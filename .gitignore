@@ -1,0 +1,9 @@
+/target
+# Never commit scan output, ISOs or anything derived from personal data.
+report.html
+report.json
+*.iso
+*.img
+manifest.json
+/out/
+/scratch/
