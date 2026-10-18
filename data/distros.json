@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "distros": [
+    {
+      "id": "linux-mint",
+      "name": "Linux Mint (Cinnamon)",
+      "homepage": "https://linuxmint.com/",
+      "desktop": "Cinnamon",
+      "family": "apt",
+      "flatpak_ready": true,
+      "secure_boot": "supported",
+      "min_ram_gb": 2,
+      "traits": { "beginner": 5, "gaming": 3, "nvidia": 4, "light": 3, "stable": 4, "fresh": 2, "windows_like": 5, "modern_look": 2, "privacy": 4, "low_maintenance": 4, "customizable": 3, "dev": 3, "community": 5, "creative": 3 },
+      "highlights": {
+        "beginner": "The most common first Linux: everything is point-and-click, with a friendly Welcome screen.",
+        "windows_like": "Looks and works like Windows: taskbar, start menu and system tray in the usual places.",
+        "nvidia": "The Driver Manager installs NVIDIA's driver with one click.",
+        "stable": "Based on Ubuntu LTS, so updates are calm and well tested.",
+        "community": "Huge community; almost any question already has an answer online.",
+        "privacy": "No telemetry, and no Snap store forced on you."
+      },
+      "caveats": ["Software versions lag behind Fedora and Arch-based distros by several months."]
+    },
+    {
+      "id": "ubuntu",
+      "name": "Ubuntu Desktop",
+      "homepage": "https://ubuntu.com/desktop",
+      "desktop": "GNOME (Ubuntu layout)",
+      "family": "apt",
+      "flatpak_ready": false,
+      "secure_boot": "supported",
+      "min_ram_gb": 4,
+      "traits": { "beginner": 4, "gaming": 3, "nvidia": 4, "light": 2, "stable": 4, "fresh": 2, "windows_like": 2, "modern_look": 4, "privacy": 2, "low_maintenance": 4, "customizable": 2, "dev": 4, "community": 5, "creative": 4 },
+      "highlights": {
+        "community": "The most widely used desktop Linux: most software and guides target it first.",
+        "nvidia": "'Additional Drivers' installs NVIDIA's driver with a checkbox.",
+        "stable": "Long-term-support releases get five years of updates.",
+        "dev": "The default target for most developer tools, Docker guides and CUDA.",
+        "creative": "Commercial creative apps that ship Linux versions usually test on Ubuntu first."
+      },
+      "caveats": ["Pushes Snap packages (slower to start, Canonical-controlled store).", "Sends optional system info to Canonical unless you opt out."]
+    },
+    {
+      "id": "kubuntu",
+      "name": "Kubuntu",
+      "homepage": "https://kubuntu.org/",
+      "desktop": "KDE Plasma",
+      "family": "apt",
+      "flatpak_ready": false,
+      "secure_boot": "supported",
+      "min_ram_gb": 4,
+      "traits": { "beginner": 4, "gaming": 3, "nvidia": 4, "light": 2, "stable": 4, "fresh": 2, "windows_like": 5, "modern_look": 3, "privacy": 3, "low_maintenance": 4, "customizable": 5, "dev": 4, "community": 4, "creative": 4 },
+      "highlights": {
+        "windows_like": "KDE Plasma's layout feels very close to Windows 10/11.",
+        "customizable": "Plasma can be customised more than any other desktop, without the terminal.",
+        "community": "Ubuntu underneath, so Ubuntu guides and software apply.",
+        "nvidia": "Driver Manager installs NVIDIA's driver with a few clicks."
+      },
+      "caveats": ["Plasma versions lag behind Fedora KDE and openSUSE.", "Also uses Snap packages by default."]
+    },
+    {
+      "id": "fedora-workstation",
+      "name": "Fedora Workstation",
+      "homepage": "https://fedoraproject.org/workstation/",
+      "desktop": "GNOME",
+      "family": "dnf",
+      "flatpak_ready": true,
+      "secure_boot": "supported",
+      "min_ram_gb": 4,
+      "traits": { "beginner": 3, "gaming": 3, "nvidia": 2, "light": 2, "stable": 3, "fresh": 4, "windows_like": 1, "modern_look": 5, "privacy": 4, "low_maintenance": 3, "customizable": 3, "dev": 5, "community": 4, "creative": 4 },
+      "highlights": {
+        "fresh": "Recent software and kernels every six months, without being an experiment.",
+        "modern_look": "A clean, modern GNOME desktop as its designers intended (closer to macOS than Windows).",
+        "dev": "A favourite of developers: up-to-date compilers, toolbox containers and Podman built in.",
+        "privacy": "Community-run project with no ads or tracking."
+      },
+      "caveats": ["NVIDIA's driver needs the RPM Fusion repository enabled first (a few steps).", "Some media codecs need an extra repository.", "A new release every six months: plan a short upgrade about twice a year."]
+    },
+    {
+      "id": "fedora-kde",
+      "name": "Fedora KDE Plasma Desktop",
+      "homepage": "https://fedoraproject.org/kde/",
+      "desktop": "KDE Plasma",
+      "family": "dnf",
+      "flatpak_ready": true,
+      "secure_boot": "supported",
+      "min_ram_gb": 4,
+      "traits": { "beginner": 3, "gaming": 3, "nvidia": 2, "light": 2, "stable": 3, "fresh": 4, "windows_like": 5, "modern_look": 4, "privacy": 4, "low_maintenance": 3, "customizable": 5, "dev": 5, "community": 3, "creative": 4 },
+      "highlights": {
+        "windows_like": "A Windows-style taskbar and start menu with the latest KDE Plasma.",
+        "fresh": "Recent Plasma, kernels and drivers every six months.",
+        "customizable": "Plasma lets you change almost everything without the terminal.",
+        "dev": "Same developer-friendly base as Fedora Workstation."
+      },
+      "caveats": ["NVIDIA's driver needs the RPM Fusion repository enabled first (a few steps).", "A new release every six months: plan a short upgrade about twice a year."]
+    },
+    {
+      "id": "pop-os",
+      "name": "Pop!_OS",
+      "homepage": "https://system76.com/pop/",
+      "desktop": "COSMIC",
+      "family": "apt",
+      "flatpak_ready": true,
+      "secure_boot": "needs_disabling",
+      "min_ram_gb": 4,
+      "traits": { "beginner": 4, "gaming": 4, "nvidia": 5, "light": 2, "stable": 3, "fresh": 3, "windows_like": 2, "modern_look": 4, "privacy": 4, "low_maintenance": 4, "customizable": 3, "dev": 5, "community": 4, "creative": 5 },
+      "highlights": {
+        "nvidia": "Has a separate download with NVIDIA's driver already installed: no setup at all.",
+        "dev": "Made by a PC maker for developers: CUDA and dev tooling are easy.",
+        "creative": "Aimed at creators too: with the NVIDIA download, GPU apps like Blender and DaVinci Resolve have their driver ready.",
+        "gaming": "Steam and GPU drivers work out of the box.",
+        "beginner": "Friendly setup and a keyboard-driven tiling option when you want it."
+      },
+      "caveats": ["Historically needs Secure Boot turned off to install; check the current release notes.", "Its new COSMIC desktop is young, so expect some rough edges."]
+    },
+    {
+      "id": "bazzite",
+      "name": "Bazzite",
+      "homepage": "https://bazzite.gg/",
+      "desktop": "KDE Plasma (GNOME edition available)",
+      "family": "rpm-ostree",
+      "flatpak_ready": true,
+      "secure_boot": "needs_key_enrolment",
+      "min_ram_gb": 8,
+      "traits": { "beginner": 4, "gaming": 5, "nvidia": 5, "light": 1, "stable": 4, "fresh": 4, "windows_like": 4, "modern_look": 3, "privacy": 4, "low_maintenance": 5, "customizable": 2, "dev": 2, "community": 3, "creative": 2 },
+      "highlights": {
+        "gaming": "Built for gaming: Steam, Proton tweaks, controller support and HDR preinstalled.",
+        "nvidia": "Has a ready-made NVIDIA edition, so the driver is already there.",
+        "low_maintenance": "Updates apply as a whole image and can be rolled back from the boot menu if anything breaks.",
+        "stable": "The core system is read-only, so it is very hard to break by accident."
+      },
+      "caveats": ["The read-only core makes classic 'install any package' tinkering harder; apps come from Flatpak or containers.", "With Secure Boot on, you enrol a key once during install.", "Wants a reasonably modern PC (8 GB+ RAM)."]
+    },
+    {
+      "id": "debian",
+      "name": "Debian",
+      "homepage": "https://www.debian.org/",
+      "desktop": "GNOME by default (KDE, Xfce, Cinnamon offered)",
+      "family": "apt",
+      "flatpak_ready": false,
+      "secure_boot": "supported",
+      "min_ram_gb": 2,
+      "traits": { "beginner": 2, "gaming": 2, "nvidia": 2, "light": 4, "stable": 5, "fresh": 1, "windows_like": 2, "modern_look": 3, "privacy": 5, "low_maintenance": 4, "customizable": 4, "dev": 4, "community": 4, "creative": 3 },
+      "highlights": {
+        "stable": "Famously rock-solid: a release changes very little for about two years.",
+        "privacy": "A volunteer, non-commercial project with a strong free-software and privacy stance.",
+        "light": "Runs well on older machines, especially with the Xfce desktop."
+      },
+      "caveats": ["Software is often a year or more old.", "NVIDIA drivers and some setup steps are manual.", "The installer asks more technical questions than Mint or Ubuntu."]
+    },
+    {
+      "id": "opensuse-tumbleweed",
+      "name": "openSUSE Tumbleweed",
+      "homepage": "https://get.opensuse.org/tumbleweed/",
+      "desktop": "KDE Plasma by default (GNOME offered)",
+      "family": "zypper",
+      "flatpak_ready": false,
+      "secure_boot": "supported",
+      "min_ram_gb": 4,
+      "traits": { "beginner": 2, "gaming": 3, "nvidia": 3, "light": 2, "stable": 3, "fresh": 5, "windows_like": 4, "modern_look": 3, "privacy": 4, "low_maintenance": 2, "customizable": 4, "dev": 4, "community": 3, "creative": 4 },
+      "highlights": {
+        "fresh": "Rolling release: you always have the latest software, with no big version upgrades.",
+        "stable": "Every update is tested as a whole, and automatic snapshots let you roll back from the boot menu.",
+        "customizable": "YaST gives a graphical control panel for almost every system setting."
+      },
+      "caveats": ["Updates are frequent and large, so you should update weekly.", "Smaller English-speaking community than Ubuntu or Fedora."]
+    },
+    {
+      "id": "zorin-os",
+      "name": "Zorin OS Core",
+      "homepage": "https://zorin.com/os/",
+      "desktop": "GNOME (Windows-style layouts)",
+      "family": "apt",
+      "flatpak_ready": true,
+      "secure_boot": "supported",
+      "min_ram_gb": 4,
+      "traits": { "beginner": 5, "gaming": 3, "nvidia": 4, "light": 3, "stable": 4, "fresh": 2, "windows_like": 5, "modern_look": 4, "privacy": 3, "low_maintenance": 4, "customizable": 3, "dev": 3, "community": 3, "creative": 3 },
+      "highlights": {
+        "windows_like": "Designed specifically for people leaving Windows; you can pick a Windows-style layout.",
+        "beginner": "Polished and simple, with Windows app support set up for you.",
+        "modern_look": "One of the most polished-looking desktops out of the box."
+      },
+      "caveats": ["Releases follow Ubuntu LTS but often arrive months later.", "Some layouts and extras are in the paid Pro edition."]
+    },
+    {
+      "id": "mx-linux",
+      "name": "MX Linux (Xfce)",
+      "homepage": "https://mxlinux.org/",
+      "desktop": "Xfce",
+      "family": "apt",
+      "flatpak_ready": true,
+      "secure_boot": "unknown",
+      "min_ram_gb": 1,
+      "traits": { "beginner": 3, "gaming": 2, "nvidia": 3, "light": 5, "stable": 5, "fresh": 1, "windows_like": 4, "modern_look": 1, "privacy": 5, "low_maintenance": 4, "customizable": 4, "dev": 3, "community": 3, "creative": 2 },
+      "highlights": {
+        "light": "Very light: makes old or low-memory PCs feel quick again.",
+        "stable": "Built on Debian stable, so very little changes under you.",
+        "beginner": "The 'MX Tools' collection puts common admin jobs in simple windows."
+      },
+      "caveats": ["Looks dated compared with GNOME or KDE.", "Not ideal for gaming or the newest hardware."]
+    }
+  ]
+}

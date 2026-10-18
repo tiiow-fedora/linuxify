@@ -59,3 +59,46 @@ Output: `%LOCALAPPDATA%\Linuxify\reports\scan-<time>\report.html` + `report.json
   agent's) and have not been checked against live repositories. That matters from Stage 4
   (`restore.sh`), so verify them before generating install commands.
 - Browser profile sizes include caches, so they overstate what needs migrating.
+
+## Stage 2 — Distro chooser: DONE (2026-10-18)
+
+```
+target\release\linuxify.exe choose                 # asks 10 questions
+target\release\linuxify.exe choose --answers tests\profiles\gamer.json
+```
+
+Output: `%LOCALAPPDATA%\Linuxify\choice.html` + `choice.json`. Uses the latest scan automatically
+(`--no-scan` to ignore it).
+
+### What works
+- 10 plain-language questions; answers are combined with the scan (NVIDIA GPU, RAM, Steam library,
+  Secure Boot, programs that won't run on Linux).
+- Ranked list of all 11 distros, with a top 3 that each have "why it fits you" reasons and
+  "good to know" cautions. Distros that need more RAM than the PC has are left out, with the reason shown.
+- 14 new unit tests (54 total, all passing), including the six answer profiles in `tests/profiles/`.
+
+### Verified
+- **Six answer profiles**, run through the CLI on this PC's real scan (32 GB, AMD GPU, Secure Boot off):
+
+  | Profile | #1 | #2 | #3 |
+  |---|---|---|---|
+  | newcomer (never used Linux, Windows look, hands-off) | Linux Mint 91% | Zorin OS 83% | Kubuntu 82% |
+  | gamer (plays a lot) | Bazzite 86% | Pop!_OS 77% | Linux Mint 74% |
+  | old_laptop (10+ yrs old) | Linux Mint 86% | MX Linux 81% | Zorin OS 79% |
+  | developer (fresh, tinkerer, modern look) | Fedora KDE 85% | Fedora Workstation 78% | openSUSE TW 78% |
+  | privacy_veteran (stable, terminal-comfortable) | Debian 89% | MX Linux 88% | Kubuntu 74% |
+  | creator (pro creative work) | Pop!_OS 81% | Ubuntu 76% | Bazzite 75% |
+
+- Unit tests also cover hardware this PC doesn't have: with a 3 GB-RAM scan the old_laptop profile
+  puts MX Linux first and excludes Bazzite and Fedora. With an NVIDIA GPU, the gamer gets Bazzite
+  then Pop!_OS, and the creator gets Pop!_OS. Secure Boot on lowers Pop!_OS's score and adds the
+  warnings. Changing one answer (newcomer → heavy gamer) changes the top pick.
+- Interactive prompt checked by piping keystrokes in: bad input is re-asked, `q` quits without saving,
+  and typed answers give the same result as the matching profile file. Bug found and fixed: input
+  piped from PowerShell starts with a byte-order mark, which made the first answer invalid.
+
+### Not tested / known limits
+- The trait ratings in `data/distros.json` are judgement calls, not benchmarks. Nobody has done an
+  outside review yet.
+- Not run with a real NVIDIA, low-RAM or Secure-Boot-on scan (unit tests only).
+- English only.

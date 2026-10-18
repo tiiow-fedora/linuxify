@@ -56,3 +56,31 @@ Short record of choices made while building Linuxify, and why.
   MCA Selector (Java), Supersonic (cross-platform), GitHub Desktop (community build only, so
   "alternative"), Skype (shut down in May 2025), plus pattern fixes (Deadlock was catching
   "Deadlock Mod Manager"; Java(TM), Unity 6, Outlook for Windows, whkd weren't matching).
+
+## Stage 2 — distro chooser
+
+- **distrochooser.de is not used directly.** It has no public API, and its About page
+  (https://distrochooser.de/info/about/en) says the question/answer structure and result matrix are
+  proprietary and may only be used with prior permission. Linuxify uses its own built-in quiz and only
+  *links* to distrochooser.de as an optional second opinion (no embedding, no scraping).
+- **Scoring is a transparent weighted sum.** Every answer adds weight to traits (beginner, gaming,
+  nvidia, light, stable, fresh, windows_like, modern_look, privacy, low_maintenance, customizable,
+  dev, community, creative). Every distro rates itself 0–5 per trait in `data/distros.json`.
+  Score = Σ weight × rating ÷ (5 × Σ weight), shown as a percentage. Reasons = the distro's
+  highlight text for its three biggest contributing traits. "Weaker on X" is added when the user
+  weighted X ≥ 2 and the distro rates it ≤ 2.
+- **The quiz questions and their weights live in code (`src/chooser.rs`), not JSON**, so they are
+  type-checked and covered by tests. The distro ratings are data and easy to edit.
+- **Scan input**: an NVIDIA GPU adds +3 nvidia weight; RAM < 4 GB adds +4 light, < 8 GB adds +1.5;
+  ≥ 5 Steam games adds +1 gaming, but only if the user didn't answer "rarely or never" (the user's
+  answer wins). A distro whose `min_ram_gb` exceeds the PC's RAM (+0.5 GB slack) is excluded and
+  shown as "not suitable". With Secure Boot on, a distro that needs it disabled loses 5 points and
+  gets a caution. Distros needing key enrolment, or whose support is unknown, get a caution only.
+- **Distro set (11)**: Linux Mint, Ubuntu, Kubuntu, Fedora Workstation, Fedora KDE, Pop!_OS,
+  Bazzite, Debian, openSUSE Tumbleweed, Zorin OS Core, MX Linux. Ratings are my judgement, not
+  measurements. Two uncertain facts are recorded as such: Pop!_OS is marked "needs Secure Boot
+  disabled" (historically true; the caveat says to check the current release), and MX Linux's Secure
+  Boot support is "unknown". No version numbers are stored, so the file doesn't go stale. ISO URLs and
+  checksums are added in Stage 3.
+- **Output**: `%LOCALAPPDATA%\Linuxify\choice.json` (answers + full ranking; Stage 3 will default to
+  `top[0]`) and `choice.html`. `--answers` accepts either a plain answers file or a saved choice.json.

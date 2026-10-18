@@ -404,6 +404,60 @@ pub fn render_html(r: &ScanReport) -> String {
     h
 }
 
+/// The distro recommendation page (`linuxify choose`).
+pub fn render_choice_html(rec: &crate::chooser::Recommendation, generated_at: &str, scan_used: bool) -> String {
+    let mut h = String::new();
+    let _ = write!(
+        h,
+        "<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><title>Your Linux Match</title><style>{CSS}\n.rank{{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}}.score{{float:right;font-size:22px;font-weight:700;color:var(--ok)}}ul{{margin:6px 0 0;padding-left:20px}}</style></head><body><main>"
+    );
+    let _ = write!(h, "<h1>Your Linux match</h1><div class=muted>{} · {}</div>", esc(generated_at), if scan_used { "based on your answers and your PC scan" } else { "based on your answers only (no scan found)" });
+    if !rec.scan_notes.is_empty() {
+        h.push_str("<h2>What your PC told us</h2><ul>");
+        for n in &rec.scan_notes {
+            let _ = write!(h, "<li>{}</li>", esc(n));
+        }
+        h.push_str("</ul>");
+    }
+    h.push_str("<h2>Top picks</h2>");
+    for (i, r) in rec.ranking.iter().take(3).enumerate() {
+        let _ = write!(
+            h,
+            "<div class='finding info'><div class=score>{:.0}%</div><div class=rank>#{}</div><b style='font-size:18px'>{}</b> <span class=sub>{} desktop · {}</span>",
+            r.score,
+            i + 1,
+            esc(&r.name),
+            esc(&r.desktop),
+            link(&r.homepage, "website")
+        );
+        if !r.reasons.is_empty() {
+            h.push_str("<div><b>Why it fits you</b><ul>");
+            for x in &r.reasons {
+                let _ = write!(h, "<li>{}</li>", esc(x));
+            }
+            h.push_str("</ul></div>");
+        }
+        if !r.cautions.is_empty() {
+            h.push_str("<div class=fix><b>Good to know</b><ul>");
+            for x in &r.cautions {
+                let _ = write!(h, "<li>{}</li>", esc(x));
+            }
+            h.push_str("</ul></div>");
+        }
+        h.push_str("</div>");
+    }
+    h.push_str("<h2>Full ranking</h2><table><thead><tr><th>Distro</th><th>Desktop</th><th>Match</th></tr></thead><tbody>");
+    for r in &rec.ranking {
+        let _ = write!(h, "<tr><td>{}</td><td>{}</td><td>{:.0}%</td></tr>", esc(&r.name), esc(&r.desktop), r.score);
+    }
+    for e in &rec.excluded {
+        let _ = write!(h, "<tr><td>{}</td><td colspan=2 class=muted>Not suitable: {}</td></tr>", esc(&e.name), esc(&e.why));
+    }
+    h.push_str("</tbody></table>");
+    h.push_str("<footer>The match score compares what you said matters with how each distro is rated in Linuxify's data/distros.json. Treat it as a starting point: the next step (<code>linuxify try</code>) lets you test-drive a distro safely before installing anything. Want a second opinion? The quiz at <a href=\"https://distrochooser.de/\" rel=\"noopener noreferrer\">distrochooser.de</a> is independent of Linuxify.</footer></main></body></html>");
+    h
+}
+
 /// Writes report.json + report.html into a timestamped folder and a `latest`
 /// copy. Returns the timestamped folder.
 pub fn write(r: &ScanReport, reports_root: &Path) -> Result<PathBuf, String> {
