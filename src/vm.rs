@@ -153,7 +153,6 @@ pub fn plan_virtualbox_remove(vbox: &Path, distro_id: &str) -> Vec<Step> {
     let mut eject = Step::new("Eject the ISO", vbox, &["storageattach", &name, "--storagectl", "SATA", "--port", "0", "--device", "0", "--type", "dvddrive", "--medium", "emptydrive"]);
     eject.may_fail = true;
     // VirtualBox keeps the VM locked for a few seconds after power-off.
-    let mut eject = eject;
     eject.retries = 10;
     let mut delete = Step::new("Delete the trial VM and its own files", vbox, &["unregistervm", &name, "--delete"]);
     delete.retries = 10;

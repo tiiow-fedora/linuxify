@@ -136,3 +136,43 @@ Short record of choices made while building Linuxify, and why.
   `%LOCALAPPDATA%\Packages\Claude_*\LocalCache\Local\`. VirtualBox runs outside the package and can't
   see them (VERR_PATH_NOT_FOUND). For testing, `scratch/run-outside.cmd` is launched via explorer.exe
   to run Linuxify as a normal process. Real users running linuxify.exe from a terminal are unaffected.
+
+## Stage 4 — data migration (staging)
+
+- **Copy, never move.** Sources are opened read-only. Everything is written inside
+  `<target>\linuxify-migration\`. The target must not overlap any source (either way round) and
+  must not be a system folder. Sources nested in other sources are dropped so nothing is copied twice.
+- **Staging layout mirrors the Linux home folder** (`home/Documents`, `home/.ssh`,
+  `home/.config/Code/User`, `home/.local/share/fonts`, `home/.minecraft`...), so restoring is one copy.
+  English folder names are kept, since they match the XDG defaults on every distro set to English.
+  Firefox-family and Thunderbird profiles are copied as whole profile folders minus caches and lock
+  files; they're cross-platform. **Chromium-family browsers: only `Bookmarks` is copied.** Saved
+  passwords and cookies are encrypted with Windows DPAPI and are unreadable on Linux, so the README
+  tells the user to export passwords or use browser sync. Minecraft copies only saves, packs,
+  screenshots and options (not the Windows game files); VS Code copies settings, keybindings,
+  snippets and tasks (not caches).
+- **Skipped and flagged rather than guessed:** shortcuts (.lnk), desktop.ini/Thumbs.db, Office
+  `~$` lock files, junctions/symlinks (never followed), OneDrive online-only files (copying would
+  silently download them), names longer than Linux's 255-byte limit, and files locked or changed
+  during the copy. All are listed in `flagged.txt` with the reason.
+- **Integrity:** each file is hashed (SHA-256) while it's copied, written to `<name>.linuxify-partial`,
+  and renamed only when complete. Modified, accessed and created times are preserved. After copying,
+  every file is re-read and checked against `manifest.json` (skip with `--no-verify`).
+  `SHA256SUMS` is in `sha256sum -c` format, so the Linux side can verify with standard tools.
+- **Resume:** an append-only `.linuxify-progress.jsonl` records each finished file. A rerun reuses
+  a file only if the source size and mtime are unchanged and the copy is still present at the right
+  size; anything else is copied again. A truncated last log line (from a crash) is ignored.
+- **`restore.sh` is static** (not templated), so it can be reviewed once and trusted. It reads
+  `apps.txt` and `SHA256SUMS` at runtime. It never overwrites an existing file in `$HOME`, adds
+  Mozilla profiles as *extra* profiles (never replacing the default), supports `--dry-run`, and asks
+  before installing apps. Apps install from Flathub per-user (works on every distro); native packages
+  use whichever of apt/dnf/zypper/pacman exists. Failed installs are listed at the end instead of
+  aborting the run.
+- **apps.txt** is generated from the scan: for each mapped program, the native app's Flatpak, else
+  the first alternative that has a Flatpak, else native package names. Blocked and unknown programs
+  are left out; nothing is invented. All 49 Flatpak IDs in app_map.json were checked against the
+  Flathub API before this was built (one was wrong, `org.lmms.LMMS` → `io.lmms.LMMS`, and is fixed).
+- `%LOCALAPPDATA%\Linuxify\migration.json` records where the staged copy is. Stage 5's "remove
+  Windows" gate will need it.
+- `--target` takes a folder (another drive, USB disk or NAS share). Linuxify never formats or
+  partitions anything for this stage. FAT32 targets are refused when a file is 4 GB or larger.

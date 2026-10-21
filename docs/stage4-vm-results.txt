@@ -1,0 +1,27 @@
+distro: Linux Mint 22.3
+PASS dry-run exits 0
+PASS dry-run created no files
+PASS dry-run lists cp commands
+PASS run 1 exits 0
+PASS checksums all matched
+FAIL documents restored (nested)
+PASS pictures/music/videos/downloads/desktop
+PASS existing file NOT overwritten
+PASS dotfiles: gitconfig, VS Code, fonts, minecraft
+PASS timestamp preserved (manifest 1792555172)
+PASS ~/.ssh is 700
+PASS private key is 600
+PASS public key is 644
+PASS warned about Windows path in ssh config
+PASS firefox profile copied
+PASS firefox profiles.ini entry
+PASS thunderbird profile added
+PASS chrome bookmarks explained
+FAIL flatpak app installed (Audacity)
+PASS native package installed (git)
+PASS restore log written
+PASS run 2 exits 0
+PASS run 2 copies nothing
+PASS run 2 doesn't duplicate profiles
+PASS sha256sum -c catches a damaged file
+SUMMARY 23 passed, 2 failed

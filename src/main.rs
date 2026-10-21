@@ -2,7 +2,8 @@ use clap::{Parser, Subcommand};
 use linuxify::chooser::{self, Answers, DistroList, QUESTIONS};
 use linuxify::mapping::{AppMap, Group, Status};
 use linuxify::readiness::Severity;
-use linuxify::{appdirs, download, iso, report, scan, vm};
+use linuxify::{appdirs, download, iso, migrate, report, restore, scan, vm};
+use std::collections::BTreeMap;
 use std::io::{BufRead, Write};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -66,6 +67,27 @@ enum Command {
         #[arg(long)]
         list: bool,
     },
+    /// Copy (never move) your files into a staging folder for Linux, with checksums and a restore script.
+    Migrate {
+        /// Folder to stage into (another drive, USB disk or NAS share). A `linuxify-migration` folder is created inside it.
+        #[arg(long)]
+        target: PathBuf,
+        /// Show what would be copied, and the totals, without copying anything.
+        #[arg(long)]
+        dry_run: bool,
+        /// Only re-check an existing staging folder against its manifest.
+        #[arg(long)]
+        verify: bool,
+        /// Skip the re-read check after copying (faster, less safe).
+        #[arg(long)]
+        no_verify: bool,
+        /// Copy just this folder instead of your usual files (can be repeated).
+        #[arg(long)]
+        from_folder: Vec<PathBuf>,
+        /// Testing aid: stop after copying this many files, as if interrupted.
+        #[arg(long, hide = true)]
+        stop_after: Option<u64>,
+    },
 }
 
 fn main() -> ExitCode {
@@ -75,6 +97,9 @@ fn main() -> ExitCode {
         Command::Choose { answers, no_scan, open } => run_choose(cli.data_dir, answers, no_scan, open),
         Command::Try { distro, vm, disk, iso_file, dry_run, reverify, remove, list } => {
             run_try(cli.data_dir, TryOpts { distro, vm, disk, iso_file, dry_run, reverify, remove, list })
+        }
+        Command::Migrate { target, dry_run, verify, no_verify, from_folder, stop_after } => {
+            run_migrate(MigrateOpts { target, dry_run, verify_only: verify, no_verify, from_folder, stop_after })
         }
     };
     match result {
@@ -428,5 +453,172 @@ fn run_try(data_dir: Option<PathBuf>, o: TryOpts) -> Result<(), String> {
     if distro.secure_boot != chooser::SecureBootSupport::Supported {
         println!("Note: the VM runs with Secure Boot off, so it doesn't show how {} behaves with Secure Boot on.", distro.name);
     }
+    Ok(())
+}
+
+struct MigrateOpts {
+    target: PathBuf,
+    dry_run: bool,
+    verify_only: bool,
+    no_verify: bool,
+    from_folder: Vec<PathBuf>,
+    stop_after: Option<u64>,
+}
+
+/// File system of the target's drive (e.g. "NTFS", "FAT32"); None for network paths.
+fn drive_filesystem(p: &Path) -> Option<String> {
+    let s = p.to_string_lossy();
+    let letter = s.chars().next().filter(|c| c.is_ascii_alphabetic() && s[1..].starts_with(':'))?;
+    let out = std::process::Command::new("powershell")
+        .args(["-NoProfile", "-NonInteractive", "-Command", &format!("(Get-Volume -DriveLetter {letter}).FileSystem")])
+        .output()
+        .ok()?;
+    let fs = String::from_utf8_lossy(&out.stdout).trim().to_string();
+    (!fs.is_empty()).then_some(fs)
+}
+
+fn print_verify(r: &migrate::VerifyReport) -> bool {
+    println!("  {} files match the manifest.", r.ok);
+    for (label, list) in [("MISSING", &r.missing), ("DIFFERENT FROM MANIFEST", &r.mismatched), ("not in manifest (extra)", &r.extra)] {
+        if !list.is_empty() {
+            println!("  {} {label}:", list.len());
+            for p in list.iter().take(20) {
+                println!("    {p}");
+            }
+            if list.len() > 20 {
+                println!("    ... and {} more", list.len() - 20);
+            }
+        }
+    }
+    r.missing.is_empty() && r.mismatched.is_empty()
+}
+
+fn run_migrate(o: MigrateOpts) -> Result<(), String> {
+    if !o.target.is_dir() {
+        return Err(format!("{} is not an existing folder. Pick a folder on another drive, a USB disk or a NAS share.", o.target.display()));
+    }
+    let staging = o.target.join(migrate::STAGING_DIR);
+
+    if o.verify_only {
+        println!("Checking {} against its manifest...", staging.display());
+        let r = migrate::verify(&staging, |_, _| {})?;
+        return if print_verify(&r) { Ok(()) } else { Err("verification FAILED".into()) };
+    }
+
+    let sources: Vec<migrate::SourceItem> = if o.from_folder.is_empty() {
+        println!("Finding your files...");
+        migrate::default_sources(&scan::userdata::scan())
+    } else {
+        o.from_folder
+            .iter()
+            .map(|f| {
+                let name = f.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_else(|| "Folder".into());
+                migrate::SourceItem { label: name.clone(), from: f.clone(), to: format!("home/{name}"), exclude: vec![], only: vec![] }
+            })
+            .collect()
+    };
+    migrate::check_target(&staging, &sources)?;
+
+    println!("Planning the copy (reading file sizes only)...");
+    let plan = migrate::plan(&sources);
+    println!("\n{}Copy plan -> {}", if o.dry_run { "DRY RUN: " } else { "" }, staging.display());
+    for (label, (files, bytes)) in &plan.per_source {
+        println!("{}", migrate::summary_line(label, *files, *bytes));
+    }
+    let total = plan.total_bytes();
+    println!("{}", migrate::summary_line("TOTAL", plan.files.len() as u64, total));
+
+    if !plan.skipped.is_empty() {
+        let mut reasons: BTreeMap<&str, usize> = BTreeMap::new();
+        for s in &plan.skipped {
+            *reasons.entry(s.reason.as_str()).or_default() += 1;
+        }
+        println!("\nWill NOT copy {} items:", plan.skipped.len());
+        for (r, n) in reasons {
+            println!("  {n:>6}  {r}");
+        }
+    }
+
+    let free = fs2::available_space(&o.target).ok();
+    if let Some(f) = free {
+        println!("\nFree space on the target: {}", download::human(f));
+    }
+    let fs = drive_filesystem(&o.target);
+    if fs.as_deref() == Some("FAT32") && plan.files.iter().any(|f| f.size >= 4 * 1024 * 1024 * 1024) {
+        return Err("the target drive is FAT32, which can't hold files of 4 GB or more; use an exFAT or NTFS drive".into());
+    }
+    if o.target.to_string_lossy().to_ascii_uppercase().starts_with("C:") {
+        println!("Note: the target is on C:, the Windows drive. Linux can read it in a dual boot only if BitLocker and Fast Startup are off.");
+    }
+    if o.dry_run {
+        println!("\nDry run: nothing was copied. Run the same command without --dry-run to copy.");
+        return Ok(());
+    }
+    let already = std::fs::read_to_string(staging.join(migrate::PROGRESS_FILE)).map(|t| migrate::parse_progress(&t)).unwrap_or_default();
+    let reusable: u64 = plan.files.iter().filter(|f| already.get(&f.rel).is_some_and(|c| c.size == f.size && c.mtime == f.mtime)).map(|f| f.size).sum();
+    if let Some(f) = free {
+        if total - reusable + 512 * 1024 * 1024 > f {
+            return Err(format!("not enough space on the target: need {} more, {} free", download::human(total - reusable), download::human(f)));
+        }
+    }
+
+    println!("\nCopying (your originals are only read, never changed)...");
+    let mut last = std::time::Instant::now();
+    let out = migrate::copy_all(&plan, &staging, o.stop_after, |done, total, _| {
+        if last.elapsed() > std::time::Duration::from_secs(2) {
+            print!("\r  {:>3}%  {} / {}   ", done * 100 / total.max(1), download::human(done), download::human(total));
+            let _ = std::io::stdout().flush();
+            last = std::time::Instant::now();
+        }
+    })?;
+    println!("\r  Copied {} new files, reused {} from an earlier run.          ", out.newly_copied, out.reused);
+    let mut skipped = plan.skipped.clone();
+    skipped.extend(out.failed.iter().cloned());
+
+    let manifest = migrate::write_manifest(&staging, &out.copied, &skipped)?;
+    // Linux side: restore.sh must keep Unix line endings.
+    std::fs::write(staging.join("restore.sh"), restore::RESTORE_SH.replace("\r\n", "\n")).map_err(|e| e.to_string())?;
+    let programs = latest_scan().map(|r| r.programs).unwrap_or_default();
+    let lines = restore::app_lines(&programs);
+    std::fs::write(staging.join("apps.txt"), restore::apps_txt(&lines)).map_err(|e| e.to_string())?;
+    let distro = std::fs::read_to_string(appdirs::home()?.join("choice.json"))
+        .ok()
+        .and_then(|t| serde_json::from_str::<serde_json::Value>(&t).ok())
+        .and_then(|v| v.pointer("/top/0").and_then(|x| x.as_str()).map(String::from));
+    std::fs::write(staging.join("README.txt"), restore::readme_txt(distro.as_deref(), manifest.total_files, &download::human(manifest.total_bytes))).map_err(|e| e.to_string())?;
+
+    // Remember where the staged copy is (Stage 5's "remove Windows" gate needs it).
+    let home = appdirs::home()?;
+    std::fs::create_dir_all(&home).map_err(|e| e.to_string())?;
+    let record = serde_json::json!({
+        "staging": staging.display().to_string(),
+        "created_at": manifest.created_at,
+        "total_files": manifest.total_files,
+        "total_bytes": manifest.total_bytes,
+    });
+    std::fs::write(home.join("migration.json"), serde_json::to_string_pretty(&record).unwrap()).map_err(|e| e.to_string())?;
+
+    if !out.failed.is_empty() {
+        println!("\n{} files could not be copied (see flagged.txt), e.g.:", out.failed.len());
+        for f in out.failed.iter().take(5) {
+            println!("  {}  ({})", f.from, f.reason);
+        }
+        println!("Close the programs using them and run the same command again: finished files are not copied twice.");
+    }
+
+    if !o.no_verify {
+        println!("\nVerifying the copy against the manifest (re-reading every file)...");
+        let r = migrate::verify(&staging, |_, _| {})?;
+        if !print_verify(&r) {
+            return Err("verification FAILED: some copied files don't match. Run the command again to re-copy them.".into());
+        }
+    }
+    println!(
+        "\nDone: {} files ({}) staged in {}\n{} apps listed in apps.txt. On Linux, open that folder and run:  bash restore.sh --dry-run",
+        manifest.total_files,
+        download::human(manifest.total_bytes),
+        staging.display(),
+        lines.len()
+    );
     Ok(())
 }
