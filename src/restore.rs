@@ -151,4 +151,17 @@ mod tests {
         assert!(RESTORE_SH.contains("sha256sum"));
         assert!(!RESTORE_SH.contains('\r'), "restore.sh must have Unix line endings");
     }
+
+    #[test]
+    fn remove_windows_script_lessons_from_vm() {
+        let s = REMOVE_WINDOWS_SH;
+        assert!(s.starts_with("#!/usr/bin/env bash"));
+        assert!(!s.contains("rm -rf"));
+        // The EFI partition is mounted root-only, so the check must go through sudo.
+        assert!(s.contains(r#"sudo test -d "$m/EFI/Microsoft""#));
+        assert!(!s.contains(r#"[ -d "$m/EFI/Microsoft" ]"#));
+        // Linuxify's own one-time installer entry points at LNXINST, which is deleted too.
+        assert!(s.contains("Linuxify Linux installer"));
+        assert!(s.contains(crate::install::BCD_DESCRIPTION));
+    }
 }

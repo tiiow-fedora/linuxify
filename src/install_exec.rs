@@ -165,8 +165,16 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
         if let Ok(text) = std::fs::read_to_string(&p) {
             let (patched, n) = install::patch_casper_grub(&text);
             if n > 0 {
-                std::fs::write(&p, patched).map_err(|e| format!("could not update {}: {e}", p.display()))?;
-                println!("  - Turned off live-session persistence in {cfg} ({n} boot entries)");
+                // Files copied off an ISO keep its read-only attribute.
+                if let Ok(meta) = std::fs::metadata(&p) {
+                    let mut perms = meta.permissions();
+                    #[allow(clippy::permissions_set_readonly_false)]
+                    perms.set_readonly(false);
+                    let _ = std::fs::set_permissions(&p, perms);
+                }
+                std::fs::write(&p, patched)
+                    .map_err(|e| format!("could not update {}: {e}\nRun `linuxify install --undo`.", p.display()))?;
+                println!("  - Set the live session to run from RAM without persistence in {cfg} ({n} boot entries)");
             }
         }
     }

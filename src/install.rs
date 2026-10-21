@@ -257,16 +257,25 @@ pub fn replace_gate_problems(g: &ReplaceGate) -> Vec<String> {
 /// persistence partition in free space on the disk they boot from. Booted
 /// from Linuxify's installer partition, that swallows the space set aside
 /// for Linux (found in the Windows VM test). `nopersistent` turns it off.
+///
+/// The live system also keeps the installer partition mounted at /cdrom, and
+/// that partition is on the disk Ubiquity has to repartition, so it stops
+/// with "Failed to unmount partitions: /cdrom" (also found in the VM test).
+/// `toram` copies the live media into RAM and releases the partition; casper
+/// skips the copy by itself when there isn't enough free memory.
 /// Returns the patched text and how many boot entries were changed.
 pub fn patch_casper_grub(cfg: &str) -> (String, usize) {
+    const FLAGS: [&str; 2] = ["nopersistent", "toram"];
     let mut changed = 0;
     let out: Vec<String> = cfg
         .split_inclusive('\n')
         .map(|line| {
             let is_casper = line.trim_start().starts_with("linux") && line.contains("boot=casper");
-            if is_casper && !line.contains("nopersistent") {
+            let has = |f: &str| line.split_whitespace().any(|w| w == f);
+            let missing: Vec<&str> = FLAGS.iter().copied().filter(|f| !has(f)).collect();
+            if is_casper && !missing.is_empty() {
                 changed += 1;
-                line.replacen("boot=casper", "boot=casper nopersistent", 1)
+                line.replacen("boot=casper", &format!("boot=casper {}", missing.join(" ")), 1)
             } else {
                 line.to_string()
             }
@@ -545,10 +554,13 @@ mod tests {
 ";
         let (out, n) = patch_casper_grub(cfg);
         assert_eq!(n, 2);
-        assert_eq!(out.matches("boot=casper nopersistent").count(), 2);
+        assert_eq!(out.matches("boot=casper nopersistent toram").count(), 2);
         assert!(out.contains("linux	/boot/memtest.efi
 "), "non-casper entries untouched");
-        assert_eq!(out.len(), cfg.len() + 2 * " nopersistent".len());
+        assert_eq!(out.len(), cfg.len() + 2 * " nopersistent toram".len());
+        // A line that already has one flag only gets the other.
+        let half = "linux /casper/vmlinuz boot=casper nopersistent quiet\n";
+        assert_eq!(patch_casper_grub(half).0, "linux /casper/vmlinuz boot=casper toram nopersistent quiet\n");
         // Idempotent, and leaves non-casper (e.g. Fedora) configs alone.
         assert_eq!(patch_casper_grub(&out), (out.clone(), 0));
         let fedora = "linux /images/pxeboot/vmlinuz root=live:CDLABEL=Fedora rd.live.image quiet

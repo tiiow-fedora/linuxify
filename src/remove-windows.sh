@@ -131,9 +131,10 @@ done
 
 boot_ids=()
 if command -v efibootmgr >/dev/null; then
-  mapfile -t boot_ids < <(efibootmgr 2>/dev/null | sed -n 's/^Boot\([0-9A-Fa-f]\{4\}\)\*\? *Windows Boot Manager.*/\1/p')
+  # Windows' own entry, and the one-time installer entry Linuxify added (it points at LNXINST).
+  mapfile -t boot_ids < <(efibootmgr 2>/dev/null | sed -n 's/^Boot\([0-9A-Fa-f]\{4\}\)\*\? *\(Windows Boot Manager\|Linuxify Linux installer\)\([[:space:]].*\)\?$/\1/p')
 fi
-note "Windows boot menu entries to remove: ${boot_ids[*]:-none}"
+note "Boot menu entries to remove (Windows, Linuxify installer): ${boot_ids[*]:-none}"
 esp_dev=$(lsblk -rpno PATH,PARTTYPE "$DISK" | awk -v e="$ESP" 'tolower($2)==e{print $1; exit}')
 [ -z "$esp_dev" ] && esp_dev=$(findmnt -n -o SOURCE /boot/efi 2>/dev/null)
 note "Windows boot files on ${esp_dev:-(no EFI partition found)}: EFI/Microsoft will be renamed, not deleted."
@@ -155,8 +156,10 @@ for t in $(printf '%s\n' "${targets[@]}" | sort -r -V); do
   # --no-reread: Linux itself usually runs from this disk, so sfdisk would
   # otherwise refuse a "busy" disk. Safe here: none of the targets is mounted
   # (checked above). partx then drops the deleted partition from the kernel.
-  if ! sudo sfdisk --no-reread --delete "$DISK" "$num"; then
-    printf '\nSTOPPED: deleting %s failed. Partitions listed before it may already be deleted;\ncheck with: lsblk %s\n' "$t" "$DISK"
+  # (its "re-reading the partition table failed" chatter is expected, so only shown on failure)
+  if ! out=$(sudo sfdisk --no-reread --delete "$DISK" "$num" 2>&1); then
+    printf '%s\n' "$out"
+    printf '\nSTOPPED: deleting %s failed. Partitions listed before it may already be deleted;\ncheck with: sudo sfdisk -l %s\n' "$t" "$DISK"
     exit 1
   fi
   sudo partx -d --nr "$num" "$DISK" 2>/dev/null || true
@@ -165,7 +168,8 @@ for id in "${boot_ids[@]}"; do sudo efibootmgr -q -b "$id" -B && note "Removed b
 if [ -n "$esp_dev" ]; then
   m=$(findmnt -n -o TARGET "$esp_dev" | head -1); tm=""
   if [ -z "$m" ]; then tm=$(mktemp -d); sudo mount "$esp_dev" "$tm" && m=$tm; fi
-  if [ -n "$m" ] && [ -d "$m/EFI/Microsoft" ]; then
+  # sudo test: distros mount the EFI partition root-only (dmask=0077), so a plain [ -d ] says "no".
+  if [ -n "$m" ] && sudo test -d "$m/EFI/Microsoft"; then
     sudo mv "$m/EFI/Microsoft" "$m/EFI/Microsoft.removed-by-linuxify" && note "Renamed EFI/Microsoft on $esp_dev"
   fi
   [ -n "$tm" ] && { sudo umount "$tm"; rmdir "$tm"; }
@@ -174,4 +178,4 @@ if command -v update-grub >/dev/null; then sudo update-grub >/dev/null 2>&1 && n
 elif command -v grub2-mkconfig >/dev/null; then sudo grub2-mkconfig -o /boot/grub2/grub.cfg >/dev/null 2>&1 && note "Boot menu updated."
 fi
 printf '{"removed_at":"%s","disk":"%s","partitions":"%s"}\n' "$(date -Is)" "$DISK" "${targets[*]}" > "$HERE/windows-removed.json"
-printf '\nDone. Windows is removed. The freed space on %s is unallocated:\nopen the "Disks" app to make a new partition from it (e.g. for more storage).\n' "$DISK"
+printf '\nDone. Windows is removed. Restart once so the system sees the new partition layout.\nThe freed space on %s is then unallocated: open the "Disks" app to make a new\npartition from it (e.g. for more storage).\n' "$DISK"

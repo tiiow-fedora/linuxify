@@ -230,8 +230,8 @@ target\release\linuxify.exe migrate --target E:\ --from-folder C:\Projects   # j
     reported that install as failed, carried on and exited cleanly, which is the intended behaviour.
 
 ### Not tested / known limits
-- **A successful Flatpak install by restore.sh is not verified yet.** The live VM had no room. I'll
-  re-test on an installed system in Stage 5's VM.
+- ~~A successful Flatpak install by restore.sh is not verified yet.~~ Verified in Stage 5 on an
+  installed Mint: `com.microsoft.Edge` installed from Flathub.
 - Only tested on Mint (apt). The dnf/zypper/pacman branches of restore.sh are untested.
 - Browser profiles copied while the browser is running may be inconsistent. Locked files are flagged
   and picked up on re-run, but closing browsers first is best.
@@ -240,7 +240,7 @@ target\release\linuxify.exe migrate --target E:\ --from-folder C:\Projects   # j
 - Folder names are kept in English (Documents, Pictures...). A non-English Linux install uses
   translated XDG folder names, so files would land beside them rather than in them.
 
-## Stage 5 — Install: IN PROGRESS (2026-10-20)
+## Stage 5 — Install: DONE (2026-10-21), tested in a throwaway VM only
 
 Done and unit-tested (102 tests): install planner, preflight + `--replace-windows` gates, executor
 with typed confirmation, `install-state.json` and `--undo`, the Linux-side `remove-windows.sh`
@@ -264,6 +264,46 @@ Windows licence accepted, the owner's call), and `remove-windows.sh` in a Linux 
   extend; and a crash could corrupt a resumed download (now 64 MB flushed checkpoints + one retry).
 - **Big finding:** Ubuntu-family live systems (casper) auto-create an 85 GB "writable" persistence
   partition in the free space, and Ubiquity's "alongside" then offered to shrink the DATA disk instead.
-  Fixed by adding `nopersistent` to casper GRUB entries on LNXINST (unit-tested). **Not yet re-tested in the VM.**
-- Still to do: redo the install in the VM with the fix, finish Mint's installer, boot Linux, test restore.sh
-  (Flatpak) and remove-windows.sh there; then publish to a public GitHub repo after a privacy pass.
+  Fixed by adding `nopersistent` to casper GRUB entries on LNXINST.
+
+### Stage 5 final run (2026-10-21, same VM, from the "before-install" snapshot)
+Full path, Windows to Mint dual boot to Windows removed, all in the VM:
+1. **Real install with the fix.** First attempt stopped at "could not update grub.cfg: Access is
+   denied": files copied off an ISO keep the read-only attribute. Fixed (attribute cleared first).
+   `--undo` from that half-finished state worked. The next run was refused because the plan had
+   changed (91 to 89 GB) and the old typed phrase no longer matched, as intended. Then it worked.
+2. **Live session: no "writable" partition**, `nopersistent` on the kernel line, 91 GB free on sda.
+3. **New finding: Ubiquity stopped with "Failed to unmount partitions: /cdrom".** The live system keeps
+   LNXINST mounted, and it's on the disk being repartitioned. Fixed by also adding `toram` (live
+   medium copied to RAM). Re-tested from a fresh install run: `/cdrom` is tmpfs, nothing on sda mounted,
+   and **"Install Linux Mint alongside Windows Boot Manager" formatted a new partition #6 on sda,
+   not the data disk** (`docs/stage5-live-toram.png`, `docs/stage5-ubiquity-alongside.png`).
+4. **Mint installed and booted** (shim + Secure Boot on). Firmware menu: Ubuntu, Windows Boot Manager,
+   and Linuxify's installer entry. Windows had booted normally before (one-time entry consumed).
+5. **restore.sh on the installed system:** dry run changed nothing; real run: 7/7 checksums, 7 files
+   restored, `.ssh` 700 / key 600 / pub 644, timestamps kept, **Flatpak Edge installed**, apt package
+   installed; a second run copied nothing.
+6. **remove-windows.sh:** check-only listed exactly WINRE, MSR, Windows and LNXINST plus 2 boot entries.
+   It **refused** when a restored file was edited and when one was missing, and passed again once the
+   file was put back. `--really` with the typed phrase deleted those 4 partitions and both boot entries
+   (`docs/stage5-remove-windows-plan.png`, `-done.png`). After a restart: sda holds only EFI + Linux,
+   Linux boots, the data disk (E:) is untouched and its staged copy still verifies.
+   - **Bug found and fixed:** `EFI/Microsoft` was not renamed, because `/boot/efi` is mounted root-only
+     and the check ran without sudo. GRUB then still listed a dead Windows entry. Fixed (`sudo test -d`);
+     the fixed block was run in the same VM: renamed, and `update-grub` dropped the Windows entry.
+   - Also fixed: the Linuxify installer's own UEFI entry was left behind (now removed too); sfdisk's
+     harmless "re-reading failed" noise is hidden; the script now says to restart once.
+
+### Not tested / known limits
+- Only Linux Mint 22.3 (Ubiquity) went through the full path. Fedora (Anaconda), Calamares-based and
+  other installers are untested with LNXINST.
+- `toram` tested with 6 GB RAM only. On PCs with little RAM casper may skip the copy, and Ubiquity
+  could then hit the `/cdrom` error again.
+- The fixed remove-windows.sh rename step was checked as an extracted block, not with a second full
+  `--really` run from scratch.
+- Not tested on real hardware, BitLocker-encrypted disks (refused by design), or disks where C: isn't
+  followed by free space Windows can shrink into.
+- Apps that need a kernel module (the VirtualBox apt package) install but don't load with Secure
+  Boot on until the module is signed/enrolled. That's the distro's MOK flow, not Linuxify.
+- The "Résumé" file name in the VM test data was mangled by the test-setup script (PowerShell 5.1
+  read it as ANSI); restore.sh kept the bytes exactly, as before.

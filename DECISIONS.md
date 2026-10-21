@@ -176,3 +176,44 @@ Short record of choices made while building Linuxify, and why.
   Windows" gate will need it.
 - `--target` takes a folder (another drive, USB disk or NAS share). Linuxify never formats or
   partitions anything for this stage. FAT32 targets are refused when a file is 4 GB or larger.
+
+## Stage 5 — install (dual boot)
+
+- **No pre-seeded/automatic installer.** Linuxify prepares the disk and boots the distro's own
+  installer; the user still clicks through it. An unattended install that partitions a real
+  disk is too risky to hide behind one confirmation, and each distro's autoinstall format differs.
+- **Shrink C:, then put the installer on a small FAT32 partition ("LNXINST") right after it.**
+  UEFI firmware boots `EFI\BOOT\BOOTX64.EFI` from FAT32 directly, so no USB stick, no GRUB
+  chain-loading and no Ventoy. The shim is the distro's own signed one, so Secure Boot can stay on.
+  The rest is left *unallocated* for the installer's "install alongside" option.
+- **One-time boot entry only** (`bcdedit /copy {bootmgr}` + `{fwbootmgr} bootsequence`): the next
+  restart starts the installer; later restarts go back to Windows by themselves.
+- **Typed confirmation that names the disk and size** (`SHRINK C: ON DISK 0 BY 89 GB`). The phrase
+  is recomputed on every run, so an old phrase can't approve a new plan (seen in the VM: after an
+  undo the plan changed from 91 to 89 GB and the old phrase was refused).
+- **`install-state.json` is written before the first change** and after every step, so
+  `--undo` works from any point, including a half-finished install (verified in the VM after a failure
+  in the copy step).
+- **`no-install.lock`** in `%LOCALAPPDATA%\Linuxify` blocks every disk change on a machine that
+  must never be converted (the developer's own PC).
+- **Removing Windows happens from Linux, not Windows** (`remove-windows.sh`). It refuses on a
+  live session, re-checks every restored file in `$HOME` against SHA256SUMS (count + hash), and
+  deletes only the Windows, MSR, recovery and LNXINST partitions on the Windows disk. EFI is kept;
+  `EFI/Microsoft` is renamed, not deleted; Windows' and Linuxify's boot entries are removed.
+- **Static C runtime** (`.cargo/config.toml`, `+crt-static`): a fresh Windows has no VC++
+  redistributable, and the exe failed to start in the VM without it.
+
+### Ubuntu-family (casper) live systems on LNXINST — found in the VM test
+- **`nopersistent`**: casper creates an 85 GB "writable" persistence partition in any free space on
+  the disk it booted from, i.e. exactly the space meant for Linux. Ubiquity's "alongside" then
+  offered to shrink the *data disk* instead.
+- **`toram`**: the live system keeps its boot medium mounted at `/cdrom`. With LNXINST on the
+  same disk Ubiquity repartitions, it stops with "Failed to unmount partitions: /cdrom". `toram`
+  copies the live medium into RAM and releases the partition. casper skips the copy by itself when
+  free memory is short, so on low-RAM PCs this protection may not apply (tested with 6 GB only).
+- Both are added to every `boot=casper` line of `boot/grub/grub.cfg` and `loopback.cfg` on LNXINST
+  (unit-tested, idempotent). The ISO's files keep their read-only attribute after copying, so it is
+  cleared first (found in the VM). With both flags Ubiquity's "Install alongside Windows Boot
+  Manager" correctly formats a new partition in sda's free space and leaves the data disk alone.
+- Other installers (Fedora's Anaconda, Calamares) are not patched; they don't auto-create
+  persistence. They are untested with LNXINST.
