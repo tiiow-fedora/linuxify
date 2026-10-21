@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "_note": "Official ISO sources. Linuxify fetches checksum_url over HTTPS (it must stay on one of allowed_hosts), picks the newest file whose name matches the selector, downloads it from the same folder, and checks its SHA-256 before use. Pinned versions (Fedora, Mint, Ubuntu flavours, NixOS, AlmaLinux) need updating when a new release comes out. Last checked 2026-10-20.",
+  "sources": [
+    { "distro": "linux-mint", "checksum_url": "https://pub.linuxmint.io/stable/22.3/sha256sum.txt", "allowed_hosts": ["pub.linuxmint.io"], "prefix": "linuxmint-", "contains": "-cinnamon-", "suffix": "64bit.iso" },
+    { "distro": "linux-mint-xfce", "checksum_url": "https://pub.linuxmint.io/stable/22.3/sha256sum.txt", "allowed_hosts": ["pub.linuxmint.io"], "prefix": "linuxmint-", "contains": "-xfce-", "suffix": "64bit.iso" },
+    { "distro": "ubuntu", "checksum_url": "https://releases.ubuntu.com/26.04/SHA256SUMS", "allowed_hosts": ["releases.ubuntu.com"], "prefix": "ubuntu-", "contains": "-desktop-", "suffix": "amd64.iso" },
+    { "distro": "kubuntu", "checksum_url": "https://cdimage.ubuntu.com/kubuntu/releases/26.04/release/SHA256SUMS", "allowed_hosts": ["cdimage.ubuntu.com"], "prefix": "kubuntu-", "contains": "-desktop-", "suffix": "amd64.iso" },
+    { "distro": "xubuntu", "checksum_url": "https://cdimage.ubuntu.com/xubuntu/releases/26.04/release/SHA256SUMS", "allowed_hosts": ["cdimage.ubuntu.com"], "prefix": "xubuntu-", "contains": "-desktop-", "suffix": "amd64.iso" },
+    { "distro": "lubuntu", "checksum_url": "https://cdimage.ubuntu.com/lubuntu/releases/26.04/release/SHA256SUMS", "allowed_hosts": ["cdimage.ubuntu.com"], "prefix": "lubuntu-", "contains": "-desktop-", "suffix": "amd64.iso" },
+    { "distro": "fedora-workstation", "checksum_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Workstation/x86_64/iso/Fedora-Workstation-44-1.7-x86_64-CHECKSUM", "allowed_hosts": ["dl.fedoraproject.org"], "prefix": "Fedora-Workstation-Live-", "contains": "", "suffix": ".x86_64.iso", "download_base": "https://download.fedoraproject.org/pub/fedora/linux/releases/44/Workstation/x86_64/iso/" },
+    { "distro": "fedora-kde", "checksum_url": "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/KDE/x86_64/iso/Fedora-KDE-44-1.7-x86_64-CHECKSUM", "allowed_hosts": ["dl.fedoraproject.org"], "prefix": "Fedora-KDE-Desktop-Live-", "contains": "", "suffix": ".x86_64.iso", "download_base": "https://download.fedoraproject.org/pub/fedora/linux/releases/44/KDE/x86_64/iso/" },
+    { "distro": "debian", "checksum_url": "https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/SHA256SUMS", "allowed_hosts": ["cdimage.debian.org"], "prefix": "debian-live-", "contains": "-amd64-gnome", "suffix": ".iso" },
+    { "distro": "arch", "checksum_url": "https://geo.mirror.pkgbuild.com/iso/latest/sha256sums.txt", "allowed_hosts": ["geo.mirror.pkgbuild.com"], "prefix": "archlinux-20", "contains": "", "suffix": "-x86_64.iso" },
+    { "distro": "bazzite", "checksum_url": "https://download.bazzite.gg/bazzite-stable-amd64.iso-CHECKSUM", "allowed_hosts": ["download.bazzite.gg"], "prefix": "bazzite-stable-amd64", "contains": "", "suffix": ".iso" },
+    { "distro": "opensuse-tumbleweed", "checksum_url": "https://download.opensuse.org/tumbleweed/iso/openSUSE-Tumbleweed-KDE-Live-x86_64-Current.iso.sha256", "allowed_hosts": ["download.opensuse.org"], "prefix": "openSUSE-Tumbleweed-KDE-Live-x86_64-", "contains": "", "suffix": ".iso" },
+    { "distro": "nixos", "checksum_url": "https://channels.nixos.org/nixos-26.05/latest-nixos-graphical-x86_64-linux.iso.sha256", "allowed_hosts": ["channels.nixos.org", "releases.nixos.org"], "prefix": "nixos-graphical-", "contains": "", "suffix": "-x86_64-linux.iso" },
+    { "distro": "almalinux", "checksum_url": "https://repo.almalinux.org/almalinux/10/live/x86_64/CHECKSUM", "allowed_hosts": ["repo.almalinux.org"], "prefix": "AlmaLinux-10.", "contains": "-Live-GNOME", "suffix": ".iso" }
+  ]
+}

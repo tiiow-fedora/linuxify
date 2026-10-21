@@ -136,3 +136,51 @@ Output: `%LOCALAPPDATA%\Linuxify\choice.html` + `choice.json`. Uses the latest s
 - Uncertain facts are marked rather than guessed: Secure Boot support is `unknown` for elementary,
   Nobara, antiX, Linux Lite and Solus. Arch-family distros, NixOS, Void and Gentoo are marked
   "needs Secure Boot turned off to install".
+
+## Stage 3 — Try before installing: DONE (2026-10-20), VM trial only
+
+```
+target\release\linuxify.exe try                     # your top pick from `choose`
+target\release\linuxify.exe try linux-mint          # downloads, verifies, boots in VirtualBox
+target\release\linuxify.exe try fedora-kde --disk 25 --dry-run
+target\release\linuxify.exe try zorin-os --iso-file D:\isos\Zorin-OS.iso
+target\release\linuxify.exe try linux-mint --remove
+target\release\linuxify.exe try --list
+```
+
+### What works
+- Official ISO download for 14 distros (Mint, Mint Xfce, Ubuntu, Kubuntu, Xubuntu, Lubuntu,
+  Fedora Workstation, Fedora KDE, Debian, Arch, Bazzite, openSUSE Tumbleweed, NixOS, AlmaLinux),
+  always picking the newest file in the official checksum list. Every one of the 14 was resolved live
+  and HEAD-checked (all HTTP 200, 1.2-7.4 GB).
+- SHA-256 verification before use, resumable downloads, a free-space check, and `--iso-file` for ISOs
+  you already have (e.g. on the NAS), which must match the official hash.
+- VirtualBox trial VM: UEFI, 4 GB RAM / 4 CPUs on this PC (sized from the scan), NAT network,
+  no disk by default. `--dry-run` prints every command, and `--remove` deletes only Linuxify's own VM.
+- 19 new unit tests (77 total, all passing; clippy clean).
+
+### Verified end to end on this PC
+1. Started the Linux Mint 22.3 download, killed it at 1.1 GB, and re-ran: it **resumed** from 1.1 GB,
+   finished (2.88 GB at about 45 MB/s), and the SHA-256 matched Mint's official `sha256sum.txt`.
+2. `linuxify try linux-mint` created the VM and booted the ISO under UEFI to GRUB, then to the **Linux
+   Mint live desktop** with networking up (`docs/stage3-mint-live-in-virtualbox.png`).
+3. `--remove` while the VM was running: powered it off, waited for VirtualBox to release it, and
+   deleted the VM and its folder. The ISO was kept (confirmed through VirtualBox), and the two
+   unrelated `<inaccessible>` VMs already registered in VirtualBox were untouched.
+4. A fake ISO passed with `--iso-file` is refused with the official hash shown. Zorin (no automatic
+   source) explains how to use `--iso-file`.
+- Bugs found and fixed on the way: `--remove` failed because VirtualBox keeps a VM locked for a few
+  seconds after power-off (now retried for up to 20 s); one line of main.rs had been mangled by a
+  PowerShell encoding round trip.
+
+### Not tested / known limits
+- **Hyper-V and QEMU backends are not tested.** Hyper-V is installed here, but VM creation needs admin;
+  QEMU isn't installed. Their command plans are unit-tested only.
+- Only Linux Mint was booted for real. The other 13 ISOs were resolved and HEAD-checked, not downloaded.
+- Checksum files are not GPG-verified (SHA-256 over HTTPS from the official host only).
+- Pinned release folders (Fedora 44, Mint 22.3, Ubuntu-family 26.04, NixOS 26.05, AlmaLinux 10) will
+  need bumping in `data/isos.json` when new releases come out. Debian, Arch, Tumbleweed and Bazzite
+  follow "latest" automatically.
+- The VM trial runs with Secure Boot off and on virtual hardware, so it can't show whether your real
+  Wi-Fi/GPU work. A USB live stick is still the way to check that.
+- Option B (boot from the real disk without a USB stick) was not built; see DECISIONS.md.

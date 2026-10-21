@@ -3,7 +3,10 @@
 
 pub mod appdirs;
 pub mod chooser;
+pub mod download;
+pub mod iso;
 pub mod mapping;
 pub mod readiness;
 pub mod report;
 pub mod scan;
+pub mod vm;

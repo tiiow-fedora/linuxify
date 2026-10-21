@@ -95,3 +95,44 @@ Short record of choices made while building Linuxify, and why.
   gets Mint Cinnamon ahead of Mint Xfce instead of a tie.
 - openSUSE Tumbleweed's stability went 3→4 and maintenance 2→3. It is the most heavily tested
   rolling release (openQA plus automatic snapshots), and rating it like Arch was unfair.
+
+## Stage 3 — try before installing
+
+- **Only Option A (VM trial) ships. Option B (boot-from-disk trial) was deliberately not built.**
+  A boot-from-disk trial means writing to the real EFI System Partition and the firmware boot
+  entries. That is the same risk class as Stage 5's install, but without Stage 5's gates. It also
+  interacts badly with the things Stage 1 flags: changing boot entries triggers BitLocker recovery,
+  and with Secure Boot on, GRUB-loopback/Ventoy-style booting needs a one-time key enrolment (MOK)
+  at a firmware-level screen that Linuxify can't drive or undo. On this PC the EFI partition is even
+  on a different disk from Windows. The VM trial already answers "will I like it?" with zero risk.
+  For "does my real hardware work?", the standard answer is a USB live stick, and Stage 5 will handle
+  real boot entries with dry-run, typed confirmation and undo. So `--undo` isn't needed; `--remove`
+  deletes the trial VM.
+- **ISO sources live in `data/isos.json`**: an official checksum URL, the hosts it may come from,
+  and a name selector (prefix/contains/suffix). Linuxify fetches the checksum list, rejects it if any
+  redirect leaves the allowed hosts, picks the newest matching file (natural version sort), and
+  downloads it from the same official folder. Fedora is the one exception: the ISO comes through
+  Fedora's own mirror redirector (`download_base`), because Fedora asks people not to download from
+  its master server, but the checksum still comes from dl.fedoraproject.org. 14 of the 31 distros are
+  automatic. The rest say where to download and accept `--iso-file`, which is still verified when an
+  official checksum source exists, and loudly unverified when it doesn't.
+- **Verification is SHA-256 against the official list fetched over HTTPS** (`https_only`, rustls).
+  GPG signature checking of the checksum files is *not* implemented yet. It would add protection
+  against a compromised distro web server. Noted as a known limit.
+- **Downloads resume** with an HTTP Range request into `<iso>.part`, check free space first, and are
+  renamed to the final name only after the SHA-256 matches. A mismatch deletes our own `.part` file.
+  A `<iso>.verified` marker (hash + size) avoids re-hashing 3-7 GB on every run; `--reverify` forces it.
+- **VM backends**: VirtualBox (preferred, tested), Hyper-V (Gen 2 with the
+  `MicrosoftUEFICertificateAuthority` Secure Boot template; needs admin, untested), QEMU (WHPX
+  acceleration with TCG fallback; untested because it isn't installed and its installer needs admin).
+  VMs get UEFI firmware, NAT networking and **no virtual disk unless `--disk N` is given**, so the
+  default trial can't write anywhere. Every VM is named `Linuxify trial - <distro>`, and only VMs
+  with that prefix are ever touched. `--remove` ejects the ISO *before* `unregistervm --delete`,
+  so VirtualBox can never delete an ISO, even one passed with `--iso-file`.
+- **Linuxify won't auto-download VM software or other executables.** It prints the winget command
+  instead (running downloaded installers is a step the user should choose).
+- **Dev-environment note (not a product issue):** the Claude desktop app is an MSIX package, so files
+  its tools write under `%LOCALAPPDATA%` are silently redirected to
+  `%LOCALAPPDATA%\Packages\Claude_*\LocalCache\Local\`. VirtualBox runs outside the package and can't
+  see them (VERR_PATH_NOT_FOUND). For testing, `scratch/run-outside.cmd` is launched via explorer.exe
+  to run Linuxify as a normal process. Real users running linuxify.exe from a terminal are unaffected.
