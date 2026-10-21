@@ -4,6 +4,8 @@
 pub mod appdirs;
 pub mod chooser;
 pub mod download;
+pub mod install;
+pub mod install_exec;
 pub mod iso;
 pub mod mapping;
 pub mod migrate;

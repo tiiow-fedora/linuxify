@@ -76,6 +76,7 @@ pub fn apps_txt(lines: &[AppLine]) -> String {
 }
 
 pub const RESTORE_SH: &str = include_str!("restore.sh");
+pub const REMOVE_WINDOWS_SH: &str = include_str!("remove-windows.sh");
 
 pub fn readme_txt(distro: Option<&str>, total_files: u64, total_human: &str) -> String {
     format!(

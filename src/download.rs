@@ -81,7 +81,7 @@ fn marker_path(iso: &Path) -> PathBuf {
 }
 
 /// True when a previous run already verified this exact file.
-fn already_verified(iso: &Path, sha256: &str) -> bool {
+pub fn already_verified(iso: &Path, sha256: &str) -> bool {
     let (Ok(md), Ok(marker)) = (std::fs::metadata(iso), std::fs::read_to_string(marker_path(iso))) else {
         return false;
     };

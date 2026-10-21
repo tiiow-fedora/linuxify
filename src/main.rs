@@ -2,7 +2,7 @@ use clap::{Parser, Subcommand};
 use linuxify::chooser::{self, Answers, DistroList, QUESTIONS};
 use linuxify::mapping::{AppMap, Group, Status};
 use linuxify::readiness::Severity;
-use linuxify::{appdirs, download, iso, migrate, report, restore, scan, vm};
+use linuxify::{appdirs, download, install, install_exec, iso, migrate, readiness, report, restore, scan, vm};
 use std::collections::BTreeMap;
 use std::io::{BufRead, Write};
 use std::path::{Path, PathBuf};
@@ -88,6 +88,23 @@ enum Command {
         #[arg(long, hide = true)]
         stop_after: Option<u64>,
     },
+    /// Set up a dual-boot install (shrinks C:, keeps Windows). Always try --dry-run first.
+    Install {
+        /// Distro id (default: your top pick from `linuxify choose`).
+        distro: Option<String>,
+        /// Space for Linux in GB (default 100, or as much as fits safely).
+        #[arg(long)]
+        linux_gb: Option<u64>,
+        /// Print exactly what would be done, change nothing.
+        #[arg(long)]
+        dry_run: bool,
+        /// Remove the installer partition and boot entry and grow C: back.
+        #[arg(long)]
+        undo: bool,
+        /// Check whether removing Windows can be unlocked (it never deletes anything itself).
+        #[arg(long)]
+        replace_windows: bool,
+    },
 }
 
 fn main() -> ExitCode {
@@ -100,6 +117,9 @@ fn main() -> ExitCode {
         }
         Command::Migrate { target, dry_run, verify, no_verify, from_folder, stop_after } => {
             run_migrate(MigrateOpts { target, dry_run, verify_only: verify, no_verify, from_folder, stop_after })
+        }
+        Command::Install { distro, linux_gb, dry_run, undo, replace_windows } => {
+            run_install(cli.data_dir, InstallOpts { distro, linux_gb, dry_run, undo, replace_windows })
         }
     };
     match result {
@@ -578,6 +598,7 @@ fn run_migrate(o: MigrateOpts) -> Result<(), String> {
     let manifest = migrate::write_manifest(&staging, &out.copied, &skipped)?;
     // Linux side: restore.sh must keep Unix line endings.
     std::fs::write(staging.join("restore.sh"), restore::RESTORE_SH.replace("\r\n", "\n")).map_err(|e| e.to_string())?;
+    std::fs::write(staging.join("remove-windows.sh"), restore::REMOVE_WINDOWS_SH.replace("\r\n", "\n")).map_err(|e| e.to_string())?;
     let programs = latest_scan().map(|r| r.programs).unwrap_or_default();
     let lines = restore::app_lines(&programs);
     std::fs::write(staging.join("apps.txt"), restore::apps_txt(&lines)).map_err(|e| e.to_string())?;
@@ -620,5 +641,205 @@ fn run_migrate(o: MigrateOpts) -> Result<(), String> {
         staging.display(),
         lines.len()
     );
+    Ok(())
+}
+
+struct InstallOpts {
+    distro: Option<String>,
+    linux_gb: Option<u64>,
+    dry_run: bool,
+    undo: bool,
+    replace_windows: bool,
+}
+
+fn read_typed_line() -> String {
+    let mut s = String::new();
+    let _ = std::io::stdin().read_line(&mut s);
+    s.trim().trim_start_matches('\u{feff}').to_string()
+}
+
+/// Verifies the staged copy from `linuxify migrate`; returns (report, staging path).
+fn verify_recorded_migration() -> Option<(migrate::VerifyReport, PathBuf, u64)> {
+    let rec: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(appdirs::home().ok()?.join("migration.json")).ok()?).ok()?;
+    let staging = PathBuf::from(rec.get("staging")?.as_str()?);
+    let total = rec.get("total_files").and_then(|v| v.as_u64()).unwrap_or(0);
+    println!("Verifying your staged copy in {} (re-reading every file)...", staging.display());
+    let r = migrate::verify(&staging, |_, _| {}).ok()?;
+    Some((r, staging, total))
+}
+
+fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> {
+    if o.replace_windows {
+        return run_replace_windows();
+    }
+    if o.undo {
+        let state = install_exec::load_state().ok_or("there is no Linuxify install setup to undo")?;
+        let p = &state.plan;
+        println!("Undo will: delete the {} boot entry, delete the {} installer partition (disk {}, at {} GB), and grow C: back into the free space.", install::BCD_DESCRIPTION, install::INSTALLER_LABEL, p.disk, p.installer_offset / install::GB);
+        println!("It does NOT remove a Linux system if you already installed one into the free space.");
+        if o.dry_run {
+            for s in install_exec::undo(&state, true)? {
+                println!("  would run: {s}");
+            }
+            return Ok(());
+        }
+        let lock = appdirs::home()?.join("no-install.lock");
+        if lock.exists() {
+            return Err(format!("this PC is locked against disk changes ({} exists); nothing was changed", lock.display()));
+        }
+        let phrase = format!("UNDO LINUXIFY ON DISK {}", p.disk);
+        println!("\nType exactly  {phrase}  to continue:");
+        if read_typed_line() != phrase {
+            return Err("confirmation didn't match; nothing was changed".into());
+        }
+        for s in install_exec::undo(&state, false)? {
+            println!("  done: {s}");
+        }
+        println!("Undo finished.");
+        return Ok(());
+    }
+
+    // ---- Which distro and ISO ----
+    let (distros, _) = DistroList::load(data_dir.as_deref())?;
+    let home = appdirs::home()?;
+    let distro_id = match o.distro {
+        Some(d) => d,
+        None => {
+            let v: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(home.join("choice.json")).map_err(|_| "say which distro to install, or run `linuxify choose` first".to_string())?).map_err(|e| e.to_string())?;
+            v.pointer("/top/0").and_then(|x| x.as_str()).ok_or("choice.json has no top pick")?.to_string()
+        }
+    };
+    let distro = distros.distros.iter().find(|d| d.id == distro_id).ok_or(format!("unknown distro '{distro_id}'"))?;
+    let isos = iso::IsoList::load(data_dir.as_deref())?;
+    let src = isos.find(&distro.id).ok_or(format!("Linuxify can't fetch a verified ISO for {} yet, so it won't install it. Use a USB stick.", distro.name))?;
+    println!("Linuxify install: {} as a DUAL BOOT (Windows stays).\n", distro.name);
+    println!("Checking the official ISO...");
+    let resolved = download::resolve(src)?;
+    let iso_path = home.join("isos").join(&resolved.file_name);
+    let iso_verified = download::already_verified(&iso_path, &resolved.sha256);
+    let iso_bytes = std::fs::metadata(&iso_path).map(|m| m.len()).unwrap_or(resolved_size_guess(&resolved));
+
+    // ---- Fresh scan + gates ----
+    println!("Re-scanning disks and boot settings...");
+    let (hw, hw_err) = scan::hardware::scan();
+    let findings = readiness::assess(&hw, hw_err.as_deref(), &[], &scan::userdata::UserData::default());
+    let backup = verify_recorded_migration();
+    let windows_disk = hw.disks.iter().find(|d| d.partitions.iter().any(|p| p.drive_letter == Some('C'))).map(|d| d.number);
+    let backup_ok = backup.as_ref().map(|(r, _, _)| r.missing.is_empty() && r.mismatched.is_empty() && r.ok > 0);
+    let backup_on_windows_disk = backup.as_ref().is_some_and(|(_, staging, _)| {
+        windows_disk.is_some() && staging.to_string_lossy().chars().next().and_then(|l| install_exec::disk_of_letter(&hw, l)) == windows_disk
+    });
+    let pre = install::Preflight {
+        is_admin: hw.is_admin,
+        blockers: install::blockers_from(&findings),
+        iso_verified,
+        backup_verified: backup_ok,
+        backup_on_windows_disk,
+        already_installed_state: install_exec::load_state().is_some(),
+    };
+    let mut problems = install::preflight_problems(&pre);
+    // A machine owner can lock Linuxify out of changing disks entirely.
+    let lock = home.join("no-install.lock");
+    if lock.exists() {
+        problems.insert(0, format!("this PC is locked against installs ({} exists); delete that file only if you really want Linuxify to change this PC's disks", lock.display()));
+    }
+
+    // ---- Plan ----
+    let letter = install_exec::free_letter(&hw).ok_or("no free drive letter for the installer partition")?;
+    let req = install::InstallRequest { distro_id: distro.id.clone(), iso: iso_path.display().to_string(), iso_bytes, largest_iso_file: 0, linux_gb: o.linux_gb, free_letter: letter };
+    let mut plan = install::plan(&hw, &req);
+    let mut estimate = false;
+    if o.dry_run && hw.c_shrinkable.is_none() {
+        // Preview only: without admin, assume C: can shrink by its free space.
+        let mut guess = hw.clone();
+        guess.c_shrinkable = hw.disks.iter().flat_map(|d| d.partitions.iter()).find(|p| p.drive_letter == Some('C')).and_then(|p| p.free);
+        plan = install::plan(&guess, &req);
+        estimate = true;
+    }
+
+    println!();
+    match &plan {
+        Ok(p) => {
+            println!("PLAN (disk {}){}:", p.disk, if estimate { " - ESTIMATE: run as administrator for the exact shrink size" } else { "" });
+            println!("  1. Shrink C: from {} GB to {} GB (frees {} GB). Windows and your files stay.", p.c_size_before / install::GB, p.c_size_after / install::GB, p.shrink / install::GB);
+            println!("  2. Create a {} GB FAT32 partition '{}' right after C: and copy the verified {} installer onto it.", p.installer_size / install::GB, install::INSTALLER_LABEL, distro.name);
+            println!("  3. Leave {} GB unallocated for Linux.", p.linux_size / install::GB);
+            println!("  4. Add a ONE-TIME boot entry so the next restart starts the installer (later restarts go to Windows as usual).");
+            println!("\n  diskpart script:\n    {}", p.diskpart_create().trim_end().replace("\r\n", "\n    "));
+            println!("  then: robocopy <ISO> {}:\\ ; bcdedit /copy {{bootmgr}} /d \"{}\" ; bcdedit /set <id> device partition={}: ; bcdedit /set <id> path \\EFI\\BOOT\\BOOTX64.EFI ; bcdedit /set {{fwbootmgr}} bootsequence <id> ; diskpart remove letter={}", p.letter, install::BCD_DESCRIPTION, p.letter, p.letter);
+            println!("\n  In the installer, choose 'Install alongside Windows' or 'use the free space'. Do NOT choose 'Erase disk'.");
+        }
+        Err(why) => {
+            println!("Linuxify can't make a plan:");
+            for w in why {
+                println!("  - {w}");
+            }
+        }
+    }
+    if !problems.is_empty() {
+        println!("\n{} it would refuse to run because:", if o.dry_run { "Dry run:" } else { "Stopped:" });
+        for pr in &problems {
+            println!("  - {pr}");
+        }
+    }
+    if o.dry_run {
+        println!("\nDry run: nothing was changed.");
+        return Ok(());
+    }
+    let plan = plan.map_err(|w| w.join("; "))?;
+    if !problems.is_empty() {
+        return Err("not safe to continue; nothing was changed".into());
+    }
+
+    // ---- Typed confirmation ----
+    let phrase = plan.confirm_phrase();
+    println!("\nThis changes your disk. Your files were verified on {} and Windows will stay installed.", backup.as_ref().map(|b| b.1.display().to_string()).unwrap_or_default());
+    println!("Type exactly  {phrase}  to continue (anything else cancels):");
+    if read_typed_line() != phrase {
+        return Err("confirmation didn't match; nothing was changed".into());
+    }
+    let state = install_exec::execute(&plan)?;
+    println!("\nReady (step: {:?}). The NEXT restart will start the {} installer; later restarts go to Windows as usual.", state.phase, distro.name);
+    println!("Restart when you're ready. In the installer pick 'Install alongside Windows' / free space.");
+    println!("Changed your mind? `linuxify install --undo` puts it back.");
+    Ok(())
+}
+
+fn resolved_size_guess(_r: &download::ResolvedIso) -> u64 {
+    // Only used for a dry run before the ISO is downloaded: assume a 6 GB ISO.
+    6 * install::GB
+}
+
+/// Windows-side half of "remove Windows": refuses unless the staged copy
+/// verifies completely (count + hashes) and doesn't live on the Windows disk.
+/// It never deletes anything itself.
+fn run_replace_windows() -> Result<(), String> {
+    println!("Checking whether it's safe to remove Windows later...\n");
+    let (hw, _) = scan::hardware::scan();
+    let windows_disk = hw.disks.iter().find(|d| d.partitions.iter().any(|p| p.drive_letter == Some('C'))).map(|d| d.number);
+    let gate = match verify_recorded_migration() {
+        None => install::ReplaceGate::default(),
+        Some((r, staging, total)) => install::ReplaceGate {
+            migration_recorded: true,
+            staging_files_ok: r.ok,
+            staging_missing: r.missing.len() as u64,
+            staging_mismatched: r.mismatched.len() as u64,
+            manifest_files: total,
+            staging_on_windows_disk: windows_disk.is_some() && staging.to_string_lossy().chars().next().and_then(|l| install_exec::disk_of_letter(&hw, l)) == windows_disk,
+        },
+    };
+    let problems = install::replace_gate_problems(&gate);
+    if !problems.is_empty() {
+        println!("REFUSED: removing Windows stays locked because:");
+        for p in &problems {
+            println!("  - {p}");
+        }
+        return Err("replace-windows gate failed".into());
+    }
+    println!("Your staged copy verified completely ({} files).", gate.staging_files_ok);
+    println!("Removing Windows is done from Linux, after you've restored your files there:");
+    println!("  1. Boot into Linux, open the linuxify-migration folder, run:  bash restore.sh");
+    println!("  2. Then:  bash remove-windows.sh   (it re-checks every restored file before it will touch Windows,");
+    println!("     shows exactly which partitions it would delete, and needs a typed confirmation).");
     Ok(())
 }

@@ -239,3 +239,16 @@ target\release\linuxify.exe migrate --target E:\ --from-folder C:\Projects   # j
   export them.
 - Folder names are kept in English (Documents, Pictures...). A non-English Linux install uses
   translated XDG folder names, so files would land beside them rather than in them.
+
+## Stage 5 — Install: IN PROGRESS (2026-10-20)
+
+Done and unit-tested (102 tests): install planner, preflight + `--replace-windows` gates, executor
+with typed confirmation, `install-state.json` and `--undo`, the Linux-side `remove-windows.sh`
+(dry by default, re-verifies restored files), and a `no-install.lock` that blocks all disk changes.
+Checked on this PC **in dry-run only**: the plan arithmetic matches the real disk layout, and the
+gates refuse correctly (not admin, staged copy on the Windows disk, a damaged staged file, the lock).
+
+**This PC must never run a real install: the owner keeps Windows on it.** `no-install.lock` is set here.
+
+Not tested yet: any real run (needs a throwaway Windows VM, which needs a Windows ISO and the
+Windows licence accepted, the owner's call), and `remove-windows.sh` in a Linux VM (next).
