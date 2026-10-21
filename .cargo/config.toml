@@ -1,0 +1,4 @@
+# Ship one self-contained exe: link the C runtime statically so Linuxify runs
+# on a fresh Windows without the Visual C++ Redistributable (found in the VM test).
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]

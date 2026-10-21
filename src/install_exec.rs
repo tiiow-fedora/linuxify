@@ -159,6 +159,17 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
     if n != iso_files || bytes != iso_bytes {
         return Err(format!("the installer partition has {n} files / {bytes} bytes but the ISO has {iso_files} / {iso_bytes}; stopping. Run `linuxify install --undo`."));
     }
+    // Stop Ubuntu-family live systems grabbing the Linux space for persistence.
+    for cfg in [r"boot\grub\grub.cfg", r"boot\grub\loopback.cfg"] {
+        let p = PathBuf::from(format!(r"{}:\{cfg}", plan.letter));
+        if let Ok(text) = std::fs::read_to_string(&p) {
+            let (patched, n) = install::patch_casper_grub(&text);
+            if n > 0 {
+                std::fs::write(&p, patched).map_err(|e| format!("could not update {}: {e}", p.display()))?;
+                println!("  - Turned off live-session persistence in {cfg} ({n} boot entries)");
+            }
+        }
+    }
     state.phase = Phase::FilesCopied;
     save_state(&state)?;
 
@@ -181,9 +192,19 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
     Ok(state)
 }
 
+/// Files and bytes under `root`, ignoring "System Volume Information", which
+/// Windows creates by itself on every newly mounted volume (e.g. a 12-byte
+/// WPSettings.dat): found when testing in a Windows VM.
 fn count_files(root: &Path) -> (u64, u64) {
-    let s = crate::scan::userdata::walk(root, |_, _| {});
-    (s.files, s.bytes)
+    let svi = root.join("System Volume Information");
+    let (mut n, mut bytes) = (0u64, 0u64);
+    crate::scan::userdata::walk(root, |p, len| {
+        if !p.starts_with(&svi) {
+            n += 1;
+            bytes += len;
+        }
+    });
+    (n, bytes)
 }
 
 /// Undo: remove the boot entry, delete the installer partition, grow C: back.

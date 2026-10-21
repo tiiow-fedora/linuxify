@@ -66,6 +66,9 @@ enum Command {
         /// Show which distros can be downloaded automatically and which VM programs were found.
         #[arg(long)]
         list: bool,
+        /// Just download and verify the ISO (no VM needed), e.g. before `linuxify install`.
+        #[arg(long)]
+        download_only: bool,
     },
     /// Copy (never move) your files into a staging folder for Linux, with checksums and a restore script.
     Migrate {
@@ -112,8 +115,8 @@ fn main() -> ExitCode {
     let result = match cli.command {
         Command::Scan { no_winget, open } => run_scan(cli.data_dir, !no_winget, open),
         Command::Choose { answers, no_scan, open } => run_choose(cli.data_dir, answers, no_scan, open),
-        Command::Try { distro, vm, disk, iso_file, dry_run, reverify, remove, list } => {
-            run_try(cli.data_dir, TryOpts { distro, vm, disk, iso_file, dry_run, reverify, remove, list })
+        Command::Try { distro, vm, disk, iso_file, dry_run, reverify, remove, list, download_only } => {
+            run_try(cli.data_dir, TryOpts { distro, vm, disk, iso_file, dry_run, reverify, remove, list, download_only })
         }
         Command::Migrate { target, dry_run, verify, no_verify, from_folder, stop_after } => {
             run_migrate(MigrateOpts { target, dry_run, verify_only: verify, no_verify, from_folder, stop_after })
@@ -309,6 +312,7 @@ struct TryOpts {
     reverify: bool,
     remove: bool,
     list: bool,
+    download_only: bool,
 }
 
 fn latest_scan() -> Option<scan::ScanReport> {
@@ -363,6 +367,24 @@ fn run_try(data_dir: Option<PathBuf>, o: TryOpts) -> Result<(), String> {
         .iter()
         .find(|d| d.id == distro_id)
         .ok_or_else(|| format!("unknown distro '{distro_id}'. Run `linuxify try --list` to see the ids."))?;
+
+    if o.download_only {
+        let src = isos.find(&distro.id).ok_or_else(|| format!("Linuxify can't download {} automatically yet", distro.name))?;
+        println!("Checking the official checksum list...");
+        let r = download::resolve(src)?;
+        println!("  Latest ISO:    {}
+  SHA-256:       {}
+  Checksum from: {}
+", r.file_name, r.sha256, r.checksum_url);
+        if o.dry_run {
+            println!("Dry run: would download {}", r.url);
+            return Ok(());
+        }
+        let p = download::ensure_iso(&r, &home.join("isos"), o.reverify)?;
+        println!("
+Ready: {}", p.display());
+        return Ok(());
+    }
 
     // Which VM program? Default order: VirtualBox, Hyper-V, QEMU.
     let chosen = match &o.vm {

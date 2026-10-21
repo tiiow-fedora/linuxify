@@ -252,3 +252,18 @@ gates refuse correctly (not admin, staged copy on the Windows disk, a damaged st
 
 Not tested yet: any real run (needs a throwaway Windows VM, which needs a Windows ISO and the
 Windows licence accepted, the owner's call), and `remove-windows.sh` in a Linux VM (next).
+
+### Stage 5 update (2026-10-21): real run in a throwaway Windows 10 VM
+- Official Windows 10 22H2 ISO (SHA-256 matched Microsoft's published hash) installed in VirtualBox,
+  UEFI with Secure Boot on, plus a second "data" disk. Never on the owner's PC.
+- In the VM: scan (no blockers), ISO verified, migrate to E:, then **real `linuxify install` worked**:
+  shrank C: by 89 GB, created and filled the LNXINST partition, added a one-time UEFI entry. **Restarting booted
+  the Mint installer from LNXINST with Secure Boot on.** `--undo` also worked for real (C: back to 127.48 GB).
+- Bugs found by the VM and fixed: exe needed the VC++ runtime (now static CRT); Windows' own
+  `System Volume Information` failed the copy check; the installer offset wasn't MiB-aligned after an
+  extend; and a crash could corrupt a resumed download (now 64 MB flushed checkpoints + one retry).
+- **Big finding:** Ubuntu-family live systems (casper) auto-create an 85 GB "writable" persistence
+  partition in the free space, and Ubiquity's "alongside" then offered to shrink the DATA disk instead.
+  Fixed by adding `nopersistent` to casper GRUB entries on LNXINST (unit-tested). **Not yet re-tested in the VM.**
+- Still to do: redo the install in the VM with the fix, finish Mint's installer, boot Linux, test restore.sh
+  (Flatpak) and remove-windows.sh there; then publish to a public GitHub repo after a privacy pass.

@@ -142,6 +142,10 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
     }
     let shrink = linux + installer;
     let c_after = part.size - shrink;
+    // diskpart starts new partitions on a 1 MiB boundary. C:'s end isn't
+    // always aligned (e.g. after an earlier "extend"), so plan the same
+    // rounding diskpart will do. The few KB skipped come out of Linux's share.
+    let installer_offset = round_up(part.offset + c_after, MB);
     Ok(InstallPlan {
         distro_id: req.distro_id.clone(),
         iso: req.iso.clone(),
@@ -151,7 +155,7 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
         c_size_before: part.size,
         shrink,
         c_size_after: c_after,
-        installer_offset: part.offset + c_after,
+        installer_offset,
         installer_size: installer,
         linux_size: linux,
         letter: req.free_letter,
@@ -249,6 +253,28 @@ pub fn replace_gate_problems(g: &ReplaceGate) -> Vec<String> {
 // Boot entry + undo
 // ---------------------------------------------------------------------------
 
+/// Ubuntu-family live systems ("casper") automatically create a "writable"
+/// persistence partition in free space on the disk they boot from. Booted
+/// from Linuxify's installer partition, that swallows the space set aside
+/// for Linux (found in the Windows VM test). `nopersistent` turns it off.
+/// Returns the patched text and how many boot entries were changed.
+pub fn patch_casper_grub(cfg: &str) -> (String, usize) {
+    let mut changed = 0;
+    let out: Vec<String> = cfg
+        .split_inclusive('\n')
+        .map(|line| {
+            let is_casper = line.trim_start().starts_with("linux") && line.contains("boot=casper");
+            if is_casper && !line.contains("nopersistent") {
+                changed += 1;
+                line.replacen("boot=casper", "boot=casper nopersistent", 1)
+            } else {
+                line.to_string()
+            }
+        })
+        .collect();
+    (out.concat(), changed)
+}
+
 /// Pulls the {GUID} out of `bcdedit /copy` output (which is localised, so
 /// only the GUID pattern is trusted).
 pub fn parse_bcd_guid(output: &str) -> Option<String> {
@@ -305,8 +331,15 @@ pub fn diskpart_undo(disk: u32, installer_partition_number: Option<u32>, c_parti
 
 /// Finds the partition number now sitting at `offset` with the expected size
 /// (partition numbers can change, offsets don't).
+/// Allows up to 1 MiB of alignment slack on the start, and 2 MB on the size.
 pub fn find_partition_at(hw: &HardwareFacts, disk: u32, offset: u64, size: u64) -> Option<u32> {
-    hw.disks.iter().find(|d| d.number == disk)?.partitions.iter().find(|p| p.offset == offset && p.size.abs_diff(size) < 2 * MB).map(|p| p.number)
+    hw.disks
+        .iter()
+        .find(|d| d.number == disk)?
+        .partitions
+        .iter()
+        .find(|p| p.offset.abs_diff(offset) < MB && p.size.abs_diff(size) < 2 * MB)
+        .map(|p| p.number)
 }
 
 #[cfg(test)]
@@ -372,8 +405,9 @@ mod tests {
         assert_eq!(p.linux_size, 100 * GB);
         assert_eq!(p.shrink, 104 * GB);
         assert_eq!(p.c_size_after, 476 * GB - 104 * GB);
-        // Installer starts exactly where the shrunk C: ends; Linux space follows it.
+        // Installer starts where the shrunk C: ends (aligned here already); Linux space follows it.
         assert_eq!(p.installer_offset, p.c_offset + p.c_size_after);
+        assert_eq!(p.installer_offset % MB, 0);
         assert!(p.installer_offset + p.installer_size + p.linux_size <= p.c_offset + p.c_size_before);
         assert_eq!(p.confirm_phrase(), "SHRINK C: ON DISK 0 BY 104 GB");
     }
@@ -433,6 +467,28 @@ mod tests {
     }
 
     #[test]
+    fn unaligned_c_gets_an_aligned_installer_offset() {
+        // Seen in the Windows VM: after diskpart "extend", C: was 136,884,239,872
+        // bytes (not a whole MiB) and diskpart moved the new partition 16.5 KB on.
+        let mut h = hw();
+        h.disks[0].partitions[2].offset = 554_696_704;
+        h.disks[0].partitions[2].size = 136_884_239_872;
+        h.disks[0].partitions[2].free = Some(110 * GB);
+        h.c_shrinkable = Some(100 * GB);
+        let mut r = req();
+        r.linux_gb = Some(85); // what the VM's plan chose: shrink 89 GB
+        let p = plan(&h, &r).unwrap();
+        assert_eq!(p.shrink, 89 * GB);
+        assert_eq!(p.installer_offset % MB, 0);
+        assert_eq!(p.installer_offset, 41_875_931_136, "must match where diskpart really put it");
+        assert!(p.installer_offset >= p.c_offset + p.c_size_after);
+        assert!(p.installer_offset + p.installer_size <= p.c_offset + p.c_size_before);
+        // And the partition diskpart made there is recognised.
+        h.disks[0].partitions.push(part(5, Some('L'), BASIC, 41_875_931_136, 4 * GB, None));
+        assert_eq!(find_partition_at(&h, 0, p.installer_offset, p.installer_size), Some(5));
+    }
+
+    #[test]
     fn installer_sizing() {
         assert_eq!(installer_size_for(1_500_000_000), 4 * GB);
         assert_eq!(installer_size_for(3_091_660_800), 4 * GB);
@@ -474,6 +530,33 @@ mod tests {
     }
 
     #[test]
+    fn casper_entries_get_nopersistent() {
+        // Real lines from Linux Mint 22.3's boot/grub/grub.cfg.
+        let cfg = "menuentry \"Start Linux Mint\" {
+	linux	/casper/vmlinuz  boot=casper uuid=6e72 username=mint hostname=mint quiet splash --
+	initrd	/casper/initrd.lz
+}
+                   menuentry \"OEM\" {
+	linux	/casper/vmlinuz  oem-config/enable=true only-ubiquity boot=casper uuid=6e72 quiet splash --
+}
+                   menuentry \"Memory test\" {
+	linux	/boot/memtest.efi
+}
+";
+        let (out, n) = patch_casper_grub(cfg);
+        assert_eq!(n, 2);
+        assert_eq!(out.matches("boot=casper nopersistent").count(), 2);
+        assert!(out.contains("linux	/boot/memtest.efi
+"), "non-casper entries untouched");
+        assert_eq!(out.len(), cfg.len() + 2 * " nopersistent".len());
+        // Idempotent, and leaves non-casper (e.g. Fedora) configs alone.
+        assert_eq!(patch_casper_grub(&out), (out.clone(), 0));
+        let fedora = "linux /images/pxeboot/vmlinuz root=live:CDLABEL=Fedora rd.live.image quiet
+";
+        assert_eq!(patch_casper_grub(fedora), (fedora.to_string(), 0));
+    }
+
+    #[test]
     fn bcd_guid_parsing() {
         assert_eq!(parse_bcd_guid("The entry was successfully copied to {3c1a4b2e-1d2c-11ef-9a8b-0123456789ab}."), Some("{3c1a4b2e-1d2c-11ef-9a8b-0123456789ab}".into()));
         assert_eq!(parse_bcd_guid("Der Eintrag wurde erfolgreich in {3c1a4b2e-1d2c-11ef-9a8b-0123456789ab} kopiert."), Some("{3c1a4b2e-1d2c-11ef-9a8b-0123456789ab}".into()));
@@ -502,6 +585,7 @@ mod tests {
         h.disks[0].partitions.push(part(5, Some('L'), BASIC, p.installer_offset, p.installer_size, None));
         assert_eq!(find_partition_at(&h, 0, p.installer_offset, p.installer_size), Some(5));
         assert_eq!(find_partition_at(&h, 0, p.installer_offset + GB, p.installer_size), None);
+        assert_eq!(find_partition_at(&h, 0, p.installer_offset + 2 * MB, p.installer_size), None);
     }
 
     #[test]

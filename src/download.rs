@@ -136,7 +136,53 @@ pub fn ensure_iso(r: &ResolvedIso, dir: &Path, reverify: bool) -> Result<PathBuf
     }
 
     let part = dir.join(format!("{}.part", r.file_name));
-    let have = std::fs::metadata(&part).map(|m| m.len()).unwrap_or(0);
+    let resumed = download_to_part(r, dir, &part)?;
+    if !verify_with_progress(&part, &r.sha256)? {
+        // Our own temporary files inside %LOCALAPPDATA%\Linuxify: safe to remove.
+        let _ = std::fs::remove_file(&part);
+        let _ = std::fs::remove_file(ok_path(&part));
+        if !resumed {
+            return Err("the download does NOT match the official SHA-256 checksum, so it was deleted and will not be used. Try again later or from another network.".into());
+        }
+        // A resumed download can carry damage from a crash; try once from scratch.
+        println!("  The resumed download didn't match the checksum; downloading it again from the start.");
+        download_to_part(r, dir, &part)?;
+        if !verify_with_progress(&part, &r.sha256)? {
+            let _ = std::fs::remove_file(&part);
+            let _ = std::fs::remove_file(ok_path(&part));
+            return Err("the download does NOT match the official SHA-256 checksum, so it was deleted and will not be used. Try again later or from another network.".into());
+        }
+    }
+    std::fs::rename(&part, &iso).map_err(|e| e.to_string())?;
+    let _ = std::fs::remove_file(ok_path(&part));
+    write_marker(&iso, &r.sha256)?;
+    println!("  Verified against the official checksum.");
+    Ok(iso)
+}
+
+/// How often the partial file is flushed to disk and its "known good"
+/// length recorded, so a crash or power cut can't leave unwritten garbage
+/// inside the part we resume from.
+const CHECKPOINT_BYTES: u64 = 64 * 1024 * 1024;
+
+fn ok_path(part: &Path) -> PathBuf {
+    let mut p = part.as_os_str().to_owned();
+    p.push(".ok");
+    PathBuf::from(p)
+}
+
+/// Where to resume: never past the last checkpoint that was flushed to disk.
+/// A .part with no checkpoint record is not trusted at all.
+pub fn resume_point(part_len: u64, checkpoint: Option<u64>) -> u64 {
+    checkpoint.map(|c| c.min(part_len)).unwrap_or(0)
+}
+
+/// Downloads into `part`, resuming from the last checkpoint. Returns true if
+/// it resumed (rather than starting from zero).
+fn download_to_part(r: &ResolvedIso, dir: &Path, part: &Path) -> Result<bool, String> {
+    let part_len = std::fs::metadata(part).map(|m| m.len()).unwrap_or(0);
+    let checkpoint = std::fs::read_to_string(ok_path(part)).ok().and_then(|t| t.trim().parse::<u64>().ok());
+    let have = resume_point(part_len, checkpoint);
     let c = client(None)?;
     let mut req = c.get(&r.url);
     if have > 0 {
@@ -157,7 +203,7 @@ pub fn ensure_iso(r: &ResolvedIso, dir: &Path, reverify: bool) -> Result<PathBuf
     }
     println!(
         "  {} {} from {}",
-        if resuming { "Resuming" } else { "Downloading" },
+        if resuming { format!("Resuming at {} of", human(have)) } else { "Downloading".to_string() },
         human(total),
         iso::host_of(resp.url().as_str()).unwrap_or("?")
     );
@@ -165,13 +211,18 @@ pub fn ensure_iso(r: &ResolvedIso, dir: &Path, reverify: bool) -> Result<PathBuf
     let mut out = std::fs::OpenOptions::new()
         .create(true)
         .write(true)
-        .append(resuming)
-        .truncate(!resuming)
-        .open(&part)
+        .truncate(false)
+        .open(part)
         .map_err(|e| format!("could not write {}: {e}", part.display()))?;
-    let mut done = if resuming { have } else { 0 };
+    // Drop anything after the last checkpoint (it may be unflushed garbage).
+    let start_at = if resuming { have } else { 0 };
+    out.set_len(start_at).map_err(|e| e.to_string())?;
+    std::io::Seek::seek(&mut out, std::io::SeekFrom::Start(start_at)).map_err(|e| e.to_string())?;
+    std::fs::write(ok_path(part), start_at.to_string()).map_err(|e| e.to_string())?;
+
+    let mut done = start_at;
+    let mut since_checkpoint = 0u64;
     let start = Instant::now();
-    let start_done = done;
     let mut last = Instant::now();
     let mut buf = vec![0u8; 1 << 20];
     loop {
@@ -181,30 +232,28 @@ pub fn ensure_iso(r: &ResolvedIso, dir: &Path, reverify: bool) -> Result<PathBuf
         }
         out.write_all(&buf[..n]).map_err(|e| e.to_string())?;
         done += n as u64;
+        since_checkpoint += n as u64;
+        if since_checkpoint >= CHECKPOINT_BYTES {
+            out.sync_data().map_err(|e| e.to_string())?;
+            std::fs::write(ok_path(part), done.to_string()).map_err(|e| e.to_string())?;
+            since_checkpoint = 0;
+        }
         if last.elapsed() > Duration::from_secs(2) {
-            let rate = (done - start_done) as f64 / start.elapsed().as_secs_f64().max(0.1);
+            let rate = (done - start_at) as f64 / start.elapsed().as_secs_f64().max(0.1);
             let pct = if total > 0 { done * 100 / total } else { 0 };
             print!("\r  {pct:>3}%  {} / {}  {:.1} MB/s   ", human(done), human(total), rate / 1e6);
             let _ = std::io::stdout().flush();
             last = Instant::now();
         }
     }
-    out.flush().map_err(|e| e.to_string())?;
+    out.sync_data().map_err(|e| e.to_string())?;
     drop(out);
+    std::fs::write(ok_path(part), done.to_string()).map_err(|e| e.to_string())?;
     println!("\r  Downloaded {}.                              ", human(done));
     if total > 0 && done != total {
         return Err(format!("download ended early ({} of {}); run the same command again to resume", human(done), human(total)));
     }
-
-    if !verify_with_progress(&part, &r.sha256)? {
-        // Our own temporary file inside %LOCALAPPDATA%\Linuxify: safe to remove.
-        let _ = std::fs::remove_file(&part);
-        return Err("the download does NOT match the official SHA-256 checksum, so it was deleted and will not be used. Try again later or from another network.".into());
-    }
-    std::fs::rename(&part, &iso).map_err(|e| e.to_string())?;
-    write_marker(&iso, &r.sha256)?;
-    println!("  Verified against the official checksum.");
-    Ok(iso)
+    Ok(resuming)
 }
 
 /// Uses an ISO the user already has (e.g. on a NAS) only if it matches the
@@ -231,6 +280,14 @@ mod tests {
         let h = sha256_file(&p, |_| {}).unwrap();
         std::fs::remove_file(&p).unwrap();
         assert_eq!(h, "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+    }
+
+    #[test]
+    fn resume_never_trusts_more_than_the_checkpoint() {
+        assert_eq!(resume_point(2_104_492_032, None), 0, "no checkpoint record: start over");
+        assert_eq!(resume_point(2_104_492_032, Some(2_013_265_920)), 2_013_265_920);
+        assert_eq!(resume_point(1_000, Some(5_000)), 1_000, "file shorter than checkpoint");
+        assert_eq!(resume_point(0, Some(0)), 0);
     }
 
     #[test]
