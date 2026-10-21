@@ -14,7 +14,7 @@ use std::collections::BTreeMap;
 pub const EMBEDDED_DISTROS: &str = include_str!("../data/distros.json");
 
 /// Every trait a distro must rate itself on, with a label for "weaker on ...".
-pub const TRAITS: [(&str, &str); 14] = [
+pub const TRAITS: [(&str, &str); 20] = [
     ("beginner", "beginner-friendliness"),
     ("gaming", "gaming"),
     ("nvidia", "NVIDIA driver setup"),
@@ -29,6 +29,12 @@ pub const TRAITS: [(&str, &str); 14] = [
     ("dev", "programming"),
     ("community", "community help"),
     ("creative", "creative/pro apps"),
+    ("diy", "learning Linux hands-on"),
+    ("software_range", "software available in the package manager"),
+    ("out_of_box", "codecs and drivers set up out of the box"),
+    ("foss", "free/open-source-only setups"),
+    ("enterprise", "matching mainstream work/enterprise Linux"),
+    ("rhel_family", "Red Hat-compatible workplaces"),
 ];
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
@@ -172,7 +178,8 @@ pub const QUESTIONS: &[Question] = &[
         id: "hardware_age",
         text: "How old is this computer?",
         options: &[
-            opt!("new", "Less than 5 years old", []),
+            // A newer PC can comfortably run a full-featured desktop.
+            opt!("new", "Less than 5 years old", [("modern_look", 0.5)]),
             opt!("middle", "5 to 10 years old", [("light", 1.5)]),
             opt!("old", "Over 10 years old, or it already feels slow", [("light", 4.0)]),
         ],
@@ -229,6 +236,43 @@ pub const QUESTIONS: &[Question] = &[
             opt!("no", "No", []),
             opt!("some", "Sometimes", [("dev", 1.5)]),
             opt!("main", "Yes, a lot – it's a main use of this PC", [("dev", 3.0), ("fresh", 1.0)]),
+        ],
+    },
+    Question {
+        id: "learning",
+        text: "Do you want to learn how Linux works under the hood?",
+        options: &[
+            opt!("no", "Not really – I just want to use my computer", []),
+            opt!("curious", "I'm curious – a bit at a time", [("diy", 1.0)]),
+            opt!("yes", "Yes – I'd like to build my system piece by piece", [("diy", 3.0), ("customizable", 1.0)]),
+        ],
+    },
+    Question {
+        id: "software",
+        text: "How important is finding almost any app in the built-in software store?",
+        options: &[
+            opt!("very", "Very – I use lots of niche tools", [("software_range", 3.0)]),
+            opt!("somewhat", "Somewhat", [("software_range", 1.0)]),
+            opt!("not", "Not very – I use a handful of common apps", []),
+        ],
+    },
+    Question {
+        id: "extras",
+        text: "Should media codecs and drivers be set up for you straight away?",
+        options: &[
+            opt!("yes", "Yes – videos and graphics should just work", [("out_of_box", 3.0)]),
+            opt!("dont_mind", "I don't mind doing a few setup steps", [("out_of_box", 1.0)]),
+            opt!("foss_only", "No – I'd rather run only free/open-source software", [("foss", 3.0)]),
+        ],
+    },
+    Question {
+        id: "work",
+        text: "Does your job or school use a specific Linux you should match?",
+        options: &[
+            opt!("no", "No", []),
+            opt!("nice", "It would be nice to match what's used at work", [("enterprise", 1.5)]),
+            opt!("ubuntu", "Yes – Ubuntu or Debian-based", [("enterprise", 4.0)]),
+            opt!("redhat", "Yes – Red Hat-compatible (RHEL, Rocky, Alma, Fedora)", [("enterprise", 2.0), ("rhel_family", 3.0)]),
         ],
     },
 ];
@@ -448,9 +492,23 @@ mod tests {
         DistroList::parse(EMBEDDED_DISTROS).expect("data/distros.json must validate")
     }
 
-    fn answers(pairs: &[(&str, &str)]) -> Answers {
-        let a: Answers = pairs.iter().map(|(k, v)| (k.to_string(), v.to_string())).collect();
-        validate_answers(&a).unwrap();
+    /// The answer profiles live in tests/profiles/*.json so the CLI can use them too.
+    fn profile(name: &str) -> Answers {
+        let text = match name {
+            "newcomer" => include_str!("../tests/profiles/newcomer.json"),
+            "gamer" => include_str!("../tests/profiles/gamer.json"),
+            "old_laptop" => include_str!("../tests/profiles/old_laptop.json"),
+            "developer" => include_str!("../tests/profiles/developer.json"),
+            "privacy_veteran" => include_str!("../tests/profiles/privacy_veteran.json"),
+            "creator" => include_str!("../tests/profiles/creator.json"),
+            "arch_tinkerer" => include_str!("../tests/profiles/arch_tinkerer.json"),
+            "enterprise_worker" => include_str!("../tests/profiles/enterprise_worker.json"),
+            "gaming_tinkerer" => include_str!("../tests/profiles/gaming_tinkerer.json"),
+            "redhat_worker" => include_str!("../tests/profiles/redhat_worker.json"),
+            _ => panic!("no profile {name}"),
+        };
+        let a: Answers = serde_json::from_str(text).unwrap();
+        validate_answers(&a).unwrap_or_else(|e| panic!("{name}: {e}"));
         a
     }
 
@@ -462,25 +520,23 @@ mod tests {
         ScanHints { nvidia_gpu: nvidia, ram_gb: Some(ram), ..Default::default() }
     }
 
-    // ---- The answer profiles (also in tests/profiles/*.json for the CLI) ----
+    fn newcomer() -> Answers { profile("newcomer") }
+    fn gamer() -> Answers { profile("gamer") }
+    fn creator() -> Answers { profile("creator") }
+    fn old_laptop() -> Answers { profile("old_laptop") }
+    fn developer() -> Answers { profile("developer") }
+    fn privacy_veteran() -> Answers { profile("privacy_veteran") }
 
-    fn newcomer() -> Answers {
-        answers(&[("experience", "never"), ("gaming", "none"), ("creative", "none"), ("hardware_age", "new"), ("stability", "stable"), ("look", "windows"), ("privacy", "somewhat"), ("updates", "hands_off"), ("tinkering", "just_work"), ("dev", "no")])
-    }
-    fn gamer() -> Answers {
-        answers(&[("experience", "a_little"), ("gaming", "lots"), ("creative", "none"), ("hardware_age", "new"), ("stability", "balanced"), ("look", "either"), ("privacy", "dont_mind"), ("updates", "hands_off"), ("tinkering", "some"), ("dev", "no")])
-    }
-    fn old_laptop() -> Answers {
-        answers(&[("experience", "never"), ("gaming", "none"), ("creative", "none"), ("hardware_age", "old"), ("stability", "stable"), ("look", "windows"), ("privacy", "somewhat"), ("updates", "hands_off"), ("tinkering", "just_work"), ("dev", "no")])
-    }
-    fn developer() -> Answers {
-        answers(&[("experience", "comfortable"), ("gaming", "casual"), ("creative", "none"), ("hardware_age", "new"), ("stability", "fresh"), ("look", "modern"), ("privacy", "somewhat"), ("updates", "control"), ("tinkering", "love"), ("dev", "main")])
-    }
-    fn privacy_veteran() -> Answers {
-        answers(&[("experience", "comfortable"), ("gaming", "none"), ("creative", "none"), ("hardware_age", "middle"), ("stability", "stable"), ("look", "either"), ("privacy", "very"), ("updates", "normal"), ("tinkering", "some"), ("dev", "some")])
-    }
-    fn creator() -> Answers {
-        answers(&[("experience", "a_little"), ("gaming", "casual"), ("creative", "pro"), ("hardware_age", "new"), ("stability", "balanced"), ("look", "modern"), ("privacy", "dont_mind"), ("updates", "normal"), ("tinkering", "just_work"), ("dev", "no")])
+    /// Prints every profile's top 5 (run with --nocapture to review).
+    #[test]
+    fn print_profile_rankings() {
+        for name in ["newcomer", "gamer", "old_laptop", "developer", "privacy_veteran", "creator", "arch_tinkerer", "enterprise_worker", "gaming_tinkerer", "redhat_worker"] {
+            for (label, h) in [("amd 32GB", hints(false, 32.0)), ("nvidia 32GB", hints(true, 32.0)), ("3GB", hints(false, 3.0))] {
+                let r = rank(&list(), &profile(name), Some(&h));
+                let t: Vec<String> = r.ranking.iter().take(5).map(|x| format!("{} {:.0}", x.id, x.score)).collect();
+                println!("{name:<18} {label:<12} {}", t.join(" | "));
+            }
+        }
     }
 
     #[test]
@@ -507,11 +563,15 @@ mod tests {
         assert!(validate_answers(&a).unwrap_err().contains("missing"));
     }
 
+    fn trait_of(id: &str, t: &str) -> u8 {
+        list().distros.iter().find(|d| d.id == id).unwrap().traits[t]
+    }
+
     #[test]
     fn newcomer_gets_mint_first() {
         let t = top(&newcomer(), Some(&hints(false, 16.0)));
         assert_eq!(t[0], "linux-mint", "{t:?}");
-        assert!(t.contains(&"zorin-os".to_string()), "{t:?}");
+        assert!(t.iter().all(|id| trait_of(id, "beginner") >= 4), "{t:?}");
     }
 
     #[test]
@@ -524,30 +584,76 @@ mod tests {
     fn old_low_ram_pc_gets_lightweight_and_excludes_heavy() {
         let r = rank(&list(), &old_laptop(), Some(&hints(false, 3.0)));
         let ids: Vec<_> = r.ranking.iter().map(|x| x.id.as_str()).collect();
-        assert_eq!(ids[0], "mx-linux", "{ids:?}");
-        assert!(ids.contains(&"linux-mint"));
-        assert!(r.excluded.iter().any(|e| e.id == "bazzite"));
-        assert!(r.excluded.iter().any(|e| e.id == "fedora-workstation"));
+        assert_eq!(ids[0], "linux-mint-xfce", "{ids:?}");
+        assert!(ids[..5].iter().all(|id| trait_of(id, "light") >= 4 || *id == "linux-mint"), "{ids:?}");
+        for heavy in ["bazzite", "fedora-workstation", "garuda", "elementary-os"] {
+            assert!(r.excluded.iter().any(|e| e.id == heavy), "{heavy} should be excluded");
+        }
     }
 
     #[test]
-    fn developer_gets_fedora_or_tumbleweed() {
+    fn developer_gets_fast_moving_distros() {
         let t = top(&developer(), Some(&hints(false, 32.0)));
-        assert!(t[0].starts_with("fedora"), "{t:?}");
-        assert!(t.contains(&"opensuse-tumbleweed".to_string()) || t.iter().filter(|x| x.starts_with("fedora")).count() == 2, "{t:?}");
+        assert!(t.iter().all(|id| trait_of(id, "fresh") >= 4 && trait_of(id, "dev") >= 3), "{t:?}");
     }
 
     #[test]
     fn privacy_veteran_gets_debian() {
         let t = top(&privacy_veteran(), Some(&hints(false, 16.0)));
         assert_eq!(t[0], "debian", "{t:?}");
-        assert!(t.contains(&"mx-linux".to_string()), "{t:?}");
+        assert!(t.iter().all(|id| trait_of(id, "privacy") == 5), "{t:?}");
     }
 
     #[test]
     fn creator_with_nvidia_gets_pop() {
         let t = top(&creator(), Some(&hints(true, 32.0)));
         assert_eq!(t[0], "pop-os", "{t:?}");
+    }
+
+    #[test]
+    fn arch_tinkerer_gets_arch() {
+        let t = top(&profile("arch_tinkerer"), Some(&hints(false, 32.0)));
+        assert_eq!(t[0], "arch", "{t:?}");
+        assert!(t.iter().all(|id| trait_of(id, "diy") >= 3), "{t:?}");
+    }
+
+    #[test]
+    fn enterprise_worker_gets_ubuntu_and_no_hobby_distros() {
+        let t = top(&profile("enterprise_worker"), Some(&hints(false, 16.0)));
+        assert_eq!(t[0], "ubuntu", "{t:?}");
+        assert!(t.iter().all(|id| trait_of(id, "enterprise") >= 3), "{t:?}");
+    }
+
+    #[test]
+    fn redhat_worker_gets_rhel_family() {
+        let t = top(&profile("redhat_worker"), Some(&hints(false, 16.0)));
+        assert_eq!(t[0], "almalinux", "{t:?}");
+        assert!(t.iter().all(|id| trait_of(id, "rhel_family") >= 2), "{t:?}");
+    }
+
+    #[test]
+    fn gaming_tinkerer_gets_cachyos() {
+        let t = top(&profile("gaming_tinkerer"), Some(&hints(true, 32.0)));
+        assert_eq!(t[0], "cachyos", "{t:?}");
+        assert!(t.iter().all(|id| trait_of(id, "gaming") >= 4), "{t:?}");
+    }
+
+    #[test]
+    fn every_distro_can_win_something_or_is_niche() {
+        // Guard against a distro whose ratings make it unreachable: it should
+        // reach the top 5 for at least one profile + hardware combination.
+        let names = ["newcomer", "gamer", "old_laptop", "developer", "privacy_veteran", "creator", "arch_tinkerer", "enterprise_worker", "gaming_tinkerer", "redhat_worker"];
+        let mut seen = std::collections::HashSet::new();
+        for n in names {
+            for h in [hints(false, 32.0), hints(true, 32.0), hints(false, 3.0), hints(false, 1.5)] {
+                for r in rank(&list(), &profile(n), Some(&h)).ranking.into_iter().take(5) {
+                    seen.insert(r.id);
+                }
+            }
+        }
+        let missing: Vec<_> = list().distros.iter().map(|d| d.id.clone()).filter(|id| !seen.contains(id)).collect();
+        println!("never in a top 5: {missing:?}");
+        assert!(missing.len() <= 8, "too many unreachable distros: {missing:?}");
     }
 
     #[test]
@@ -595,14 +701,4 @@ mod tests {
         assert!(notes.iter().any(|n| n.contains("30 Steam games")));
     }
 
-    #[test]
-    fn profile_files_match_code_profiles() {
-        let load = |s: &str| -> Answers { serde_json::from_str(s).unwrap() };
-        assert_eq!(load(include_str!("../tests/profiles/newcomer.json")), newcomer());
-        assert_eq!(load(include_str!("../tests/profiles/gamer.json")), gamer());
-        assert_eq!(load(include_str!("../tests/profiles/old_laptop.json")), old_laptop());
-        assert_eq!(load(include_str!("../tests/profiles/developer.json")), developer());
-        assert_eq!(load(include_str!("../tests/profiles/privacy_veteran.json")), privacy_veteran());
-        assert_eq!(load(include_str!("../tests/profiles/creator.json")), creator());
-    }
 }

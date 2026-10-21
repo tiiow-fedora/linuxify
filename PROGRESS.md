@@ -102,3 +102,37 @@ Output: `%LOCALAPPDATA%\Linuxify\choice.html` + `choice.json`. Uses the latest s
   outside review yet.
 - Not run with a real NVIDIA, low-RAM or Secure-Boot-on scan (unit tests only).
 - English only.
+
+### Update 2026-10-20 — 31 distros, 14 questions (requested by the owner)
+- **Distros 11 → 31.** Added Linux Mint Xfce, Xubuntu, Lubuntu, Ubuntu MATE, elementary OS,
+  Fedora Silverblue, Nobara, antiX, Linux Lite, Arch, EndeavourOS, Manjaro, CachyOS, Garuda,
+  openSUSE Leap, NixOS, Void, Gentoo, Solus and AlmaLinux.
+- **Questions 10 → 14:** wanting to learn Linux hands-on; how much software the package manager has;
+  codecs/drivers out of the box vs free-software-only; and whether work uses an Ubuntu/Debian-based
+  or a Red Hat-compatible Linux. Traits 14 → 20 (`diy`, `software_range`, `out_of_box`, `foss`,
+  `enterprise`, `rhel_family`).
+- **Profiles 6 → 10** (`tests/profiles/`). The tests now load these files directly. Results on this PC's real scan:
+
+  | Profile | #1 | #2 | #3 |
+  |---|---|---|---|
+  | newcomer | Linux Mint 91% | Linux Mint Xfce 91% | Zorin OS 86% |
+  | gamer | Bazzite 86% | Pop!_OS 81% | CachyOS 78% |
+  | old_laptop | Linux Mint Xfce 94% | Linux Mint 87% | Linux Lite 86% |
+  | developer | EndeavourOS 85% | CachyOS 83% | Garuda 82% |
+  | privacy_veteran | Debian 87% | NixOS 86% | Arch 81% |
+  | creator | Pop!_OS 83% | Bazzite 77% | Ubuntu 77% |
+  | arch_tinkerer | Arch 94% | EndeavourOS 91% | NixOS 89% |
+  | enterprise_worker (Ubuntu shop) | Ubuntu 85% | Fedora Silverblue 77% | Fedora Workstation 76% |
+  | redhat_worker | AlmaLinux 75% | Fedora KDE 73% | Fedora Workstation 72% |
+  | gaming_tinkerer | CachyOS 90% | Garuda 87% | EndeavourOS 83% |
+
+- The tests check *properties*, not just names: e.g. every top-3 pick for the old laptop is
+  lightweight, every pick for the enterprise worker has an enterprise rating ≥ 3, and on a 3 GB PC the
+  heavy distros (Bazzite, Fedora, Garuda, elementary) are excluded. One test checks how many distros
+  can't reach a top 5 under any test profile and hardware combination. Solus is the only one left that
+  only shows up for unusual answer combinations (elementary, Leap and Tumbleweed were checked with
+  realistic answer sets).
+- 59 unit tests, all passing.
+- Uncertain facts are marked rather than guessed: Secure Boot support is `unknown` for elementary,
+  Nobara, antiX, Linux Lite and Solus. Arch-family distros, NixOS, Void and Gentoo are marked
+  "needs Secure Boot turned off to install".

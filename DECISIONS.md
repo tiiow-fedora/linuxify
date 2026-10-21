@@ -84,3 +84,14 @@ Short record of choices made while building Linuxify, and why.
   checksums are added in Stage 3.
 - **Output**: `%LOCALAPPDATA%\Linuxify\choice.json` (answers + full ranking; Stage 3 will default to
   `top[0]`) and `choice.html`. `--answers` accepts either a plain answers file or a saved choice.json.
+
+### 2026-10-20: expanded to 31 distros / 14 questions
+- I picked the list as "distros with a sizeable desktop user base". I left out special-purpose
+  systems (Tails, Kali, Qubes), SteamOS (no official general-PC installer) and very new projects
+  (KDE Linux).
+- The "work" question distinguishes Ubuntu/Debian shops from Red Hat-compatible shops, backed by a
+  `rhel_family` trait. Without it, AlmaLinux lost to Debian even for Red Hat users.
+- Answering "less than 5 years old" adds a small (0.5) preference for a modern desktop, so a newer PC
+  gets Mint Cinnamon ahead of Mint Xfce instead of a tie.
+- openSUSE Tumbleweed's stability went 3→4 and maintenance 2→3. It is the most heavily tested
+  rolling release (openQA plus automatic snapshots), and rating it like Arch was unfair.

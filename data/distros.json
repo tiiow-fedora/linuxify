@@ -10,16 +10,40 @@
       "flatpak_ready": true,
       "secure_boot": "supported",
       "min_ram_gb": 2,
-      "traits": { "beginner": 5, "gaming": 3, "nvidia": 4, "light": 3, "stable": 4, "fresh": 2, "windows_like": 5, "modern_look": 2, "privacy": 4, "low_maintenance": 4, "customizable": 3, "dev": 3, "community": 5, "creative": 3 },
+      "traits": {
+        "beginner": 5,
+        "gaming": 3,
+        "nvidia": 4,
+        "light": 3,
+        "stable": 4,
+        "fresh": 2,
+        "windows_like": 5,
+        "modern_look": 2,
+        "privacy": 4,
+        "low_maintenance": 4,
+        "customizable": 3,
+        "dev": 3,
+        "community": 5,
+        "creative": 3,
+        "diy": 1,
+        "software_range": 4,
+        "out_of_box": 5,
+        "foss": 2,
+        "enterprise": 2,
+        "rhel_family": 0
+      },
       "highlights": {
         "beginner": "The most common first Linux: everything is point-and-click, with a friendly Welcome screen.",
         "windows_like": "Looks and works like Windows: taskbar, start menu and system tray in the usual places.",
         "nvidia": "The Driver Manager installs NVIDIA's driver with one click.",
         "stable": "Based on Ubuntu LTS, so updates are calm and well tested.",
         "community": "Huge community; almost any question already has an answer online.",
-        "privacy": "No telemetry, and no Snap store forced on you."
+        "privacy": "No telemetry, and no Snap store forced on you.",
+        "out_of_box": "Media codecs and the driver manager are offered right in the installer."
       },
-      "caveats": ["Software versions lag behind Fedora and Arch-based distros by several months."]
+      "caveats": [
+        "Software versions lag behind Fedora and Arch-based distros by several months."
+      ]
     },
     {
       "id": "ubuntu",
@@ -30,15 +54,41 @@
       "flatpak_ready": false,
       "secure_boot": "supported",
       "min_ram_gb": 4,
-      "traits": { "beginner": 4, "gaming": 3, "nvidia": 4, "light": 2, "stable": 4, "fresh": 2, "windows_like": 2, "modern_look": 4, "privacy": 2, "low_maintenance": 4, "customizable": 2, "dev": 4, "community": 5, "creative": 4 },
+      "traits": {
+        "beginner": 4,
+        "gaming": 3,
+        "nvidia": 4,
+        "light": 2,
+        "stable": 4,
+        "fresh": 2,
+        "windows_like": 2,
+        "modern_look": 4,
+        "privacy": 2,
+        "low_maintenance": 4,
+        "customizable": 2,
+        "dev": 4,
+        "community": 5,
+        "creative": 4,
+        "diy": 1,
+        "software_range": 5,
+        "out_of_box": 4,
+        "foss": 2,
+        "enterprise": 5,
+        "rhel_family": 0
+      },
       "highlights": {
         "community": "The most widely used desktop Linux: most software and guides target it first.",
         "nvidia": "'Additional Drivers' installs NVIDIA's driver with a checkbox.",
         "stable": "Long-term-support releases get five years of updates.",
         "dev": "The default target for most developer tools, Docker guides and CUDA.",
-        "creative": "Commercial creative apps that ship Linux versions usually test on Ubuntu first."
+        "creative": "Commercial creative apps that ship Linux versions usually test on Ubuntu first.",
+        "enterprise": "The Linux most companies, clouds and universities standardise on.",
+        "software_range": "Almost every Linux app publishes an Ubuntu package first."
       },
-      "caveats": ["Pushes Snap packages (slower to start, Canonical-controlled store).", "Sends optional system info to Canonical unless you opt out."]
+      "caveats": [
+        "Pushes Snap packages (slower to start, Canonical-controlled store).",
+        "Sends optional system info to Canonical unless you opt out."
+      ]
     },
     {
       "id": "kubuntu",
@@ -49,14 +99,38 @@
       "flatpak_ready": false,
       "secure_boot": "supported",
       "min_ram_gb": 4,
-      "traits": { "beginner": 4, "gaming": 3, "nvidia": 4, "light": 2, "stable": 4, "fresh": 2, "windows_like": 5, "modern_look": 3, "privacy": 3, "low_maintenance": 4, "customizable": 5, "dev": 4, "community": 4, "creative": 4 },
+      "traits": {
+        "beginner": 4,
+        "gaming": 3,
+        "nvidia": 4,
+        "light": 2,
+        "stable": 4,
+        "fresh": 2,
+        "windows_like": 5,
+        "modern_look": 3,
+        "privacy": 3,
+        "low_maintenance": 4,
+        "customizable": 5,
+        "dev": 4,
+        "community": 4,
+        "creative": 4,
+        "diy": 1,
+        "software_range": 5,
+        "out_of_box": 4,
+        "foss": 2,
+        "enterprise": 3,
+        "rhel_family": 0
+      },
       "highlights": {
         "windows_like": "KDE Plasma's layout feels very close to Windows 10/11.",
         "customizable": "Plasma can be customised more than any other desktop, without the terminal.",
         "community": "Ubuntu underneath, so Ubuntu guides and software apply.",
         "nvidia": "Driver Manager installs NVIDIA's driver with a few clicks."
       },
-      "caveats": ["Plasma versions lag behind Fedora KDE and openSUSE.", "Also uses Snap packages by default."]
+      "caveats": [
+        "Plasma versions lag behind Fedora KDE and openSUSE.",
+        "Also uses Snap packages by default."
+      ]
     },
     {
       "id": "fedora-workstation",
@@ -67,14 +141,41 @@
       "flatpak_ready": true,
       "secure_boot": "supported",
       "min_ram_gb": 4,
-      "traits": { "beginner": 3, "gaming": 3, "nvidia": 2, "light": 2, "stable": 3, "fresh": 4, "windows_like": 1, "modern_look": 5, "privacy": 4, "low_maintenance": 3, "customizable": 3, "dev": 5, "community": 4, "creative": 4 },
+      "traits": {
+        "beginner": 3,
+        "gaming": 3,
+        "nvidia": 2,
+        "light": 2,
+        "stable": 3,
+        "fresh": 4,
+        "windows_like": 1,
+        "modern_look": 5,
+        "privacy": 4,
+        "low_maintenance": 3,
+        "customizable": 3,
+        "dev": 5,
+        "community": 4,
+        "creative": 4,
+        "diy": 2,
+        "software_range": 4,
+        "out_of_box": 2,
+        "foss": 5,
+        "enterprise": 4,
+        "rhel_family": 3
+      },
       "highlights": {
         "fresh": "Recent software and kernels every six months, without being an experiment.",
         "modern_look": "A clean, modern GNOME desktop as its designers intended (closer to macOS than Windows).",
         "dev": "A favourite of developers: up-to-date compilers, toolbox containers and Podman built in.",
-        "privacy": "Community-run project with no ads or tracking."
+        "privacy": "Community-run project with no ads or tracking.",
+        "foss": "Ships only free software by default; Red Hat's upstream, so skills transfer to work.",
+        "rhel_family": "Fedora is where Red Hat Enterprise Linux comes from, so the tools match what Red Hat shops use."
       },
-      "caveats": ["NVIDIA's driver needs the RPM Fusion repository enabled first (a few steps).", "Some media codecs need an extra repository.", "A new release every six months: plan a short upgrade about twice a year."]
+      "caveats": [
+        "NVIDIA's driver needs the RPM Fusion repository enabled first (a few steps).",
+        "Some media codecs need an extra repository.",
+        "A new release every six months: plan a short upgrade about twice a year."
+      ]
     },
     {
       "id": "fedora-kde",
@@ -85,14 +186,38 @@
       "flatpak_ready": true,
       "secure_boot": "supported",
       "min_ram_gb": 4,
-      "traits": { "beginner": 3, "gaming": 3, "nvidia": 2, "light": 2, "stable": 3, "fresh": 4, "windows_like": 5, "modern_look": 4, "privacy": 4, "low_maintenance": 3, "customizable": 5, "dev": 5, "community": 3, "creative": 4 },
+      "traits": {
+        "beginner": 3,
+        "gaming": 3,
+        "nvidia": 2,
+        "light": 2,
+        "stable": 3,
+        "fresh": 4,
+        "windows_like": 5,
+        "modern_look": 4,
+        "privacy": 4,
+        "low_maintenance": 3,
+        "customizable": 5,
+        "dev": 5,
+        "community": 3,
+        "creative": 4,
+        "diy": 2,
+        "software_range": 4,
+        "out_of_box": 2,
+        "foss": 5,
+        "enterprise": 3,
+        "rhel_family": 3
+      },
       "highlights": {
         "windows_like": "A Windows-style taskbar and start menu with the latest KDE Plasma.",
         "fresh": "Recent Plasma, kernels and drivers every six months.",
         "customizable": "Plasma lets you change almost everything without the terminal.",
         "dev": "Same developer-friendly base as Fedora Workstation."
       },
-      "caveats": ["NVIDIA's driver needs the RPM Fusion repository enabled first (a few steps).", "A new release every six months: plan a short upgrade about twice a year."]
+      "caveats": [
+        "NVIDIA's driver needs the RPM Fusion repository enabled first (a few steps).",
+        "A new release every six months: plan a short upgrade about twice a year."
+      ]
     },
     {
       "id": "pop-os",
@@ -103,15 +228,40 @@
       "flatpak_ready": true,
       "secure_boot": "needs_disabling",
       "min_ram_gb": 4,
-      "traits": { "beginner": 4, "gaming": 4, "nvidia": 5, "light": 2, "stable": 3, "fresh": 3, "windows_like": 2, "modern_look": 4, "privacy": 4, "low_maintenance": 4, "customizable": 3, "dev": 5, "community": 4, "creative": 5 },
+      "traits": {
+        "beginner": 4,
+        "gaming": 4,
+        "nvidia": 5,
+        "light": 2,
+        "stable": 3,
+        "fresh": 3,
+        "windows_like": 2,
+        "modern_look": 4,
+        "privacy": 4,
+        "low_maintenance": 4,
+        "customizable": 3,
+        "dev": 5,
+        "community": 4,
+        "creative": 5,
+        "diy": 1,
+        "software_range": 4,
+        "out_of_box": 5,
+        "foss": 2,
+        "enterprise": 3,
+        "rhel_family": 0
+      },
       "highlights": {
         "nvidia": "Has a separate download with NVIDIA's driver already installed: no setup at all.",
         "dev": "Made by a PC maker for developers: CUDA and dev tooling are easy.",
         "creative": "Aimed at creators too: with the NVIDIA download, GPU apps like Blender and DaVinci Resolve have their driver ready.",
         "gaming": "Steam and GPU drivers work out of the box.",
-        "beginner": "Friendly setup and a keyboard-driven tiling option when you want it."
+        "beginner": "Friendly setup and a keyboard-driven tiling option when you want it.",
+        "out_of_box": "Codecs, drivers and Flatpak are set up for you."
       },
-      "caveats": ["Historically needs Secure Boot turned off to install; check the current release notes.", "Its new COSMIC desktop is young, so expect some rough edges."]
+      "caveats": [
+        "Historically needs Secure Boot turned off to install; check the current release notes.",
+        "Its new COSMIC desktop is young, so expect some rough edges."
+      ]
     },
     {
       "id": "bazzite",
@@ -122,14 +272,39 @@
       "flatpak_ready": true,
       "secure_boot": "needs_key_enrolment",
       "min_ram_gb": 8,
-      "traits": { "beginner": 4, "gaming": 5, "nvidia": 5, "light": 1, "stable": 4, "fresh": 4, "windows_like": 4, "modern_look": 3, "privacy": 4, "low_maintenance": 5, "customizable": 2, "dev": 2, "community": 3, "creative": 2 },
+      "traits": {
+        "beginner": 4,
+        "gaming": 5,
+        "nvidia": 5,
+        "light": 1,
+        "stable": 4,
+        "fresh": 4,
+        "windows_like": 4,
+        "modern_look": 3,
+        "privacy": 4,
+        "low_maintenance": 5,
+        "customizable": 2,
+        "dev": 2,
+        "community": 3,
+        "creative": 2,
+        "diy": 0,
+        "software_range": 3,
+        "out_of_box": 5,
+        "foss": 2,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
       "highlights": {
         "gaming": "Built for gaming: Steam, Proton tweaks, controller support and HDR preinstalled.",
         "nvidia": "Has a ready-made NVIDIA edition, so the driver is already there.",
         "low_maintenance": "Updates apply as a whole image and can be rolled back from the boot menu if anything breaks.",
         "stable": "The core system is read-only, so it is very hard to break by accident."
       },
-      "caveats": ["The read-only core makes classic 'install any package' tinkering harder; apps come from Flatpak or containers.", "With Secure Boot on, you enrol a key once during install.", "Wants a reasonably modern PC (8 GB+ RAM)."]
+      "caveats": [
+        "The read-only core makes classic 'install any package' tinkering harder; apps come from Flatpak or containers.",
+        "With Secure Boot on, you enrol a key once during install.",
+        "Wants a reasonably modern PC (8 GB+ RAM)."
+      ]
     },
     {
       "id": "debian",
@@ -140,13 +315,40 @@
       "flatpak_ready": false,
       "secure_boot": "supported",
       "min_ram_gb": 2,
-      "traits": { "beginner": 2, "gaming": 2, "nvidia": 2, "light": 4, "stable": 5, "fresh": 1, "windows_like": 2, "modern_look": 3, "privacy": 5, "low_maintenance": 4, "customizable": 4, "dev": 4, "community": 4, "creative": 3 },
+      "traits": {
+        "beginner": 2,
+        "gaming": 2,
+        "nvidia": 2,
+        "light": 4,
+        "stable": 5,
+        "fresh": 1,
+        "windows_like": 2,
+        "modern_look": 3,
+        "privacy": 5,
+        "low_maintenance": 4,
+        "customizable": 4,
+        "dev": 4,
+        "community": 4,
+        "creative": 3,
+        "diy": 3,
+        "software_range": 5,
+        "out_of_box": 2,
+        "foss": 4,
+        "enterprise": 4,
+        "rhel_family": 0
+      },
       "highlights": {
         "stable": "Famously rock-solid: a release changes very little for about two years.",
         "privacy": "A volunteer, non-commercial project with a strong free-software and privacy stance.",
-        "light": "Runs well on older machines, especially with the Xfce desktop."
+        "light": "Runs well on older machines, especially with the Xfce desktop.",
+        "software_range": "One of the largest software collections of any distro (tens of thousands of packages).",
+        "foss": "Free software by default, with non-free firmware clearly separated."
       },
-      "caveats": ["Software is often a year or more old.", "NVIDIA drivers and some setup steps are manual.", "The installer asks more technical questions than Mint or Ubuntu."]
+      "caveats": [
+        "Software is often a year or more old.",
+        "NVIDIA drivers and some setup steps are manual.",
+        "The installer asks more technical questions than Mint or Ubuntu."
+      ]
     },
     {
       "id": "opensuse-tumbleweed",
@@ -157,13 +359,37 @@
       "flatpak_ready": false,
       "secure_boot": "supported",
       "min_ram_gb": 4,
-      "traits": { "beginner": 2, "gaming": 3, "nvidia": 3, "light": 2, "stable": 3, "fresh": 5, "windows_like": 4, "modern_look": 3, "privacy": 4, "low_maintenance": 2, "customizable": 4, "dev": 4, "community": 3, "creative": 4 },
+      "traits": {
+        "beginner": 2,
+        "gaming": 3,
+        "nvidia": 3,
+        "light": 2,
+        "stable": 4,
+        "fresh": 5,
+        "windows_like": 4,
+        "modern_look": 3,
+        "privacy": 4,
+        "low_maintenance": 3,
+        "customizable": 4,
+        "dev": 4,
+        "community": 3,
+        "creative": 4,
+        "diy": 3,
+        "software_range": 4,
+        "out_of_box": 2,
+        "foss": 4,
+        "enterprise": 2,
+        "rhel_family": 0
+      },
       "highlights": {
         "fresh": "Rolling release: you always have the latest software, with no big version upgrades.",
-        "stable": "Every update is tested as a whole, and automatic snapshots let you roll back from the boot menu.",
+        "stable": "The most tested rolling release: every update passes automated openQA testing, and snapshots let you roll back from the boot menu.",
         "customizable": "YaST gives a graphical control panel for almost every system setting."
       },
-      "caveats": ["Updates are frequent and large, so you should update weekly.", "Smaller English-speaking community than Ubuntu or Fedora."]
+      "caveats": [
+        "Updates are frequent and large, so you should update weekly.",
+        "Smaller English-speaking community than Ubuntu or Fedora."
+      ]
     },
     {
       "id": "zorin-os",
@@ -174,13 +400,37 @@
       "flatpak_ready": true,
       "secure_boot": "supported",
       "min_ram_gb": 4,
-      "traits": { "beginner": 5, "gaming": 3, "nvidia": 4, "light": 3, "stable": 4, "fresh": 2, "windows_like": 5, "modern_look": 4, "privacy": 3, "low_maintenance": 4, "customizable": 3, "dev": 3, "community": 3, "creative": 3 },
+      "traits": {
+        "beginner": 5,
+        "gaming": 3,
+        "nvidia": 4,
+        "light": 3,
+        "stable": 4,
+        "fresh": 2,
+        "windows_like": 5,
+        "modern_look": 4,
+        "privacy": 3,
+        "low_maintenance": 4,
+        "customizable": 3,
+        "dev": 3,
+        "community": 3,
+        "creative": 3,
+        "diy": 1,
+        "software_range": 4,
+        "out_of_box": 5,
+        "foss": 2,
+        "enterprise": 2,
+        "rhel_family": 0
+      },
       "highlights": {
         "windows_like": "Designed specifically for people leaving Windows; you can pick a Windows-style layout.",
         "beginner": "Polished and simple, with Windows app support set up for you.",
         "modern_look": "One of the most polished-looking desktops out of the box."
       },
-      "caveats": ["Releases follow Ubuntu LTS but often arrive months later.", "Some layouts and extras are in the paid Pro edition."]
+      "caveats": [
+        "Releases follow Ubuntu LTS but often arrive months later.",
+        "Some layouts and extras are in the paid Pro edition."
+      ]
     },
     {
       "id": "mx-linux",
@@ -191,13 +441,853 @@
       "flatpak_ready": true,
       "secure_boot": "unknown",
       "min_ram_gb": 1,
-      "traits": { "beginner": 3, "gaming": 2, "nvidia": 3, "light": 5, "stable": 5, "fresh": 1, "windows_like": 4, "modern_look": 1, "privacy": 5, "low_maintenance": 4, "customizable": 4, "dev": 3, "community": 3, "creative": 2 },
+      "traits": {
+        "beginner": 3,
+        "gaming": 2,
+        "nvidia": 3,
+        "light": 5,
+        "stable": 5,
+        "fresh": 1,
+        "windows_like": 4,
+        "modern_look": 1,
+        "privacy": 5,
+        "low_maintenance": 4,
+        "customizable": 4,
+        "dev": 3,
+        "community": 3,
+        "creative": 2,
+        "diy": 2,
+        "software_range": 4,
+        "out_of_box": 4,
+        "foss": 3,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
       "highlights": {
         "light": "Very light: makes old or low-memory PCs feel quick again.",
         "stable": "Built on Debian stable, so very little changes under you.",
         "beginner": "The 'MX Tools' collection puts common admin jobs in simple windows."
       },
-      "caveats": ["Looks dated compared with GNOME or KDE.", "Not ideal for gaming or the newest hardware."]
+      "caveats": [
+        "Looks dated compared with GNOME or KDE.",
+        "Not ideal for gaming or the newest hardware."
+      ]
+    },
+    {
+      "id": "linux-mint-xfce",
+      "name": "Linux Mint (Xfce)",
+      "homepage": "https://linuxmint.com/",
+      "desktop": "Xfce",
+      "family": "apt",
+      "flatpak_ready": true,
+      "secure_boot": "supported",
+      "min_ram_gb": 2,
+      "traits": {
+        "beginner": 5,
+        "gaming": 2,
+        "nvidia": 4,
+        "light": 5,
+        "stable": 4,
+        "fresh": 2,
+        "windows_like": 5,
+        "modern_look": 1,
+        "privacy": 4,
+        "low_maintenance": 4,
+        "customizable": 3,
+        "dev": 3,
+        "community": 5,
+        "creative": 2,
+        "diy": 1,
+        "software_range": 4,
+        "out_of_box": 5,
+        "foss": 2,
+        "enterprise": 2,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "light": "Mint's lightest edition: the same friendly tools on older hardware.",
+        "beginner": "Same Welcome screen, Driver Manager and update tool as Mint Cinnamon.",
+        "windows_like": "Classic taskbar-and-menu layout."
+      },
+      "caveats": [
+        "Looks plainer than the Cinnamon edition."
+      ]
+    },
+    {
+      "id": "xubuntu",
+      "name": "Xubuntu",
+      "homepage": "https://xubuntu.org/",
+      "desktop": "Xfce",
+      "family": "apt",
+      "flatpak_ready": false,
+      "secure_boot": "supported",
+      "min_ram_gb": 2,
+      "traits": {
+        "beginner": 4,
+        "gaming": 2,
+        "nvidia": 4,
+        "light": 4,
+        "stable": 4,
+        "fresh": 2,
+        "windows_like": 4,
+        "modern_look": 1,
+        "privacy": 3,
+        "low_maintenance": 4,
+        "customizable": 3,
+        "dev": 3,
+        "community": 4,
+        "creative": 2,
+        "diy": 1,
+        "software_range": 5,
+        "out_of_box": 4,
+        "foss": 2,
+        "enterprise": 3,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "light": "Ubuntu with the light Xfce desktop: good on older PCs.",
+        "software_range": "All of Ubuntu's software and guides apply."
+      },
+      "caveats": [
+        "Uses Snap packages like Ubuntu."
+      ]
+    },
+    {
+      "id": "lubuntu",
+      "name": "Lubuntu",
+      "homepage": "https://lubuntu.me/",
+      "desktop": "LXQt",
+      "family": "apt",
+      "flatpak_ready": false,
+      "secure_boot": "supported",
+      "min_ram_gb": 2,
+      "traits": {
+        "beginner": 3,
+        "gaming": 1,
+        "nvidia": 3,
+        "light": 5,
+        "stable": 4,
+        "fresh": 2,
+        "windows_like": 4,
+        "modern_look": 2,
+        "privacy": 3,
+        "low_maintenance": 4,
+        "customizable": 2,
+        "dev": 3,
+        "community": 3,
+        "creative": 1,
+        "diy": 1,
+        "software_range": 5,
+        "out_of_box": 4,
+        "foss": 2,
+        "enterprise": 2,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "light": "One of the lightest Ubuntu flavours (LXQt desktop).",
+        "software_range": "All of Ubuntu's software and guides apply."
+      },
+      "caveats": [
+        "Fewer graphical settings tools than the bigger desktops."
+      ]
+    },
+    {
+      "id": "ubuntu-mate",
+      "name": "Ubuntu MATE",
+      "homepage": "https://ubuntu-mate.org/",
+      "desktop": "MATE",
+      "family": "apt",
+      "flatpak_ready": false,
+      "secure_boot": "supported",
+      "min_ram_gb": 2,
+      "traits": {
+        "beginner": 4,
+        "gaming": 2,
+        "nvidia": 4,
+        "light": 4,
+        "stable": 4,
+        "fresh": 2,
+        "windows_like": 4,
+        "modern_look": 2,
+        "privacy": 3,
+        "low_maintenance": 4,
+        "customizable": 4,
+        "dev": 3,
+        "community": 3,
+        "creative": 2,
+        "diy": 1,
+        "software_range": 5,
+        "out_of_box": 4,
+        "foss": 2,
+        "enterprise": 2,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "light": "A traditional, lightweight desktop that stays out of your way.",
+        "customizable": "MATE Tweak switches between Windows-, Mac- and classic layouts in one click."
+      },
+      "caveats": [
+        "Smaller team than Ubuntu's main edition."
+      ]
+    },
+    {
+      "id": "elementary-os",
+      "name": "elementary OS",
+      "homepage": "https://elementary.io/",
+      "desktop": "Pantheon",
+      "family": "apt",
+      "flatpak_ready": true,
+      "secure_boot": "unknown",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 5,
+        "gaming": 2,
+        "nvidia": 3,
+        "light": 2,
+        "stable": 4,
+        "fresh": 2,
+        "windows_like": 1,
+        "modern_look": 5,
+        "privacy": 4,
+        "low_maintenance": 4,
+        "customizable": 1,
+        "dev": 3,
+        "community": 3,
+        "creative": 3,
+        "diy": 1,
+        "software_range": 4,
+        "out_of_box": 3,
+        "foss": 3,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "modern_look": "Beautiful, consistent, Mac-like design.",
+        "beginner": "Very simple: few settings to get lost in.",
+        "privacy": "Funded by its users; no tracking or ads."
+      },
+      "caveats": [
+        "Deliberately limited customisation.",
+        "Releases trail Ubuntu LTS by months."
+      ]
+    },
+    {
+      "id": "fedora-silverblue",
+      "name": "Fedora Silverblue",
+      "homepage": "https://fedoraproject.org/atomic-desktops/silverblue/",
+      "desktop": "GNOME",
+      "family": "rpm-ostree",
+      "flatpak_ready": true,
+      "secure_boot": "supported",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 3,
+        "gaming": 2,
+        "nvidia": 2,
+        "light": 2,
+        "stable": 5,
+        "fresh": 4,
+        "windows_like": 1,
+        "modern_look": 5,
+        "privacy": 4,
+        "low_maintenance": 5,
+        "customizable": 2,
+        "dev": 4,
+        "community": 3,
+        "creative": 3,
+        "diy": 1,
+        "software_range": 3,
+        "out_of_box": 2,
+        "foss": 5,
+        "enterprise": 3,
+        "rhel_family": 2
+      },
+      "highlights": {
+        "stable": "Read-only core with whole-system updates you can roll back from the boot menu.",
+        "low_maintenance": "Updates install in the background and apply on next boot.",
+        "dev": "Built around Toolbox containers for development."
+      },
+      "caveats": [
+        "Apps come mainly from Flatpak; installing system packages is a different workflow.",
+        "NVIDIA drivers need extra steps (Bazzite is the easier atomic option for NVIDIA)."
+      ]
+    },
+    {
+      "id": "nobara",
+      "name": "Nobara",
+      "homepage": "https://nobaraproject.org/",
+      "desktop": "KDE Plasma (GNOME edition available)",
+      "family": "dnf",
+      "flatpak_ready": true,
+      "secure_boot": "unknown",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 3,
+        "gaming": 5,
+        "nvidia": 5,
+        "light": 2,
+        "stable": 2,
+        "fresh": 5,
+        "windows_like": 4,
+        "modern_look": 3,
+        "privacy": 3,
+        "low_maintenance": 3,
+        "customizable": 3,
+        "dev": 3,
+        "community": 2,
+        "creative": 4,
+        "diy": 1,
+        "software_range": 4,
+        "out_of_box": 5,
+        "foss": 1,
+        "enterprise": 1,
+        "rhel_family": 1
+      },
+      "highlights": {
+        "gaming": "Fedora tuned for gaming and streaming by the maintainer of Proton-GE.",
+        "nvidia": "NVIDIA drivers, codecs and OBS are set up for you.",
+        "out_of_box": "Codecs and common extras preinstalled."
+      },
+      "caveats": [
+        "Run by a very small team; fixes depend on a few people.",
+        "Fast-moving, so occasional breakage is more likely than on Mint or Ubuntu."
+      ]
+    },
+    {
+      "id": "antix",
+      "name": "antiX",
+      "homepage": "https://antixlinux.com/",
+      "desktop": "IceWM (and other lightweight window managers)",
+      "family": "apt",
+      "flatpak_ready": false,
+      "secure_boot": "unknown",
+      "min_ram_gb": 1,
+      "traits": {
+        "beginner": 2,
+        "gaming": 1,
+        "nvidia": 2,
+        "light": 5,
+        "stable": 4,
+        "fresh": 1,
+        "windows_like": 3,
+        "modern_look": 0,
+        "privacy": 5,
+        "low_maintenance": 3,
+        "customizable": 4,
+        "dev": 2,
+        "community": 2,
+        "creative": 1,
+        "diy": 4,
+        "software_range": 4,
+        "out_of_box": 2,
+        "foss": 4,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "light": "Extremely light: runs on very old PCs with 1 GB of RAM or less.",
+        "privacy": "No systemd, no telemetry, very minimal."
+      },
+      "caveats": [
+        "Very spartan look and tools.",
+        "Not suitable for gaming or modern GPUs."
+      ]
+    },
+    {
+      "id": "linux-lite",
+      "name": "Linux Lite",
+      "homepage": "https://www.linuxliteos.com/",
+      "desktop": "Xfce",
+      "family": "apt",
+      "flatpak_ready": false,
+      "secure_boot": "unknown",
+      "min_ram_gb": 1,
+      "traits": {
+        "beginner": 5,
+        "gaming": 2,
+        "nvidia": 3,
+        "light": 5,
+        "stable": 4,
+        "fresh": 2,
+        "windows_like": 5,
+        "modern_look": 1,
+        "privacy": 3,
+        "low_maintenance": 4,
+        "customizable": 2,
+        "dev": 2,
+        "community": 3,
+        "creative": 2,
+        "diy": 1,
+        "software_range": 4,
+        "out_of_box": 4,
+        "foss": 2,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "beginner": "Aimed squarely at Windows users on older PCs, with clear help manuals.",
+        "light": "Light Xfce desktop on an Ubuntu LTS base.",
+        "windows_like": "Start-menu-and-taskbar layout."
+      },
+      "caveats": [
+        "Small team; releases follow Ubuntu LTS."
+      ]
+    },
+    {
+      "id": "arch",
+      "name": "Arch Linux",
+      "homepage": "https://archlinux.org/",
+      "desktop": "Your choice (you install it)",
+      "family": "pacman",
+      "flatpak_ready": false,
+      "secure_boot": "needs_disabling",
+      "min_ram_gb": 2,
+      "traits": {
+        "beginner": 1,
+        "gaming": 4,
+        "nvidia": 3,
+        "light": 4,
+        "stable": 2,
+        "fresh": 5,
+        "windows_like": 2,
+        "modern_look": 2,
+        "privacy": 5,
+        "low_maintenance": 1,
+        "customizable": 5,
+        "dev": 5,
+        "community": 5,
+        "creative": 4,
+        "diy": 5,
+        "software_range": 5,
+        "out_of_box": 1,
+        "foss": 4,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "diy": "You build the system yourself, so you learn exactly how it works.",
+        "software_range": "Official repos plus the AUR: nearly every Linux program exists here.",
+        "fresh": "Rolling release with the latest everything.",
+        "community": "The Arch Wiki is the best Linux documentation there is."
+      },
+      "caveats": [
+        "Installation is manual (archinstall helps, but it is still technical).",
+        "Install media doesn't boot with Secure Boot on; it can be set up afterwards.",
+        "You are responsible for reading news before updates."
+      ]
+    },
+    {
+      "id": "endeavouros",
+      "name": "EndeavourOS",
+      "homepage": "https://endeavouros.com/",
+      "desktop": "KDE Plasma by default (others offered)",
+      "family": "pacman",
+      "flatpak_ready": false,
+      "secure_boot": "needs_disabling",
+      "min_ram_gb": 2,
+      "traits": {
+        "beginner": 2,
+        "gaming": 4,
+        "nvidia": 4,
+        "light": 3,
+        "stable": 2,
+        "fresh": 5,
+        "windows_like": 3,
+        "modern_look": 3,
+        "privacy": 5,
+        "low_maintenance": 2,
+        "customizable": 5,
+        "dev": 5,
+        "community": 4,
+        "creative": 4,
+        "diy": 3,
+        "software_range": 5,
+        "out_of_box": 3,
+        "foss": 3,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "fresh": "Arch with a graphical installer: rolling and up to date.",
+        "software_range": "Full access to Arch's repos and the AUR.",
+        "community": "Known for a friendly forum, plus the Arch Wiki."
+      },
+      "caveats": [
+        "Still Arch underneath: expect to use the terminal for maintenance.",
+        "Needs Secure Boot turned off to install."
+      ]
+    },
+    {
+      "id": "manjaro",
+      "name": "Manjaro",
+      "homepage": "https://manjaro.org/",
+      "desktop": "KDE Plasma, GNOME or Xfce",
+      "family": "pacman",
+      "flatpak_ready": true,
+      "secure_boot": "needs_disabling",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 3,
+        "gaming": 4,
+        "nvidia": 4,
+        "light": 3,
+        "stable": 3,
+        "fresh": 4,
+        "windows_like": 4,
+        "modern_look": 3,
+        "privacy": 4,
+        "low_maintenance": 3,
+        "customizable": 4,
+        "dev": 4,
+        "community": 4,
+        "creative": 3,
+        "diy": 2,
+        "software_range": 5,
+        "out_of_box": 4,
+        "foss": 2,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "beginner": "A friendlier, graphical way into the Arch world.",
+        "nvidia": "Hardware tool installs NVIDIA drivers automatically.",
+        "software_range": "Its own repos plus (with care) the AUR."
+      },
+      "caveats": [
+        "Its delayed repos can clash with AUR packages built for current Arch.",
+        "Has a history of project-management slip-ups (e.g. expired website certificates)."
+      ]
+    },
+    {
+      "id": "cachyos",
+      "name": "CachyOS",
+      "homepage": "https://cachyos.org/",
+      "desktop": "KDE Plasma by default (many offered)",
+      "family": "pacman",
+      "flatpak_ready": false,
+      "secure_boot": "needs_disabling",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 2,
+        "gaming": 5,
+        "nvidia": 5,
+        "light": 3,
+        "stable": 2,
+        "fresh": 5,
+        "windows_like": 4,
+        "modern_look": 3,
+        "privacy": 4,
+        "low_maintenance": 3,
+        "customizable": 5,
+        "dev": 4,
+        "community": 3,
+        "creative": 4,
+        "diy": 2,
+        "software_range": 5,
+        "out_of_box": 4,
+        "foss": 2,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "gaming": "Performance-tuned kernels and packages, with a gaming setup option.",
+        "nvidia": "Detects your GPU and installs the right driver during setup.",
+        "fresh": "Arch-based rolling release, always current."
+      },
+      "caveats": [
+        "Arch-based: occasional manual fixes after updates.",
+        "Younger, smaller project than Fedora or Ubuntu.",
+        "Needs Secure Boot turned off to install."
+      ]
+    },
+    {
+      "id": "garuda",
+      "name": "Garuda Linux",
+      "homepage": "https://garudalinux.org/",
+      "desktop": "KDE Plasma (themed 'Dr460nized')",
+      "family": "pacman",
+      "flatpak_ready": false,
+      "secure_boot": "needs_disabling",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 3,
+        "gaming": 4,
+        "nvidia": 4,
+        "light": 1,
+        "stable": 2,
+        "fresh": 5,
+        "windows_like": 4,
+        "modern_look": 4,
+        "privacy": 4,
+        "low_maintenance": 3,
+        "customizable": 5,
+        "dev": 3,
+        "community": 3,
+        "creative": 3,
+        "diy": 1,
+        "software_range": 5,
+        "out_of_box": 5,
+        "foss": 2,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "out_of_box": "Gaming tools, codecs and drivers come preinstalled.",
+        "stable": "Automatic Btrfs snapshots before updates let you roll back.",
+        "modern_look": "Flashy, heavily themed desktop out of the box."
+      },
+      "caveats": [
+        "Heavy: wants a fairly modern PC.",
+        "Arch-based rolling release.",
+        "Needs Secure Boot turned off to install."
+      ]
+    },
+    {
+      "id": "opensuse-leap",
+      "name": "openSUSE Leap",
+      "homepage": "https://get.opensuse.org/leap/",
+      "desktop": "KDE Plasma by default (GNOME offered)",
+      "family": "zypper",
+      "flatpak_ready": false,
+      "secure_boot": "supported",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 3,
+        "gaming": 2,
+        "nvidia": 3,
+        "light": 2,
+        "stable": 5,
+        "fresh": 2,
+        "windows_like": 4,
+        "modern_look": 3,
+        "privacy": 4,
+        "low_maintenance": 4,
+        "customizable": 4,
+        "dev": 4,
+        "community": 3,
+        "creative": 2,
+        "diy": 2,
+        "software_range": 4,
+        "out_of_box": 2,
+        "foss": 4,
+        "enterprise": 4,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "stable": "Shares its core with SUSE Linux Enterprise: built for long, calm releases.",
+        "enterprise": "Close match to SUSE's enterprise Linux.",
+        "customizable": "YaST gives a graphical control panel for almost every system setting."
+      },
+      "caveats": [
+        "Software and drivers are older than Tumbleweed or Fedora.",
+        "Some codecs need the community Packman repository."
+      ]
+    },
+    {
+      "id": "nixos",
+      "name": "NixOS",
+      "homepage": "https://nixos.org/",
+      "desktop": "GNOME or KDE Plasma (your choice)",
+      "family": "nix",
+      "flatpak_ready": false,
+      "secure_boot": "needs_disabling",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 1,
+        "gaming": 3,
+        "nvidia": 3,
+        "light": 3,
+        "stable": 4,
+        "fresh": 4,
+        "windows_like": 2,
+        "modern_look": 3,
+        "privacy": 5,
+        "low_maintenance": 3,
+        "customizable": 5,
+        "dev": 5,
+        "community": 3,
+        "creative": 3,
+        "diy": 5,
+        "software_range": 5,
+        "out_of_box": 2,
+        "foss": 4,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "diy": "The whole system is described in one config file: rebuild it anywhere, identically.",
+        "stable": "Every change is a new 'generation' you can roll back to from the boot menu.",
+        "software_range": "Nixpkgs is one of the largest package collections of any distro."
+      },
+      "caveats": [
+        "Steep learning curve: it works very differently from other Linux distros.",
+        "Many normal Linux how-to guides don't apply directly.",
+        "Needs Secure Boot turned off to install."
+      ]
+    },
+    {
+      "id": "void",
+      "name": "Void Linux",
+      "homepage": "https://voidlinux.org/",
+      "desktop": "Xfce live image, or your choice",
+      "family": "xbps",
+      "flatpak_ready": false,
+      "secure_boot": "needs_disabling",
+      "min_ram_gb": 1,
+      "traits": {
+        "beginner": 1,
+        "gaming": 2,
+        "nvidia": 2,
+        "light": 5,
+        "stable": 3,
+        "fresh": 4,
+        "windows_like": 2,
+        "modern_look": 1,
+        "privacy": 5,
+        "low_maintenance": 2,
+        "customizable": 5,
+        "dev": 4,
+        "community": 2,
+        "creative": 2,
+        "diy": 5,
+        "software_range": 3,
+        "out_of_box": 1,
+        "foss": 4,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "light": "Lean and fast, with its own runit init system.",
+        "diy": "Minimal base you assemble yourself; great for learning.",
+        "privacy": "Independent, community-run, nothing phoning home."
+      },
+      "caveats": [
+        "Small community; fewer guides.",
+        "Mostly manual setup.",
+        "Needs Secure Boot turned off to install."
+      ]
+    },
+    {
+      "id": "gentoo",
+      "name": "Gentoo",
+      "homepage": "https://www.gentoo.org/",
+      "desktop": "Your choice (you build it)",
+      "family": "portage",
+      "flatpak_ready": false,
+      "secure_boot": "needs_disabling",
+      "min_ram_gb": 2,
+      "traits": {
+        "beginner": 0,
+        "gaming": 2,
+        "nvidia": 2,
+        "light": 3,
+        "stable": 3,
+        "fresh": 4,
+        "windows_like": 1,
+        "modern_look": 1,
+        "privacy": 5,
+        "low_maintenance": 1,
+        "customizable": 5,
+        "dev": 4,
+        "community": 3,
+        "creative": 2,
+        "diy": 5,
+        "software_range": 4,
+        "out_of_box": 1,
+        "foss": 4,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "diy": "The deepest hands-on Linux: you choose and (optionally) compile everything.",
+        "customizable": "Every package can be built with exactly the features you want."
+      },
+      "caveats": [
+        "Install takes hours to days and is fully manual.",
+        "Not for a first Linux.",
+        "Needs Secure Boot turned off to install."
+      ]
+    },
+    {
+      "id": "solus",
+      "name": "Solus",
+      "homepage": "https://getsol.us/",
+      "desktop": "Budgie (Plasma, GNOME, Xfce offered)",
+      "family": "eopkg",
+      "flatpak_ready": true,
+      "secure_boot": "unknown",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 4,
+        "gaming": 3,
+        "nvidia": 3,
+        "light": 3,
+        "stable": 4,
+        "fresh": 3,
+        "windows_like": 3,
+        "modern_look": 4,
+        "privacy": 4,
+        "low_maintenance": 4,
+        "customizable": 2,
+        "dev": 3,
+        "community": 2,
+        "creative": 3,
+        "diy": 1,
+        "software_range": 2,
+        "out_of_box": 4,
+        "foss": 3,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "beginner": "Independent desktop-focused distro with a curated, polished feel.",
+        "stable": "Curated rolling release: weekly, tested update batches."
+      },
+      "caveats": [
+        "Small team and a smaller software catalogue (Flatpak fills gaps).",
+        "Independent package format, so fewer outside guides apply."
+      ]
+    },
+    {
+      "id": "almalinux",
+      "name": "AlmaLinux",
+      "homepage": "https://almalinux.org/",
+      "desktop": "GNOME",
+      "family": "dnf",
+      "flatpak_ready": true,
+      "secure_boot": "supported",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 2,
+        "gaming": 1,
+        "nvidia": 2,
+        "light": 2,
+        "stable": 5,
+        "fresh": 1,
+        "windows_like": 1,
+        "modern_look": 3,
+        "privacy": 4,
+        "low_maintenance": 4,
+        "customizable": 2,
+        "dev": 4,
+        "community": 3,
+        "creative": 2,
+        "diy": 2,
+        "software_range": 2,
+        "out_of_box": 2,
+        "foss": 4,
+        "enterprise": 5,
+        "rhel_family": 5
+      },
+      "highlights": {
+        "enterprise": "Binary-compatible with Red Hat Enterprise Linux: matches many workplaces' servers.",
+        "stable": "Ten-year support cycle; almost nothing changes under you.",
+        "rhel_family": "Same software and commands as Red Hat Enterprise Linux, so work skills and scripts carry straight over."
+      },
+      "caveats": [
+        "Built for servers and workstations, not gaming or the newest hardware.",
+        "Desktop software is old; many apps come from EPEL or Flatpak."
+      ]
     }
   ]
 }
