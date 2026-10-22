@@ -240,7 +240,7 @@ fn download_to_part(r: &ResolvedIso, dir: &Path, part: &Path) -> Result<bool, St
         }
         if last.elapsed() > Duration::from_secs(2) {
             let rate = (done - start_at) as f64 / start.elapsed().as_secs_f64().max(0.1);
-            let pct = if total > 0 { done * 100 / total } else { 0 };
+            let pct = (done * 100).checked_div(total).unwrap_or(0);
             print!("\r  {pct:>3}%  {} / {}  {:.1} MB/s   ", human(done), human(total), rate / 1e6);
             let _ = std::io::stdout().flush();
             last = Instant::now();

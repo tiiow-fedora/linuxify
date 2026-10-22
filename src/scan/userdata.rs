@@ -422,7 +422,7 @@ fn scan_steam(data: &mut UserData) {
                 }
             }
         }
-        games.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+        games.sort_by_key(|a| a.name.to_lowercase());
         let total_bytes = games.iter().map(|g| g.size_on_disk).sum();
         data.steam.push(SteamLibrary { path: lib, games, total_bytes });
     }
