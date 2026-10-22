@@ -14,6 +14,7 @@
 //! This module is pure planning + safety gates (unit-tested). The thin
 //! executor lives in main.rs and only runs after an exact typed confirmation.
 
+use crate::chooser::{Installer, SecureBootSupport};
 use crate::readiness::{Finding, Severity, ESP_GUID};
 use crate::scan::hardware::{Firmware, HardwareFacts};
 use serde::{Deserialize, Serialize};
@@ -28,6 +29,10 @@ pub const KEEP_WINDOWS_FREE: u64 = 20 * GB;
 pub const MIN_LINUX: u64 = 40 * GB;
 pub const DEFAULT_LINUX: u64 = 100 * GB;
 const FAT32_MAX_FILE: u64 = 4 * GB - 1;
+/// Memory the live desktop and installer need on top of a `toram` copy of the ISO.
+/// Xubuntu 26.04 (5.2 GB ISO) copied into 6 GB of RAM hung before its desktop
+/// appeared (VM test); Mint 22.3 (2.9 GB) in 6 GB was fine.
+pub const TORAM_HEADROOM: u64 = 3 * GB;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InstallPlan {
@@ -43,6 +48,12 @@ pub struct InstallPlan {
     pub installer_size: u64,
     pub linux_size: u64,
     pub letter: char,
+    /// Ask the live system to copy itself into RAM (frees LNXINST for the installer).
+    /// Only for Ubiquity, the one installer that must unmount its live medium:
+    /// Calamares breaks with it (Lubuntu: unpackfs can't loop-mount the RAM copy)
+    /// and the others install fine with LNXINST still mounted.
+    #[serde(default)]
+    pub copy_to_ram: bool,
 }
 
 impl InstallPlan {
@@ -82,6 +93,7 @@ pub struct InstallRequest {
     pub iso: String,
     pub iso_bytes: u64,
     pub largest_iso_file: u64,
+    pub installer: Installer,
     /// Linux space in GB (None = default 100 GB, or as much as fits).
     pub linux_gb: Option<u64>,
     pub free_letter: char,
@@ -104,9 +116,20 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
     }
     if req.largest_iso_file > FAT32_MAX_FILE {
         why.push(format!(
-            "this ISO contains a file over 4 GB ({} GB), which can't go on a FAT32 installer partition. Use a USB stick for this distro.",
-            req.largest_iso_file / GB
+            "this ISO contains a {:.2} GB file, and FAT32 (which the installer partition must use so the PC can boot it) can't hold files over 4 GB. Use a USB stick for this distro.",
+            req.largest_iso_file as f64 / GB as f64
         ));
+    }
+    if req.installer == Installer::Ubiquity {
+        let need = req.iso_bytes.saturating_add(TORAM_HEADROOM);
+        let ram = hw.ram_bytes.unwrap_or(0);
+        if ram < need {
+            why.push(format!(
+                "this distro's installer has to run from memory when it starts from the disk it installs to. That needs {:.1} GB of RAM and this PC has {:.1} GB. Use a USB stick for this distro.",
+                need as f64 / GB as f64,
+                ram as f64 / GB as f64
+            ));
+        }
     }
     let Some((disk, part)) = hw.disks.iter().find_map(|d| d.partitions.iter().find(|p| p.drive_letter == Some('C')).map(|p| (d, p))) else {
         why.push("couldn't find the C: partition".into());
@@ -159,6 +182,7 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
         installer_size: installer,
         linux_size: linux,
         letter: req.free_letter,
+        copy_to_ram: req.installer == Installer::Ubiquity,
     })
 }
 
@@ -182,6 +206,13 @@ pub struct Preflight {
     /// The staged copy lives on the disk that's about to be repartitioned.
     pub backup_on_windows_disk: bool,
     pub already_installed_state: bool,
+    /// Secure Boot is on in the firmware right now.
+    pub secure_boot_on: bool,
+    /// Whether the chosen distro's installer starts with Secure Boot on (data/distros.json).
+    pub distro_secure_boot: SecureBootSupport,
+    pub distro_name: String,
+    /// A laptop running on battery could power off halfway through shrinking C:.
+    pub on_battery: bool,
 }
 
 pub fn blockers_from(findings: &[Finding]) -> Vec<String> {
@@ -196,6 +227,24 @@ pub fn preflight_problems(p: &Preflight) -> Vec<String> {
     }
     for b in &p.blockers {
         v.push(format!("readiness blocker: {b}"));
+    }
+    // Checked before any disk change: firmware with Secure Boot on refuses to start an
+    // unsigned installer, which would leave C: shrunk and nothing to install from.
+    if p.secure_boot_on {
+        match p.distro_secure_boot {
+            SecureBootSupport::NeedsDisabling => v.push(format!(
+                "{}'s installer can't start while Secure Boot is on. Turn Secure Boot off in your PC's firmware settings first, or choose a distro that supports it",
+                p.distro_name
+            )),
+            SecureBootSupport::Unknown => v.push(format!(
+                "Secure Boot is on and Linuxify doesn't know whether {}'s installer starts with it on. Turn Secure Boot off first, or choose a distro that supports it",
+                p.distro_name
+            )),
+            SecureBootSupport::Supported | SecureBootSupport::NeedsKeyEnrolment => {}
+        }
+    }
+    if p.on_battery {
+        v.push("this PC is running on battery; plug in the charger so it can't power off while C: is being shrunk".into());
     }
     if !p.iso_verified {
         v.push("the installer ISO hasn't been downloaded and verified (run `linuxify try <distro>` first, or check the ISO)".into());
@@ -253,35 +302,113 @@ pub fn replace_gate_problems(g: &ReplaceGate) -> Vec<String> {
 // Boot entry + undo
 // ---------------------------------------------------------------------------
 
-/// Ubuntu-family live systems ("casper") automatically create a "writable"
-/// persistence partition in free space on the disk they boot from. Booted
-/// from Linuxify's installer partition, that swallows the space set aside
-/// for Linux (found in the Windows VM test). `nopersistent` turns it off.
+/// What to pick in the distro's installer so Linux goes into the free space
+/// Linuxify left, and Windows is not shrunk again or erased. Each wording was
+/// checked against the real installer in the Windows VM test.
+pub fn installer_hint(installer: Installer) -> &'static str {
+    match installer {
+        Installer::Ubiquity | Installer::UbuntuDesktop => {
+            "In the installer choose 'Install … alongside Windows Boot Manager'."
+        }
+        Installer::Calamares => {
+            "In the installer choose 'Replace a partition', then click the grey 'Free Space' block. Don't pick 'Install alongside' (it shrinks Windows again) or 'Erase disk'."
+        }
+        Installer::Anaconda | Installer::Unknown => {
+            "In the installer, install into the free (unallocated) space. Never pick 'Erase disk' or anything that deletes or shrinks the Windows partition."
+        }
+    }
+}
+
+/// Boot config files on the installer partition that `adapt_live_boot` rewrites.
+pub const LIVE_BOOT_CONFIGS: [&str; 4] = [r"boot\grub\grub.cfg", r"boot\grub\loopback.cfg", r"boot\grub2\grub.cfg", r"EFI\BOOT\grub.cfg"];
+
+/// Live systems are built to boot from a USB stick or DVD. Booted from a
+/// partition on the same disk Linux will be installed to, several of them
+/// misbehave (all found in the Windows VM test). This rewrites the kernel
+/// lines in an ISO's GRUB config so they run cleanly from LNXINST:
 ///
-/// The live system also keeps the installer partition mounted at /cdrom, and
-/// that partition is on the disk Ubiquity has to repartition, so it stops
-/// with "Failed to unmount partitions: /cdrom" (also found in the VM test).
-/// `toram` copies the live media into RAM and releases the partition; casper
-/// skips the copy by itself when there isn't enough free memory.
-/// Returns the patched text and how many boot entries were changed.
-pub fn patch_casper_grub(cfg: &str) -> (String, usize) {
-    const FLAGS: [&str; 2] = ["nopersistent", "toram"];
+/// - Ubuntu family (casper, `/casper/vmlinuz`): casper creates a "writable"
+///   persistence partition in any free space on its boot disk, swallowing the
+///   space meant for Linux, so `nopersistent`. It also keeps LNXINST mounted
+///   at /cdrom, which stops Ubiquity (Mint) repartitioning the disk, so `toram`
+///   when `to_ram` is set. casper's own memory check only asks whether the copy
+///   fits, not whether the desktop still fits beside it, so the caller decides.
+/// - Debian live-boot (`boot=live`): `toram` (when `to_ram`), for the same /cdrom reason.
+/// - dracut live images (Fedora, AlmaLinux, openSUSE: `root=live:`) and
+///   Anaconda (`inst.stage2=`) find their files by the ISO's volume label,
+///   which LNXINST doesn't have, so the label is replaced by `label`.
+///   openSUSE turns on a persistent overlay (`rd.live.overlay.persistent`),
+///   which is removed for the same reason as casper's.
+/// - GRUB's own `search ... -l '<label>'` gets the new label too.
+///
+/// Returns the patched text and how many lines were changed. Idempotent.
+pub fn adapt_live_boot(cfg: &str, label: &str, to_ram: bool) -> (String, usize) {
     let mut changed = 0;
     let out: Vec<String> = cfg
         .split_inclusive('\n')
         .map(|line| {
-            let is_casper = line.trim_start().starts_with("linux") && line.contains("boot=casper");
-            let has = |f: &str| line.split_whitespace().any(|w| w == f);
-            let missing: Vec<&str> = FLAGS.iter().copied().filter(|f| !has(f)).collect();
-            if is_casper && !missing.is_empty() {
+            let new = adapt_line(line, label, to_ram);
+            if new != line {
                 changed += 1;
-                line.replacen("boot=casper", &format!("boot=casper {}", missing.join(" ")), 1)
-            } else {
-                line.to_string()
             }
+            new
         })
         .collect();
     (out.concat(), changed)
+}
+
+fn adapt_line(line: &str, label: &str, to_ram: bool) -> String {
+    let body = line.trim_end_matches(['\r', '\n']);
+    let ending = &line[body.len()..];
+    let indent = &body[..body.len() - body.trim_start().len()];
+    let words: Vec<&str> = body.split_whitespace().collect();
+    let Some(&cmd) = words.first() else { return line.to_string() };
+
+    if cmd == "search" {
+        // search --no-floppy --set=root -l 'Fedora-WS-Live-44'  (also --label)
+        let Some(i) = words.iter().position(|w| *w == "-l" || *w == "--label") else { return line.to_string() };
+        let Some(old) = words.get(i + 1) else { return line.to_string() };
+        if old.trim_matches(['\'', '"']) == label {
+            return line.to_string();
+        }
+        return format!("{indent}{}{ending}", body.trim_start().replacen(old, &format!("'{label}'"), 1));
+    }
+    if !(cmd == "linux" || cmd == "linuxefi") || words.len() < 2 {
+        return line.to_string();
+    }
+
+    let kernel = words[1];
+    let mut args: Vec<String> = words[2..].iter().map(|w| w.to_string()).collect();
+    let has = |args: &[String], f: &str| args.iter().any(|a| a == f);
+    let mut add: Vec<&str> = Vec::new();
+    if kernel.contains("/casper/") || has(&args, "boot=casper") {
+        for f in ["nopersistent", "toram"] {
+            if !has(&args, f) && (f != "toram" || to_ram) {
+                add.push(f);
+            }
+        }
+    }
+    if to_ram && has(&args, "boot=live") && !has(&args, "toram") {
+        add.push("toram");
+    }
+    let before = args.clone();
+    args.retain(|a| a != "rd.live.overlay.persistent" && !a.starts_with("rd.live.overlay.cowfs="));
+    for a in args.iter_mut() {
+        for key in ["root=live:CDLABEL=", "root=live:LABEL=", "inst.stage2=hd:LABEL=", "inst.repo=hd:LABEL="] {
+            if a.starts_with(key) {
+                *a = format!("{}{label}", key.replace("CDLABEL=", "LABEL="));
+            }
+        }
+    }
+    if add.is_empty() && args == before {
+        return line.to_string();
+    }
+    // New flags go right after the kernel path, so they stay before casper's `---`
+    // (anything after it is also copied into the installed system's boot line).
+    let mut all: Vec<String> = vec![cmd.to_string(), kernel.to_string()];
+    all.extend(add.iter().map(|a| a.to_string()));
+    all.extend(args);
+    format!("{indent}{}{ending}", all.join(" "))
 }
 
 /// Pulls the {GUID} out of `bcdedit /copy` output (which is localised, so
@@ -397,12 +524,13 @@ mod tests {
             c_drive: None,
             c_shrinkable: Some(250 * GB),
             fast_startup: Some(false),
+            on_battery: false,
             probe_errors: BTreeMap::new(),
         }
     }
 
     fn req() -> InstallRequest {
-        InstallRequest { distro_id: "linux-mint".into(), iso: "mint.iso".into(), iso_bytes: 3_091_660_800, largest_iso_file: 2_900_000_000, linux_gb: None, free_letter: 'L' }
+        InstallRequest { distro_id: "linux-mint".into(), iso: "mint.iso".into(), iso_bytes: 3_091_660_800, largest_iso_file: 2_900_000_000, installer: Installer::Ubiquity, linux_gb: None, free_letter: 'L' }
     }
 
     #[test]
@@ -506,15 +634,39 @@ mod tests {
 
     #[test]
     fn preflight_requires_everything() {
-        let ok = Preflight { is_admin: true, blockers: vec![], iso_verified: true, backup_verified: Some(true), backup_on_windows_disk: false, already_installed_state: false };
+        let ok = Preflight { is_admin: true, iso_verified: true, backup_verified: Some(true), distro_secure_boot: SecureBootSupport::Supported, ..Default::default() };
         assert!(preflight_problems(&ok).is_empty());
-        let bad = Preflight { is_admin: false, blockers: vec!["BitLocker is on for C:".into()], iso_verified: false, backup_verified: None, backup_on_windows_disk: true, already_installed_state: true };
+        let bad = Preflight { is_admin: false, blockers: vec!["BitLocker is on for C:".into()], iso_verified: false, backup_verified: None, backup_on_windows_disk: true, already_installed_state: true, ..ok.clone() };
         let p = preflight_problems(&bad);
         assert_eq!(p.len(), 6, "{p:?}");
         let failed_backup = Preflight { backup_verified: Some(false), ..ok.clone() };
         assert!(preflight_problems(&failed_backup)[0].contains("failed verification"));
-        let same_disk = Preflight { backup_on_windows_disk: true, ..ok };
+        let same_disk = Preflight { backup_on_windows_disk: true, ..ok.clone() };
         assert!(preflight_problems(&same_disk)[0].contains("same disk"));
+    }
+
+    #[test]
+    fn secure_boot_gate_matches_the_distro() {
+        let base = Preflight { is_admin: true, iso_verified: true, backup_verified: Some(true), secure_boot_on: true, distro_name: "Arch Linux".into(), ..Default::default() };
+        let with = |s| preflight_problems(&Preflight { distro_secure_boot: s, ..base.clone() });
+        assert!(with(SecureBootSupport::Supported).is_empty());
+        assert!(with(SecureBootSupport::NeedsKeyEnrolment).is_empty());
+        let p = with(SecureBootSupport::NeedsDisabling);
+        assert_eq!(p.len(), 1);
+        assert!(p[0].contains("Arch Linux") && p[0].contains("Turn Secure Boot off"));
+        assert_eq!(with(SecureBootSupport::Unknown).len(), 1);
+        // Secure Boot off: any distro is fine.
+        let off = Preflight { secure_boot_on: false, distro_secure_boot: SecureBootSupport::NeedsDisabling, ..base };
+        assert!(preflight_problems(&off).is_empty());
+    }
+
+    #[test]
+    fn battery_power_blocks_the_install() {
+        let ok = Preflight { is_admin: true, iso_verified: true, backup_verified: Some(true), ..Default::default() };
+        assert!(preflight_problems(&ok).is_empty());
+        let p = preflight_problems(&Preflight { on_battery: true, ..ok });
+        assert_eq!(p.len(), 1);
+        assert!(p[0].contains("charger"));
     }
 
     #[test]
@@ -539,33 +691,45 @@ mod tests {
     }
 
     #[test]
-    fn casper_entries_get_nopersistent() {
-        // Real lines from Linux Mint 22.3's boot/grub/grub.cfg.
-        let cfg = "menuentry \"Start Linux Mint\" {
-	linux	/casper/vmlinuz  boot=casper uuid=6e72 username=mint hostname=mint quiet splash --
-	initrd	/casper/initrd.lz
-}
-                   menuentry \"OEM\" {
-	linux	/casper/vmlinuz  oem-config/enable=true only-ubiquity boot=casper uuid=6e72 quiet splash --
-}
-                   menuentry \"Memory test\" {
-	linux	/boot/memtest.efi
-}
-";
-        let (out, n) = patch_casper_grub(cfg);
+    fn live_boot_is_adapted_for_every_family() {
+        // Real lines from the offered ISOs' boot configs (2026-10).
+        let mint = "menuentry \"Start Linux Mint\" {\n\tlinux\t/casper/vmlinuz  boot=casper uuid=6e72 username=mint quiet splash --\n\tinitrd\t/casper/initrd.lz\n}\n\tlinux\t/boot/memtest.efi\n";
+        let (out, n) = adapt_live_boot(mint, "LNXINST", true);
+        assert_eq!(n, 1);
+        assert!(out.contains("\tlinux /casper/vmlinuz nopersistent toram boot=casper uuid=6e72 username=mint quiet splash --\n"), "{out}");
+        assert!(out.contains("\tlinux\t/boot/memtest.efi\n"), "non-live entries untouched");
+
+        // Ubuntu 26.04 family: no boot=casper any more; flags must stay before `---`.
+        let ubuntu = "  linux  /casper/vmlinuz  --- quiet splash\r\n";
+        assert_eq!(adapt_live_boot(ubuntu, "LNXINST", true).0, "  linux /casper/vmlinuz nopersistent toram --- quiet splash\r\n");
+
+        let debian = "linux\t/live/vmlinuz-6.12 boot=live components quiet splash findiso=${iso_path}\n";
+        assert_eq!(adapt_live_boot(debian, "LNXINST", true).0, "linux /live/vmlinuz-6.12 toram boot=live components quiet splash findiso=${iso_path}\n");
+        // Not enough RAM for a copy: casper still gets nopersistent, nobody gets toram.
+        assert_eq!(adapt_live_boot(ubuntu, "LNXINST", false).0, "  linux /casper/vmlinuz nopersistent --- quiet splash\r\n");
+        assert_eq!(adapt_live_boot(debian, "LNXINST", false), (debian.to_string(), 0));
+
+        let fedora = "linux ($root)/boot/x86_64/loader/linux quiet rhgb  root=live:CDLABEL=Fedora-WS-Live-44 rd.live.image\n";
+        assert_eq!(adapt_live_boot(fedora, "LNXINST", true).0, "linux ($root)/boot/x86_64/loader/linux quiet rhgb root=live:LABEL=LNXINST rd.live.image\n");
+
+        let alma = "  search --no-floppy --set=root -l 'AlmaLinux-10_2-x86_64-GNOME'\n  linuxefi /images/pxeboot/vmlinuz root=live:CDLABEL=AlmaLinux-10_2-x86_64-GNOME  rd.live.image quiet rhgb\n";
+        let (a, n) = adapt_live_boot(alma, "LNXINST", true);
         assert_eq!(n, 2);
-        assert_eq!(out.matches("boot=casper nopersistent toram").count(), 2);
-        assert!(out.contains("linux	/boot/memtest.efi
-"), "non-casper entries untouched");
-        assert_eq!(out.len(), cfg.len() + 2 * " nopersistent toram".len());
-        // A line that already has one flag only gets the other.
-        let half = "linux /casper/vmlinuz boot=casper nopersistent quiet\n";
-        assert_eq!(patch_casper_grub(half).0, "linux /casper/vmlinuz boot=casper toram nopersistent quiet\n");
-        // Idempotent, and leaves non-casper (e.g. Fedora) configs alone.
-        assert_eq!(patch_casper_grub(&out), (out.clone(), 0));
-        let fedora = "linux /images/pxeboot/vmlinuz root=live:CDLABEL=Fedora rd.live.image quiet
-";
-        assert_eq!(patch_casper_grub(fedora), (fedora.to_string(), 0));
+        assert_eq!(a, "  search --no-floppy --set=root -l 'LNXINST'\n  linuxefi /images/pxeboot/vmlinuz root=live:LABEL=LNXINST rd.live.image quiet rhgb\n");
+
+        let bazzite = "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=bazzite-x86_64-stable quiet\n";
+        assert_eq!(adapt_live_boot(bazzite, "LNXINST", true).0, "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=LNXINST quiet\n");
+
+        let suse = "linux ($root)/boot/x86_64/loader/linux ${extra_cmdline} quiet root=live:CDLABEL=openSUSE_Tumbleweed_KDE_Live rd.live.image rd.live.overlay.persistent rd.live.overlay.cowfs=ext4\n";
+        assert_eq!(adapt_live_boot(suse, "LNXINST", true).0, "linux ($root)/boot/x86_64/loader/linux ${extra_cmdline} quiet root=live:LABEL=LNXINST rd.live.image\n");
+
+        // Idempotent, and leaves others alone (Arch's loopback, NixOS).
+        for cfg in [mint, ubuntu, debian, fedora, alma, bazzite, suse] {
+            let once = adapt_live_boot(cfg, "LNXINST", true).0;
+            assert_eq!(adapt_live_boot(&once, "LNXINST", true), (once.clone(), 0));
+        }
+        let arch = "linux /arch/boot/x86_64/vmlinuz-linux archisobasedir=arch img_dev=UUID=${archiso_img_dev_uuid}\n";
+        assert_eq!(adapt_live_boot(arch, "LNXINST", true), (arch.to_string(), 0));
     }
 
     #[test]
@@ -607,5 +771,28 @@ mod tests {
         h.disks[0].partitions.retain(|p| p.number != 1);
         h.disks.push(Disk { number: 1, partition_style: Some("GPT".into()), partitions: vec![part(1, None, ESP_GUID, MB, 600 * MB, None)], ..Default::default() });
         assert!(plan(&h, &req()).is_ok());
+    }
+
+    #[test]
+    fn copy_to_ram_only_for_ubiquity_with_headroom() {
+        let mut h = hw();
+        h.ram_bytes = Some(6 * GB); // Mint in the 6 GB VM: fine with toram
+        assert!(plan(&h, &req()).unwrap().copy_to_ram);
+        h.ram_bytes = Some(4 * GB);
+        let why = plan(&h, &req()).unwrap_err();
+        assert!(why.iter().any(|w| w.contains("RAM") && w.contains("USB stick")), "{why:?}");
+        // Calamares (Lubuntu) broke with toram; Ubuntu's installer doesn't need it.
+        for i in [Installer::Calamares, Installer::UbuntuDesktop, Installer::Anaconda, Installer::Unknown] {
+            let p = plan(&h, &InstallRequest { installer: i, ..req() }).unwrap();
+            assert!(!p.copy_to_ram, "{i:?}");
+        }
+    }
+
+    #[test]
+    fn installer_hints_steer_away_from_shrinking_windows() {
+        assert!(installer_hint(Installer::Ubiquity).contains("alongside Windows Boot Manager"));
+        let c = installer_hint(Installer::Calamares);
+        assert!(c.contains("Replace a partition") && c.contains("Free Space") && c.contains("Don't pick 'Install alongside'"));
+        assert!(installer_hint(Installer::Unknown).contains("Never pick 'Erase disk'"));
     }
 }

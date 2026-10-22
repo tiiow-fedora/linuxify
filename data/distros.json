@@ -9,6 +9,7 @@
       "family": "apt",
       "flatpak_ready": true,
       "secure_boot": "supported",
+      "installer": "ubiquity",
       "min_ram_gb": 2,
       "traits": {
         "beginner": 5,
@@ -53,6 +54,7 @@
       "family": "apt",
       "flatpak_ready": false,
       "secure_boot": "supported",
+      "installer": "ubuntu_desktop",
       "min_ram_gb": 4,
       "traits": {
         "beginner": 4,
@@ -98,6 +100,7 @@
       "family": "apt",
       "flatpak_ready": false,
       "secure_boot": "supported",
+      "installer": "calamares",
       "min_ram_gb": 4,
       "traits": {
         "beginner": 4,
@@ -481,6 +484,7 @@
       "family": "apt",
       "flatpak_ready": true,
       "secure_boot": "supported",
+      "installer": "ubiquity",
       "min_ram_gb": 2,
       "traits": {
         "beginner": 5,
@@ -521,6 +525,7 @@
       "family": "apt",
       "flatpak_ready": false,
       "secure_boot": "supported",
+      "installer": "ubuntu_desktop",
       "min_ram_gb": 2,
       "traits": {
         "beginner": 4,
@@ -560,6 +565,7 @@
       "family": "apt",
       "flatpak_ready": false,
       "secure_boot": "supported",
+      "installer": "calamares",
       "min_ram_gb": 2,
       "traits": {
         "beginner": 3,

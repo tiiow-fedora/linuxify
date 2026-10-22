@@ -37,12 +37,28 @@ pub const TRAITS: [(&str, &str); 20] = [
     ("rhel_family", "Red Hat-compatible workplaces"),
 ];
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum SecureBootSupport {
     Supported,
     NeedsKeyEnrolment,
     NeedsDisabling,
+    #[default]
+    Unknown,
+}
+
+/// The installer a distro's live ISO starts. It decides how Linuxify prepares the
+/// installer partition and what it tells the user to pick (see install::installer_hint).
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum Installer {
+    /// Ubiquity (Linux Mint): must unmount the live medium, so it needs `toram`.
+    Ubiquity,
+    /// Ubuntu's Flutter installer (ubuntu-desktop-bootstrap).
+    UbuntuDesktop,
+    Calamares,
+    Anaconda,
+    #[default]
     Unknown,
 }
 
@@ -57,6 +73,8 @@ pub struct Distro {
     pub family: String,
     pub flatpak_ready: bool,
     pub secure_boot: SecureBootSupport,
+    #[serde(default)]
+    pub installer: Installer,
     pub min_ram_gb: u32,
     pub traits: BTreeMap<String, u8>,
     #[serde(default)]

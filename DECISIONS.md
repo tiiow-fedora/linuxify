@@ -207,13 +207,37 @@ Short record of choices made while building Linuxify, and why.
 - **`nopersistent`**: casper creates an 85 GB "writable" persistence partition in any free space on
   the disk it booted from, i.e. exactly the space meant for Linux. Ubiquity's "alongside" then
   offered to shrink the *data disk* instead.
-- **`toram`**: the live system keeps its boot medium mounted at `/cdrom`. With LNXINST on the
-  same disk Ubiquity repartitions, it stops with "Failed to unmount partitions: /cdrom". `toram`
-  copies the live medium into RAM and releases the partition. casper skips the copy by itself when
-  free memory is short, so on low-RAM PCs this protection may not apply (tested with 6 GB only).
-- Both are added to every `boot=casper` line of `boot/grub/grub.cfg` and `loopback.cfg` on LNXINST
-  (unit-tested, idempotent). The ISO's files keep their read-only attribute after copying, so it is
-  cleared first (found in the VM). With both flags Ubiquity's "Install alongside Windows Boot
-  Manager" correctly formats a new partition in sda's free space and leaves the data disk alone.
-- Other installers (Fedora's Anaconda, Calamares) are not patched; they don't auto-create
-  persistence. They are untested with LNXINST.
+- **`toram` only for Ubiquity (Mint), and only with enough RAM.** Ubiquity stops with "Failed to
+  unmount partitions: /cdrom" while LNXINST is mounted from the disk it repartitions; `toram` copies
+  the live medium into RAM and releases it. It is NOT a general fix, all found in the VM:
+  Xubuntu's 5.2 GB ISO copied into 6 GB of RAM hung before the desktop appeared; Lubuntu's Calamares
+  failed in `unpackfs` ("/dev/loop1 already mounted") because casper had already loop-mounted the
+  RAM copy; Ubuntu's and Xubuntu's Flutter installer and Lubuntu's Calamares all install fine with
+  LNXINST still mounted. So `data/distros.json` records each distro's `installer`, and the plan adds
+  `toram` only for `ubiquity`, refusing (use a USB stick) when RAM < ISO size + 3 GB.
+- `nopersistent` is added right after the kernel path of every casper line (`/casper/` in the path
+  or `boot=casper`, so it lands before `---`). Ubuntu 26.04's lines have no `boot=casper` at all;
+  matching only that missed them, and live Ubuntu made a 77 GB "writable" partition.
+- **Installer-specific instructions** (`installer_hint`). Ubiquity and the Flutter installer say
+  "Install … alongside Windows Boot Manager" and use the free space. In Calamares, "Install
+  alongside" *shrinks Windows again*; the right choice is "Replace a partition" + the Free Space
+  block. Unknown installers get a generic "install into the free space, never Erase disk".
+- **`--undo` after Linux is installed is a safe cleanup**: it deletes only LNXINST (found by exact
+  offset and size) and its boot entry and extends C: into the freed 5 GB; the Linux partition and
+  its boot entry stay (VM-verified with Lubuntu). The end-of-install message says so.
+- **One adapter for every live-boot family** (`adapt_live_boot`, unit-tested with real lines from
+  each ISO, idempotent), applied to `boot\grub\grub.cfg`, `loopback.cfg`, `boot\grub2\grub.cfg` and
+  `EFI\BOOT\grub.cfg`: dracut's `root=live:CDLABEL=…` and Anaconda's `inst.stage2=hd:LABEL=…`
+  point at LNXINST (the ISO's own label no longer exists once the files are on a partition);
+  GRUB's `search -l '<iso label>'` is changed the same way; Debian's `boot=live` gets `toram` only via the rule above;
+  openSUSE's `rd.live.overlay.persistent` is removed for the same reason as `nopersistent`.
+  The ISO's files keep their read-only attribute after copying, so it is cleared first.
+- **A file over 4 GB can't go on FAT32**, so the plan refuses it and says to use a USB stick
+  (Kubuntu 26.04: 4.08 GB squashfs). The dry run mounts the ISO read-only to find this, so it shows
+  up before the confirmation, not after.
+- **Secure Boot gate.** With Secure Boot on, a distro marked `needs_disabling` or `unknown` in
+  `data/distros.json` is refused before any disk change: the firmware would refuse the installer,
+  leaving C: shrunk and nothing to boot. `needs_key_enrolment` (Bazzite) is allowed; its own
+  installer guides the enrolment.
+- **Battery gate.** On a laptop running on battery (`Win32_Battery` status discharging/low/critical)
+  the install refuses until the charger is plugged in; the scan shows it as a warning.

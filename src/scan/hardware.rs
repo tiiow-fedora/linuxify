@@ -57,6 +57,8 @@ pub struct Probe {
     pub bitlocker_cmdlet: Vec<BitLockerCmdlet>,
     #[serde(default, deserialize_with = "one_or_many")]
     pub bitlocker_shell: Vec<BitLockerShell>,
+    #[serde(default, deserialize_with = "one_or_many")]
+    pub batteries: Vec<Battery>,
     #[serde(default)]
     pub errors: BTreeMap<String, String>,
 }
@@ -242,6 +244,17 @@ pub struct BitLockerVolume {
     pub detail: String,
 }
 
+/// Win32_Battery: BatteryStatus 1 = discharging, 4 = low, 5 = critical (2 = on AC).
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct Battery {
+    pub status: Option<u16>,
+    pub charge: Option<u8>,
+}
+
+pub fn on_battery(batteries: &[Battery]) -> bool {
+    batteries.iter().any(|b| matches!(b.status, Some(1 | 4 | 5)))
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RstVmd {
     pub detected: bool,
@@ -267,6 +280,9 @@ pub struct HardwareFacts {
     /// Bytes Windows says C: can shrink by (needs admin; None otherwise).
     pub c_shrinkable: Option<u64>,
     pub fast_startup: Option<bool>,
+    /// Running on battery power right now (laptops).
+    #[serde(default)]
+    pub on_battery: bool,
     pub probe_errors: BTreeMap<String, String>,
 }
 
@@ -476,6 +492,7 @@ pub fn interpret(probe: Probe, reg: RegistryBootFacts) -> HardwareFacts {
         c_drive: probe.c_drive,
         c_shrinkable: probe.c_shrink.map(|s| s.current.saturating_sub(s.min)),
         fast_startup: reg.hiberboot_enabled.map(|v| v == 1),
+        on_battery: on_battery(&probe.batteries),
         probe_errors: probe.errors,
     }
 }
@@ -616,6 +633,16 @@ mod tests {
         assert!(detect_rst_vmd(&[c("Intel(R) Chipset SATA/PCIe RST Premium Controller", "iaStorAC")], &[]).detected);
         let raid_disk = Disk { number: 0, bus_type: Some("RAID".into()), ..Default::default() };
         assert!(detect_rst_vmd(&clean, &[raid_disk]).detected);
+    }
+
+    #[test]
+    fn battery_status_codes() {
+        let b = |status| vec![Battery { status: Some(status), charge: Some(50) }];
+        assert!(on_battery(&b(1)) && on_battery(&b(4)) && on_battery(&b(5)));
+        assert!(!on_battery(&b(2)) && !on_battery(&b(3)));
+        assert!(!on_battery(&[]), "desktops have no battery");
+        let p: Probe = serde_json::from_str(r#"{"batteries": {"status": 1, "charge": 40}}"#).unwrap();
+        assert!(on_battery(&p.batteries), "a single battery arrives as an object, not a list");
     }
 
     #[test]

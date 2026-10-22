@@ -159,11 +159,11 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
     if n != iso_files || bytes != iso_bytes {
         return Err(format!("the installer partition has {n} files / {bytes} bytes but the ISO has {iso_files} / {iso_bytes}; stopping. Run `linuxify install --undo`."));
     }
-    // Stop Ubuntu-family live systems grabbing the Linux space for persistence.
-    for cfg in [r"boot\grub\grub.cfg", r"boot\grub\loopback.cfg"] {
+    // Make the live system run cleanly from LNXINST (see install::adapt_live_boot).
+    for cfg in install::LIVE_BOOT_CONFIGS {
         let p = PathBuf::from(format!(r"{}:\{cfg}", plan.letter));
         if let Ok(text) = std::fs::read_to_string(&p) {
-            let (patched, n) = install::patch_casper_grub(&text);
+            let (patched, n) = install::adapt_live_boot(&text, install::INSTALLER_LABEL, plan.copy_to_ram);
             if n > 0 {
                 // Files copied off an ISO keep its read-only attribute.
                 if let Ok(meta) = std::fs::metadata(&p) {
@@ -174,7 +174,7 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
                 }
                 std::fs::write(&p, patched)
                     .map_err(|e| format!("could not update {}: {e}\nRun `linuxify install --undo`.", p.display()))?;
-                println!("  - Set the live session to run from RAM without persistence in {cfg} ({n} boot entries)");
+                println!("  - Adapted {cfg} to start from the installer partition ({n} lines)");
             }
         }
     }

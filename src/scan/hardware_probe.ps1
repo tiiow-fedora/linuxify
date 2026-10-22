@@ -69,6 +69,11 @@ Try-Section 'net_adapters' {
         [ordered]@{ name = $_.Name; description = $_.InterfaceDescription; media = [string]$_.NdisPhysicalMedium; pnp_id = $_.PnPDeviceID; status = [string]$_.Status }
     })
 }
+Try-Section 'batteries' {
+    @(Get-CimInstance Win32_Battery | ForEach-Object {
+        [ordered]@{ status = $_.BatteryStatus; charge = $_.EstimatedChargeRemaining }
+    })
+}
 Try-Section 'c_drive' {
     $v = Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='C:'"
     [ordered]@{ size = [uint64]$v.Size; free = [uint64]$v.FreeSpace; file_system = $v.FileSystem }

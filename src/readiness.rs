@@ -198,6 +198,16 @@ pub fn assess(hw: &HardwareFacts, hw_error: Option<&str>, programs: &[MappedProg
         ));
     }
 
+    if hw.on_battery {
+        out.push(f(
+            "on-battery",
+            Severity::Warning,
+            "Running on battery",
+            "Shrinking C: and setting up the installer must not be interrupted by the PC powering off.".into(),
+            Some("Plug in the charger before `linuxify install` (it refuses to run on battery)."),
+        ));
+    }
+
     // --- Hardware compatibility ---------------------------------------------
     if hw.os.as_ref().and_then(|o| o.arch.as_deref()).is_some_and(|a| a.to_lowercase().contains("arm")) {
         out.push(f("arm-cpu", Severity::Blocker, "This is an ARM PC", "Linux support for Windows-on-ARM laptops is still limited and most distros' installers won't boot on them.".into(), None));
@@ -294,6 +304,7 @@ mod tests {
             c_drive: Some(CDrive { size: 1_000_000_000_000, free: 400_000_000_000, file_system: Some("NTFS".into()) }),
             c_shrinkable: Some(300_000_000_000),
             fast_startup: Some(false),
+            on_battery: false,
             probe_errors: BTreeMap::new(),
         }
     }
