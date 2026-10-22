@@ -43,19 +43,33 @@ pub fn disk_of_letter(hw: &HardwareFacts, letter: char) -> Option<u32> {
     hw.disks.iter().find(|d| d.partitions.iter().any(|p| p.drive_letter == Some(l))).map(|d| d.number)
 }
 
-/// Mounts the ISO read-only and returns (drive letter, file count, total bytes, largest file).
-pub fn mount_iso(iso: &Path) -> Result<(char, u64, u64, u64), String> {
+/// Mounts the ISO read-only and returns its drive letter and every file
+/// (path relative to the root, size).
+pub fn mount_iso(iso: &Path) -> Result<(char, Vec<(String, u64)>), String> {
     let p = iso.display().to_string().replace('\'', "''");
-    let out = ps(&format!(
-        "$i = Mount-DiskImage -ImagePath '{p}' -Access ReadOnly -PassThru; Start-Sleep 1; \
-         $l = ($i | Get-Volume).DriveLetter; \
-         $f = Get-ChildItem \"$($l):\\\" -Recurse -File -Force; \
-         \"$l|$($f.Count)|$(($f | Measure-Object Length -Sum).Sum)|$(($f | Measure-Object Length -Maximum).Maximum)\""
-    ))?;
-    let parts: Vec<&str> = out.lines().last().unwrap_or("").split('|').collect();
-    let num = |i: usize| parts.get(i).and_then(|x| x.trim().parse::<u64>().ok()).unwrap_or(0);
-    let letter = parts.first().and_then(|x| x.chars().next()).filter(|c| c.is_ascii_alphabetic()).ok_or(format!("could not mount {}: {out}", iso.display()))?;
-    Ok((letter, num(1), num(2), num(3)))
+    let out = ps(&format!("$i = Mount-DiskImage -ImagePath '{p}' -Access ReadOnly -PassThru; Start-Sleep 1; ($i | Get-Volume).DriveLetter"))?;
+    let letter = out.lines().last().and_then(|x| x.trim().chars().next()).filter(|c| c.is_ascii_alphabetic()).ok_or(format!("could not mount {}: {out}", iso.display()))?;
+    let root = PathBuf::from(format!("{letter}:\\"));
+    let mut files = Vec::new();
+    crate::scan::userdata::walk(&root, |p, len| {
+        files.push((p.strip_prefix(&root).unwrap_or(p).display().to_string(), len));
+    });
+    Ok((letter, files))
+}
+
+/// The ISO's files as FAT32 will hold them, plus the case-twins whose contents
+/// differ (those can't both survive on FAT32). Leaves the ISO mounted.
+pub fn inspect_iso(iso: &Path) -> Result<(char, install::FatView, Vec<String>), String> {
+    let (letter, files) = mount_iso(iso)?;
+    let view = install::fat_view(&files);
+    let mut conflicts = Vec::new();
+    for group in &view.case_twins {
+        let hashes: Vec<Option<String>> = group.iter().map(|rel| crate::download::sha256_file(&PathBuf::from(format!("{letter}:\\{rel}")), |_| {}).ok()).collect();
+        if hashes.iter().any(|h| h.is_none() || *h != hashes[0]) {
+            conflicts.push(group.join(" = "));
+        }
+    }
+    Ok((letter, view, conflicts))
 }
 
 pub fn dismount_iso(iso: &Path) {
@@ -116,7 +130,12 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
 
     // 1. Check the ISO's contents BEFORE touching the disk.
     println!("  - Checking the installer files inside the ISO");
-    let (iso_letter, iso_files, iso_bytes, largest) = mount_iso(&iso)?;
+    let (iso_letter, view, conflicts) = inspect_iso(&iso)?;
+    let (iso_files, iso_bytes, largest) = (view.files, view.bytes, view.largest);
+    if !conflicts.is_empty() {
+        dismount_iso(&iso);
+        return Err(format!("the ISO has different files whose names differ only in case ({}), which FAT32 can't hold; nothing was changed. Use a USB stick for this distro.", conflicts.join(", ")));
+    }
     if largest >= 4 * install::GB {
         dismount_iso(&iso);
         return Err("the ISO has a file of 4 GB or more, which FAT32 can't hold; nothing was changed. Use a USB stick for this distro.".into());
@@ -160,7 +179,15 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
         return Err(format!("the installer partition has {n} files / {bytes} bytes but the ISO has {iso_files} / {iso_bytes}; stopping. Run `linuxify install --undo`."));
     }
     // Make the live system run cleanly from LNXINST (see install::adapt_live_boot).
-    for cfg in install::LIVE_BOOT_CONFIGS {
+    // Plus systemd-boot entries (Arch's ISO boots with systemd-boot on UEFI).
+    let entries = std::fs::read_dir(format!(r"{}:\loader\entries", plan.letter))
+        .into_iter()
+        .flatten()
+        .flatten()
+        .filter_map(|e| e.file_name().into_string().ok())
+        .filter(|n| n.to_ascii_lowercase().ends_with(".conf"))
+        .map(|n| format!(r"loader\entries\{n}"));
+    for cfg in install::LIVE_BOOT_CONFIGS.iter().map(|c| c.to_string()).chain(entries) {
         let p = PathBuf::from(format!(r"{}:\{cfg}", plan.letter));
         if let Ok(text) = std::fs::read_to_string(&p) {
             let (patched, n) = install::adapt_live_boot(&text, install::INSTALLER_LABEL, plan.copy_to_ram);
@@ -177,6 +204,13 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
                 println!("  - Adapted {cfg} to start from the installer partition ({n} lines)");
             }
         }
+    }
+    if plan.copy_to_ram {
+        // Referenced by the adapted dracut boot lines (see install::release_initrd).
+        let p = PathBuf::from(format!(r"{}:\{}", plan.letter, install::RELEASE_INITRD));
+        std::fs::create_dir_all(p.parent().unwrap_or(&p))
+            .and_then(|_| std::fs::write(&p, install::release_initrd()))
+            .map_err(|e| format!("could not write {}: {e}\nRun `linuxify install --undo`.", p.display()))?;
     }
     state.phase = Phase::FilesCopied;
     save_state(&state)?;

@@ -266,6 +266,9 @@ pub struct HardwareFacts {
     pub is_admin: bool,
     pub os: Option<OsInfo>,
     pub cpus: Vec<Cpu>,
+    /// x86-64 microarchitecture level of this CPU (1-3), from CPUID.
+    #[serde(default)]
+    pub cpu_level: Option<u8>,
     pub ram_bytes: Option<u64>,
     pub computer: Option<ComputerInfo>,
     pub gpus: Vec<Gpu>,
@@ -471,6 +474,31 @@ pub fn secure_boot_from(reg: &RegistryBootFacts, firmware: Firmware) -> SecureBo
     }
 }
 
+/// The x86-64 psABI level (v1-v3) this CPU meets. AlmaLinux 10 is built for
+/// v3 (AVX2: Intel Haswell 2013+, AMD Excavator 2015+) and stops at boot with
+/// "CPU does not support x86-64-v3" on anything older (VM test).
+#[cfg(target_arch = "x86_64")]
+pub fn x86_64_level() -> Option<u8> {
+    use std::arch::is_x86_feature_detected as has;
+    let v2 = has!("cmpxchg16b") && has!("popcnt") && has!("sse3") && has!("ssse3") && has!("sse4.1") && has!("sse4.2");
+    let v3 = v2
+        && has!("avx")
+        && has!("avx2")
+        && has!("bmi1")
+        && has!("bmi2")
+        && has!("f16c")
+        && has!("fma")
+        && has!("lzcnt")
+        && has!("movbe")
+        && has!("xsave");
+    Some(if v3 { 3 } else if v2 { 2 } else { 1 })
+}
+
+#[cfg(not(target_arch = "x86_64"))]
+pub fn x86_64_level() -> Option<u8> {
+    None
+}
+
 pub fn interpret(probe: Probe, reg: RegistryBootFacts) -> HardwareFacts {
     let firmware = firmware_from(&reg);
     let bitlocker = bitlocker_volumes(&probe);
@@ -479,6 +507,7 @@ pub fn interpret(probe: Probe, reg: RegistryBootFacts) -> HardwareFacts {
         is_admin: probe.is_admin,
         os: probe.os,
         cpus: probe.cpu,
+        cpu_level: x86_64_level(),
         ram_bytes: probe.ram_bytes,
         computer: probe.computer,
         gpus: probe.gpus.iter().map(gpu_from_raw).collect(),

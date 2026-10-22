@@ -221,14 +221,68 @@ Short record of choices made while building Linuxify, and why.
 - **Installer-specific instructions** (`installer_hint`). Ubiquity and the Flutter installer say
   "Install … alongside Windows Boot Manager" and use the free space. In Calamares, "Install
   alongside" *shrinks Windows again*; the right choice is "Replace a partition" + the Free Space
-  block. Unknown installers get a generic "install into the free space, never Erase disk".
+  block. Anaconda: "Share disk with other operating systems", "Reclaim additional space" unticked
+  (its review lists the ESP as "format as efi", but it only mounts it: the Windows files were
+  still there and Fedora's GRUB lists Windows). Unknown installers get a generic "install into the
+  free space, never Erase disk". Every hint starts by naming the Windows disk by size (GiB and GB,
+  since installers differ): with a second drive in the VM, Calamares (Debian) and Anaconda both
+  preselected the *other* drive.
+- **Anaconda hides the disk it booted from.** It resolves the live device (`/run/initramfs/livedev`
+  → LNXINST) and protects the whole disk plus every sibling partition, so the Windows disk vanished
+  from Fedora's destination list and only the backup drive was offered. Fix, VM-verified by hand
+  first: `rd.live.ram=1` (dracut copies the image to RAM), then unmount `/run/initramfs/live` and
+  delete `livedev` before the installer starts. `adapt_live_boot` adds `rd.live.ram=1` (dropping
+  `rd.live.check`) and a second initrd, `linuxify\release.img`, to every `initrd` line; it is a
+  one-file newc cpio (`release_initrd`) holding a dracut pre-pivot hook that does the unmount.
+  It has no directory entries on purpose: in Fedora's and AlmaLinux's initrds `lib` and
+  `usr/lib/dracut/hooks` are symlinks, and a directory entry would replace them. The files go to
+  `var/lib/dracut/hooks/…`, the real hook directory in Fedora, AlmaLinux and openSUSE alike
+  (openSUSE has no `usr/lib/dracut/hooks` at all). The RAM rule (ISO + 3 GB) applies to Anaconda
+  as to Ubiquity, counting only the squashfs that dracut copies (the ISO's largest file) instead
+  of the whole ISO.
+- **YaST skips every disk with a mounted filesystem** (`DiskAnalyzer#available_device?`), and
+  openSUSE's kiwi live system loop-mounts `LiveOS/squashfs.img` straight off LNXINST, so again
+  only the backup drive was offered, and YaST's default plan *shrank its NTFS to 1 GB*. kiwi has
+  no copy-to-RAM for local media, so `release.img` carries a second hook (pre-mount, before the
+  root is assembled) that copies the squashfs into kiwi's own tmpfs, remounts both squashfs
+  mounts from the copy and unmounts LNXINST; any failed step leaves things as they were. VM
+  result: YaST's default plan then used the Windows disk's free space (new root + swap, ESP
+  mounted, not formatted) and touched nothing else. openSUSE is `"installer": "yast"`, which runs
+  from RAM with the same squashfs-only RAM rule.
+- **openSUSE: tell the user to pick GRUB2.** YaST's default boot loader is now systemd-boot, which
+  keeps kernel and initrd on the ESP; Windows' 100 MB ESP was 91% full after one kernel, so the
+  next update wouldn't fit. With "GRUB2 for EFI" (Booting on the last screen) the ESP stayed at
+  34% and GRUB listed Windows. Linuxify can't choose this for the user, so the YaST hint says it.
+- **Installer ISOs (Bazzite) need no RAM copy.** Anaconda booted with `inst.stage2=hd:` is the
+  install-from-hard-drive mode: it protects only the source partition, and the Windows disk was
+  offered with its free space. It also reads ~4.6 GB of ostree data from LNXINST during the
+  install, so a RAM copy would be impossible anyway. Own installer type, `anaconda_classic`, with
+  a hint matching its older screen ("Automatic", "Free up space…" unticked).
+- **Some ISOs can't start from a partition at all.** NixOS's initrd mounts
+  `/dev/disk/by-label/<ISO label>` as `iso9660`; a FAT32 partition can be neither, and its systemd
+  initrd has no dracut hooks to patch. `usb_only` in `data/distros.json` carries the reason, and
+  the plan refuses with "use a USB stick" before any change.
+- **systemd-boot entries are adapted too.** Arch's ISO boots with systemd-boot on UEFI
+  (`loader\entries\*.conf`) and finds its medium by ISO UUID (`archisosearchuuid=`); that becomes
+  `archisolabel=LNXINST`.
+- **CPU level gate.** AlmaLinux 10 is built for x86-64-v3 (AVX2) and stops right after the
+  kernel with "CPU does not support x86-64-v3" on older CPUs (seen in the VM, whose virtual CPU is
+  v2). The scan now records the CPU's level from CPUID (`x86_64_level`); a distro with a higher
+  `min_cpu_level` is left out by the chooser and refused by the install plan, before any change.
+- **Keep `CDLABEL=` as `CDLABEL=`.** openSUSE's live root comes from kiwi's dracut generator,
+  which only accepts `root=live:CDLABEL=…`; rewriting it to `LABEL=` dropped the VM into the dracut
+  emergency shell. dracut's own dmsquash accepts both, so only the label value is replaced.
+- **FAT32 ignores case.** Fedora 44's ISO has both `EFI/BOOT/BOOTX64.EFI` and `bootx64.efi`
+  (identical), so 340 ISO files become 338 on LNXINST and the post-copy check stopped the install.
+  The ISO is now counted the way FAT32 will hold it (`fat_view`); case-twins with different
+  contents (hashed) are refused before any disk change, "use a USB stick".
 - **`--undo` after Linux is installed is a safe cleanup**: it deletes only LNXINST (found by exact
   offset and size) and its boot entry and extends C: into the freed 5 GB; the Linux partition and
   its boot entry stay (VM-verified with Lubuntu). The end-of-install message says so.
 - **One adapter for every live-boot family** (`adapt_live_boot`, unit-tested with real lines from
   each ISO, idempotent), applied to `boot\grub\grub.cfg`, `loopback.cfg`, `boot\grub2\grub.cfg` and
   `EFI\BOOT\grub.cfg`: dracut's `root=live:CDLABEL=…` and Anaconda's `inst.stage2=hd:LABEL=…`
-  point at LNXINST (the ISO's own label no longer exists once the files are on a partition);
+  point at LNXINST (label value only, see above) (the ISO's own label no longer exists once the files are on a partition);
   GRUB's `search -l '<iso label>'` is changed the same way; Debian's `boot=live` gets `toram` only via the rule above;
   openSUSE's `rd.live.overlay.persistent` is removed for the same reason as `nopersistent`.
   The ISO's files keep their read-only attribute after copying, so it is cleared first.

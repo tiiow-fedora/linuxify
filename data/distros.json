@@ -143,6 +143,7 @@
       "family": "dnf",
       "flatpak_ready": true,
       "secure_boot": "supported",
+      "installer": "anaconda",
       "min_ram_gb": 4,
       "traits": {
         "beginner": 3,
@@ -188,6 +189,7 @@
       "family": "dnf",
       "flatpak_ready": true,
       "secure_boot": "supported",
+      "installer": "anaconda",
       "min_ram_gb": 4,
       "traits": {
         "beginner": 3,
@@ -274,6 +276,7 @@
       "family": "rpm-ostree",
       "flatpak_ready": true,
       "secure_boot": "needs_key_enrolment",
+      "installer": "anaconda_classic",
       "min_ram_gb": 8,
       "traits": {
         "beginner": 4,
@@ -317,6 +320,7 @@
       "family": "apt",
       "flatpak_ready": false,
       "secure_boot": "supported",
+      "installer": "calamares",
       "min_ram_gb": 2,
       "traits": {
         "beginner": 2,
@@ -361,6 +365,7 @@
       "family": "zypper",
       "flatpak_ready": false,
       "secure_boot": "supported",
+      "installer": "yast",
       "min_ram_gb": 4,
       "traits": {
         "beginner": 2,
@@ -1056,6 +1061,7 @@
       "family": "zypper",
       "flatpak_ready": false,
       "secure_boot": "supported",
+      "installer": "yast",
       "min_ram_gb": 4,
       "traits": {
         "beginner": 3,
@@ -1098,6 +1104,7 @@
       "flatpak_ready": false,
       "secure_boot": "needs_disabling",
       "min_ram_gb": 4,
+      "usb_only": "NixOS's installer only starts from its own ISO filesystem (its start-up looks for an ISO 9660 disk with the ISO's exact name), which an installer partition can't be.",
       "traits": {
         "beginner": 1,
         "gaming": 3,
@@ -1262,7 +1269,9 @@
       "family": "dnf",
       "flatpak_ready": true,
       "secure_boot": "supported",
+      "installer": "anaconda",
       "min_ram_gb": 4,
+      "min_cpu_level": 3,
       "traits": {
         "beginner": 2,
         "gaming": 1,

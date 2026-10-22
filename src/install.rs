@@ -33,6 +33,8 @@ const FAT32_MAX_FILE: u64 = 4 * GB - 1;
 /// Xubuntu 26.04 (5.2 GB ISO) copied into 6 GB of RAM hung before its desktop
 /// appeared (VM test); Mint 22.3 (2.9 GB) in 6 GB was fine.
 pub const TORAM_HEADROOM: u64 = 3 * GB;
+/// Extra initrd that `adapt_live_boot` adds to dracut live boots (see `release_initrd`).
+pub const RELEASE_INITRD: &str = r"linuxify\release.img";
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InstallPlan {
@@ -49,11 +51,15 @@ pub struct InstallPlan {
     pub linux_size: u64,
     pub letter: char,
     /// Ask the live system to copy itself into RAM (frees LNXINST for the installer).
-    /// Only for Ubiquity, the one installer that must unmount its live medium:
-    /// Calamares breaks with it (Lubuntu: unpackfs can't loop-mount the RAM copy)
-    /// and the others install fine with LNXINST still mounted.
+    /// Only for Ubiquity and Anaconda, the installers that won't touch a disk
+    /// while their live medium sits on it: Calamares breaks with it (Lubuntu:
+    /// unpackfs can't loop-mount the RAM copy) and the others install fine with
+    /// LNXINST still mounted.
     #[serde(default)]
     pub copy_to_ram: bool,
+    /// Size of the disk C: is on, so the installer hint can name it.
+    #[serde(default)]
+    pub disk_size: u64,
 }
 
 impl InstallPlan {
@@ -93,7 +99,13 @@ pub struct InstallRequest {
     pub iso: String,
     pub iso_bytes: u64,
     pub largest_iso_file: u64,
+    /// Files in the ISO whose names differ only in case AND whose contents differ.
+    pub iso_case_conflicts: Vec<String>,
     pub installer: Installer,
+    /// Distro's minimum x86-64 level (0 = any).
+    pub min_cpu_level: u8,
+    /// Set when the distro's ISO can't start from a partition (see Distro::usb_only).
+    pub usb_only: Option<String>,
     /// Linux space in GB (None = default 100 GB, or as much as fits).
     pub linux_gb: Option<u64>,
     pub free_letter: char,
@@ -120,8 +132,25 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
             req.largest_iso_file as f64 / GB as f64
         ));
     }
-    if req.installer == Installer::Ubiquity {
-        let need = req.iso_bytes.saturating_add(TORAM_HEADROOM);
+    if !req.iso_case_conflicts.is_empty() {
+        why.push(format!(
+            "this ISO has different files whose names differ only in upper/lower case ({}), and FAT32 can't hold both. Use a USB stick for this distro.",
+            req.iso_case_conflicts.join(", ")
+        ));
+    }
+    if let Some(why_usb) = &req.usb_only {
+        why.push(format!("{why_usb} Use a USB stick for this distro."));
+    }
+    if let Some(cpu) = crate::chooser::cpu_too_old(req.min_cpu_level, hw.cpu_level) {
+        why.push(format!("this distro {cpu}."));
+    }
+    if runs_from_ram(req.installer) {
+        // casper's `toram` copies the whole ISO; dracut's `rd.live.ram` only the
+        // squashfs, which is the ISO's largest file (Fedora KDE: 3.0 of 3.4 GB,
+        // fine in the 6 GB VM). The kiwi hook (openSUSE) copies the same file.
+        let squashfs_only = matches!(req.installer, Installer::Anaconda | Installer::Yast);
+        let copied = if squashfs_only && req.largest_iso_file > 0 { req.largest_iso_file } else { req.iso_bytes };
+        let need = copied.saturating_add(TORAM_HEADROOM);
         let ram = hw.ram_bytes.unwrap_or(0);
         if ram < need {
             why.push(format!(
@@ -182,8 +211,18 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
         installer_size: installer,
         linux_size: linux,
         letter: req.free_letter,
-        copy_to_ram: req.installer == Installer::Ubiquity,
+        copy_to_ram: runs_from_ram(req.installer),
+        disk_size: disk.size,
     })
+}
+
+/// Ubiquity (Mint) won't repartition a disk while its live medium is mounted
+/// from it, and Anaconda (Fedora, AlmaLinux) hides that disk altogether: it
+/// protects the whole disk holding the live device; YaST (openSUSE) skips any
+/// disk with a mounted filesystem. All need the live system in RAM and LNXINST
+/// let go (VM tests).
+fn runs_from_ram(installer: Installer) -> bool {
+    matches!(installer, Installer::Ubiquity | Installer::Anaconda | Installer::Yast)
 }
 
 fn round_down_gb(x: u64) -> u64 {
@@ -305,18 +344,66 @@ pub fn replace_gate_problems(g: &ReplaceGate) -> Vec<String> {
 /// What to pick in the distro's installer so Linux goes into the free space
 /// Linuxify left, and Windows is not shrunk again or erased. Each wording was
 /// checked against the real installer in the Windows VM test.
-pub fn installer_hint(installer: Installer) -> &'static str {
-    match installer {
-        Installer::Ubiquity | Installer::UbuntuDesktop => {
-            "In the installer choose 'Install … alongside Windows Boot Manager'."
-        }
+pub fn installer_hint(installer: Installer, disk_size: u64) -> String {
+    // With a second drive, Calamares and Anaconda both preselected it rather
+    // than the Windows disk (VM test), so name the disk by size. Installers
+    // show it in GiB (Calamares) or GB (Anaconda).
+    let disk = format!(
+        "In the installer pick the disk Windows is on ({} GiB, shown as {} GB by some installers), not any other drive.",
+        disk_size / GB,
+        (disk_size as f64 / 1e9).round()
+    );
+    let then = match installer {
+        Installer::Ubiquity | Installer::UbuntuDesktop => "Then choose 'Install … alongside Windows Boot Manager'.",
         Installer::Calamares => {
-            "In the installer choose 'Replace a partition', then click the grey 'Free Space' block. Don't pick 'Install alongside' (it shrinks Windows again) or 'Erase disk'."
+            "Then choose 'Replace a partition' and click the grey 'Free Space' block. Don't pick 'Install alongside' (it shrinks Windows again) or 'Erase disk'."
         }
-        Installer::Anaconda | Installer::Unknown => {
-            "In the installer, install into the free (unallocated) space. Never pick 'Erase disk' or anything that deletes or shrinks the Windows partition."
+        Installer::Anaconda => {
+            "Then choose 'Share disk with other operating systems' and leave 'Reclaim additional space' unticked. A warning that the EFI partition is under 500 MiB is fine."
+        }
+        Installer::AnacondaClassic => {
+            "In 'Installation Destination' select only that disk, keep 'Automatic', and leave 'Free up space by removing or shrinking existing partitions' unticked."
+        }
+        Installer::Yast => {
+            "'Suggested Partitioning' should only create partitions in the free space; if it lists any 'Shrink' or 'Delete', click 'Guided Setup' and pick only that disk. On the last screen click 'Booting' and change the boot loader to 'GRUB2 for EFI': the default (systemd-boot) stores kernels on Windows' small EFI partition, which fills up at the next update."
+        }
+        Installer::Unknown => {
+            "Then install into the free (unallocated) space. Never pick 'Erase disk' or anything that deletes or shrinks the Windows partition."
+        }
+    };
+    format!("{disk} {then}")
+}
+
+/// What the ISO's files look like once copied to FAT32, which ignores case:
+/// paths that differ only in case end up as one file. Fedora 44 ships both
+/// `EFI/BOOT/BOOTX64.EFI` and `EFI/BOOT/bootx64.efi` (identical copies), so
+/// 340 files on the ISO become 338 on LNXINST (found in the VM test).
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct FatView {
+    pub files: u64,
+    pub bytes: u64,
+    pub largest: u64,
+    /// Groups of paths that collapse into one name on FAT32.
+    pub case_twins: Vec<Vec<String>>,
+}
+
+pub fn fat_view(files: &[(String, u64)]) -> FatView {
+    let mut by_name: std::collections::BTreeMap<String, Vec<&(String, u64)>> = std::collections::BTreeMap::new();
+    for f in files {
+        by_name.entry(f.0.to_lowercase()).or_default().push(f);
+    }
+    let mut v = FatView::default();
+    for group in by_name.values() {
+        // The last one copied wins; twins are only accepted when identical (checked by the caller).
+        let size = group.iter().map(|f| f.1).max().unwrap_or(0);
+        v.files += 1;
+        v.bytes += size;
+        v.largest = v.largest.max(size);
+        if group.len() > 1 {
+            v.case_twins.push(group.iter().map(|f| f.0.clone()).collect());
         }
     }
+    v
 }
 
 /// Boot config files on the installer partition that `adapt_live_boot` rewrites.
@@ -340,14 +427,21 @@ pub const LIVE_BOOT_CONFIGS: [&str; 4] = [r"boot\grub\grub.cfg", r"boot\grub\loo
 ///   openSUSE turns on a persistent overlay (`rd.live.overlay.persistent`),
 ///   which is removed for the same reason as casper's.
 /// - GRUB's own `search ... -l '<label>'` gets the new label too.
+/// - dracut live images when `to_ram` (Anaconda: Fedora, AlmaLinux):
+///   `rd.live.ram=1` (and no `rd.live.check`, which would read the whole
+///   image twice), plus `release_initrd` on every `initrd` line, whose hook
+///   unmounts LNXINST once the image is in RAM. Anaconda protects the whole
+///   disk holding the live device, so without this it hides the Windows disk
+///   and offers only other drives.
 ///
 /// Returns the patched text and how many lines were changed. Idempotent.
 pub fn adapt_live_boot(cfg: &str, label: &str, to_ram: bool) -> (String, usize) {
     let mut changed = 0;
+    let release = to_ram && cfg.contains("root=live:");
     let out: Vec<String> = cfg
         .split_inclusive('\n')
         .map(|line| {
-            let new = adapt_line(line, label, to_ram);
+            let new = adapt_line(line, label, to_ram, release);
             if new != line {
                 changed += 1;
             }
@@ -357,13 +451,30 @@ pub fn adapt_live_boot(cfg: &str, label: &str, to_ram: bool) -> (String, usize) 
     (out.concat(), changed)
 }
 
-fn adapt_line(line: &str, label: &str, to_ram: bool) -> String {
+fn adapt_line(line: &str, label: &str, to_ram: bool, release: bool) -> String {
     let body = line.trim_end_matches(['\r', '\n']);
     let ending = &line[body.len()..];
     let indent = &body[..body.len() - body.trim_start().len()];
     let words: Vec<&str> = body.split_whitespace().collect();
     let Some(&cmd) = words.first() else { return line.to_string() };
 
+    if release && (cmd == "initrd" || cmd == "initrdefi") && words.len() >= 2 {
+        // initrd ($root)/boot/x86_64/loader/initrd -> ... ($root)/linuxify/release.img
+        let extra = format!("/{}", RELEASE_INITRD.replace('\\', "/"));
+        if words.iter().any(|w| w.ends_with(&extra)) {
+            return line.to_string();
+        }
+        let prefix = words[1].find('/').map_or("", |i| &words[1][..i]);
+        return format!("{indent}{} {prefix}{extra}{ending}", body.trim_start());
+    }
+
+    if words.iter().any(|w| w.starts_with("archisosearchuuid=")) {
+        // archiso finds its medium by the ISO's UUID (systemd-boot `options` and GRUB `linux`
+        // lines); LNXINST has none, so look it up by label instead.
+        let fixed: Vec<String> =
+            words.iter().map(|w| if w.starts_with("archisosearchuuid=") { format!("archisolabel={label}") } else { w.to_string() }).collect();
+        return format!("{indent}{}{ending}", fixed.join(" "));
+    }
     if cmd == "search" {
         // search --no-floppy --set=root -l 'Fedora-WS-Live-44'  (also --label)
         let Some(i) = words.iter().position(|w| *w == "-l" || *w == "--label") else { return line.to_string() };
@@ -391,12 +502,15 @@ fn adapt_line(line: &str, label: &str, to_ram: bool) -> String {
     if to_ram && has(&args, "boot=live") && !has(&args, "toram") {
         add.push("toram");
     }
+    if to_ram && args.iter().any(|a| a.starts_with("root=live:")) && !has(&args, "rd.live.ram=1") {
+        add.push("rd.live.ram=1");
+    }
     let before = args.clone();
-    args.retain(|a| a != "rd.live.overlay.persistent" && !a.starts_with("rd.live.overlay.cowfs="));
+    args.retain(|a| a != "rd.live.overlay.persistent" && !a.starts_with("rd.live.overlay.cowfs=") && !(to_ram && a == "rd.live.check"));
     for a in args.iter_mut() {
         for key in ["root=live:CDLABEL=", "root=live:LABEL=", "inst.stage2=hd:LABEL=", "inst.repo=hd:LABEL="] {
             if a.starts_with(key) {
-                *a = format!("{}{label}", key.replace("CDLABEL=", "LABEL="));
+                *a = format!("{key}{label}");
             }
         }
     }
@@ -409,6 +523,67 @@ fn adapt_line(line: &str, label: &str, to_ram: bool) -> String {
     all.extend(add.iter().map(|a| a.to_string()));
     all.extend(args);
     format!("{indent}{}{ending}", all.join(" "))
+}
+
+/// dracut hook that `release_initrd` carries. With `rd.live.ram=1` the live
+/// image is already copied to RAM by now, so LNXINST is only held by its
+/// mount; `livedev` is what Anaconda reads to find (and protect) the live
+/// device. If the copy didn't happen the unmount fails and nothing changes.
+const RELEASE_HOOK: &str = "# Linuxify: let go of the installer partition so the installer can use its disk.\n\
+if umount /run/initramfs/live 2>/dev/null; then\n    rm -f /run/initramfs/livedev\nfi\n";
+
+/// The same for kiwi (openSUSE), which has no copy-to-RAM for local media: it
+/// loop-mounts LiveOS/squashfs.img straight off LNXINST. Before the root is
+/// mounted, copy that file into kiwi's own tmpfs and remount both squashfs
+/// mounts from the copy. Any failed step leaves LNXINST mounted, which only
+/// means YaST keeps hiding the disk.
+const KIWI_RAM_HOOK: &str = "# Linuxify: copy the live image into RAM and let go of the installer partition.\n\
+_lx_img=/run/overlay/live/LiveOS/squashfs.img\n\
+if mountpoint -q /run/overlay/live && [ -f \"$_lx_img\" ]; then\n\
+    _lx_old=$(losetup -n -O NAME -j \"$_lx_img\")\n\
+    if cp \"$_lx_img\" /run/overlay/squashfs.img && _lx_new=$(losetup -r -f --show /run/overlay/squashfs.img); then\n\
+        for _lx_m in /run/overlay/squashfs_container /run/overlay/rootfsbase; do\n\
+            umount \"$_lx_m\" && mount -t squashfs -o ro \"$_lx_new\" \"$_lx_m\" || mount -t squashfs -o ro \"$_lx_old\" \"$_lx_m\"\n\
+        done\n\
+        losetup -d \"$_lx_old\" 2>/dev/null\n\
+        umount /run/overlay/live 2>/dev/null\n\
+    else\n\
+        rm -f /run/overlay/squashfs.img\n\
+    fi\n\
+fi\n\
+unset _lx_img _lx_old _lx_new _lx_m\n";
+
+/// A tiny uncompressed initrd (newc cpio) appended after the distro's own
+/// one; the kernel unpacks both. It holds only the hook files, no directory
+/// entries (Fedora's `lib` and `usr/lib/dracut/hooks` are symlinks, and a
+/// directory entry would replace them). /var/lib/dracut/hooks is the real
+/// hook directory in Fedora, AlmaLinux and openSUSE alike; openSUSE has no
+/// usr/lib/dracut/hooks at all. Each hook does nothing on the other's system.
+pub fn release_initrd() -> Vec<u8> {
+    fn entry(out: &mut Vec<u8>, name: &str, mode: u32, data: &[u8]) {
+        let fields = [1, mode, 0, 0, 1, 0, data.len() as u32, 0, 0, 0, 0, name.len() as u32 + 1, 0];
+        out.extend_from_slice(b"070701");
+        for f in fields {
+            out.extend_from_slice(format!("{f:08X}").as_bytes());
+        }
+        out.extend_from_slice(name.as_bytes());
+        out.push(0);
+        while !out.len().is_multiple_of(4) {
+            out.push(0);
+        }
+        out.extend_from_slice(data);
+        while !out.len().is_multiple_of(4) {
+            out.push(0);
+        }
+    }
+    let mut out = Vec::new();
+    entry(&mut out, "var/lib/dracut/hooks/pre-pivot/99-linuxify-release.sh", 0o100755, RELEASE_HOOK.as_bytes());
+    entry(&mut out, "var/lib/dracut/hooks/pre-mount/99-linuxify-kiwi-ram.sh", 0o100755, KIWI_RAM_HOOK.as_bytes());
+    entry(&mut out, "TRAILER!!!", 0, b"");
+    while !out.len().is_multiple_of(512) {
+        out.push(0);
+    }
+    out
 }
 
 /// Pulls the {GUID} out of `bcdedit /copy` output (which is localised, so
@@ -496,6 +671,7 @@ mod tests {
             is_admin: true,
             os: None,
             cpus: vec![],
+            cpu_level: Some(3),
             ram_bytes: Some(16 * GB),
             computer: None,
             gpus: vec![],
@@ -530,7 +706,7 @@ mod tests {
     }
 
     fn req() -> InstallRequest {
-        InstallRequest { distro_id: "linux-mint".into(), iso: "mint.iso".into(), iso_bytes: 3_091_660_800, largest_iso_file: 2_900_000_000, installer: Installer::Ubiquity, linux_gb: None, free_letter: 'L' }
+        InstallRequest { distro_id: "linux-mint".into(), iso: "mint.iso".into(), iso_bytes: 3_091_660_800, largest_iso_file: 2_900_000_000, iso_case_conflicts: vec![], installer: Installer::Ubiquity, min_cpu_level: 0, usb_only: None, linux_gb: None, free_letter: 'L' }
     }
 
     #[test]
@@ -710,18 +886,18 @@ mod tests {
         assert_eq!(adapt_live_boot(debian, "LNXINST", false), (debian.to_string(), 0));
 
         let fedora = "linux ($root)/boot/x86_64/loader/linux quiet rhgb  root=live:CDLABEL=Fedora-WS-Live-44 rd.live.image\n";
-        assert_eq!(adapt_live_boot(fedora, "LNXINST", true).0, "linux ($root)/boot/x86_64/loader/linux quiet rhgb root=live:LABEL=LNXINST rd.live.image\n");
+        assert_eq!(adapt_live_boot(fedora, "LNXINST", false).0, "linux ($root)/boot/x86_64/loader/linux quiet rhgb root=live:CDLABEL=LNXINST rd.live.image\n");
 
         let alma = "  search --no-floppy --set=root -l 'AlmaLinux-10_2-x86_64-GNOME'\n  linuxefi /images/pxeboot/vmlinuz root=live:CDLABEL=AlmaLinux-10_2-x86_64-GNOME  rd.live.image quiet rhgb\n";
-        let (a, n) = adapt_live_boot(alma, "LNXINST", true);
+        let (a, n) = adapt_live_boot(alma, "LNXINST", false);
         assert_eq!(n, 2);
-        assert_eq!(a, "  search --no-floppy --set=root -l 'LNXINST'\n  linuxefi /images/pxeboot/vmlinuz root=live:LABEL=LNXINST rd.live.image quiet rhgb\n");
+        assert_eq!(a, "  search --no-floppy --set=root -l 'LNXINST'\n  linuxefi /images/pxeboot/vmlinuz root=live:CDLABEL=LNXINST rd.live.image quiet rhgb\n");
 
         let bazzite = "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=bazzite-x86_64-stable quiet\n";
         assert_eq!(adapt_live_boot(bazzite, "LNXINST", true).0, "linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=LNXINST quiet\n");
 
         let suse = "linux ($root)/boot/x86_64/loader/linux ${extra_cmdline} quiet root=live:CDLABEL=openSUSE_Tumbleweed_KDE_Live rd.live.image rd.live.overlay.persistent rd.live.overlay.cowfs=ext4\n";
-        assert_eq!(adapt_live_boot(suse, "LNXINST", true).0, "linux ($root)/boot/x86_64/loader/linux ${extra_cmdline} quiet root=live:LABEL=LNXINST rd.live.image\n");
+        assert_eq!(adapt_live_boot(suse, "LNXINST", false).0, "linux ($root)/boot/x86_64/loader/linux ${extra_cmdline} quiet root=live:CDLABEL=LNXINST rd.live.image\n");
 
         // Idempotent, and leaves others alone (Arch's loopback, NixOS).
         for cfg in [mint, ubuntu, debian, fedora, alma, bazzite, suse] {
@@ -782,17 +958,101 @@ mod tests {
         let why = plan(&h, &req()).unwrap_err();
         assert!(why.iter().any(|w| w.contains("RAM") && w.contains("USB stick")), "{why:?}");
         // Calamares (Lubuntu) broke with toram; Ubuntu's installer doesn't need it.
-        for i in [Installer::Calamares, Installer::UbuntuDesktop, Installer::Anaconda, Installer::Unknown] {
+        for i in [Installer::Calamares, Installer::UbuntuDesktop, Installer::AnacondaClassic, Installer::Unknown] {
             let p = plan(&h, &InstallRequest { installer: i, ..req() }).unwrap();
             assert!(!p.copy_to_ram, "{i:?}");
         }
+        // Anaconda hides the disk holding its live device, so it runs from RAM too;
+        // only the squashfs is copied (Fedora KDE: 3.37 GB ISO, 3.0 GB squashfs, 6 GB VM).
+        h.ram_bytes = Some(6 * GB);
+        let kde = InstallRequest { installer: Installer::Anaconda, iso_bytes: 3_368_683_520, largest_iso_file: 3_004_424_192, ..req() };
+        assert!(plan(&h, &kde).unwrap().copy_to_ram);
+        assert!(plan(&h, &InstallRequest { installer: Installer::Ubiquity, ..kde }).is_err());
+    }
+
+    #[test]
+    fn dracut_live_runs_from_ram_and_releases_lnxinst() {
+        let fedora = "\tsearch --no-floppy --set=root -l 'Fedora-KDE-Live-44'\n\tlinux ($root)/boot/x86_64/loader/linux quiet rhgb root=live:CDLABEL=Fedora-KDE-Live-44 rd.live.image rd.live.check\n\tinitrd ($root)/boot/x86_64/loader/initrd\n";
+        let (a, n) = adapt_live_boot(fedora, "LNXINST", true);
+        assert_eq!(n, 3);
+        assert_eq!(a, "\tsearch --no-floppy --set=root -l 'LNXINST'\n\tlinux ($root)/boot/x86_64/loader/linux rd.live.ram=1 quiet rhgb root=live:CDLABEL=LNXINST rd.live.image\n\tinitrd ($root)/boot/x86_64/loader/initrd ($root)/linuxify/release.img\n");
+        assert_eq!(adapt_live_boot(&a, "LNXINST", true), (a.clone(), 0));
+        let alma = "  linuxefi /images/pxeboot/vmlinuz root=live:CDLABEL=Alma rd.live.image\r\n  initrdefi /images/pxeboot/initrd.img\r\n";
+        assert!(adapt_live_boot(alma, "LNXINST", true).0.contains("  initrdefi /images/pxeboot/initrd.img /linuxify/release.img\r\n"));
+        // Not for installers that don't need it, nor for non-dracut configs.
+        assert!(!adapt_live_boot(fedora, "LNXINST", false).0.contains("release.img"));
+        let mint = "linux /casper/vmlinuz boot=casper quiet\ninitrd /casper/initrd.lz\n";
+        assert_eq!(adapt_live_boot(mint, "LNXINST", true).0, "linux /casper/vmlinuz nopersistent toram boot=casper quiet\ninitrd /casper/initrd.lz\n");
+    }
+
+    #[test]
+    fn archiso_finds_lnxinst_by_label() {
+        // Arch 2026.10.01: systemd-boot entry and GRUB loopback.cfg.
+        let entry = "options  archisobasedir=arch archisosearchuuid=2026-10-01-14-49-03-00 \n";
+        assert_eq!(adapt_live_boot(entry, "LNXINST", false).0, "options archisobasedir=arch archisolabel=LNXINST\n");
+        let grub = "    linux /arch/boot/x86_64/vmlinuz-linux archisobasedir=arch archisosearchuuid=2026-10-01-14-49-03-00\r\n";
+        let (out, n) = adapt_live_boot(grub, "LNXINST", false);
+        assert_eq!((out.as_str(), n), ("    linux /arch/boot/x86_64/vmlinuz-linux archisobasedir=arch archisolabel=LNXINST\r\n", 1));
+        assert_eq!(adapt_live_boot(&out, "LNXINST", false).1, 0);
+    }
+
+    #[test]
+    fn plan_refuses_a_usb_only_distro() {
+        let why = plan(&hw(), &InstallRequest { usb_only: Some("NixOS can't.".into()), ..req() }).unwrap_err();
+        assert!(why.iter().any(|w| w == "NixOS can't. Use a USB stick for this distro."));
+    }
+
+    #[test]
+    fn plan_refuses_a_distro_this_cpu_cannot_start() {
+        let mut h = hw();
+        h.cpu_level = Some(2);
+        let why = plan(&h, &InstallRequest { min_cpu_level: 3, ..req() }).unwrap_err();
+        assert!(why.iter().any(|w| w.contains("needs a newer processor")));
+        assert!(plan(&h, &req()).is_ok());
+    }
+
+    #[test]
+    fn release_initrd_holds_two_hook_files_in_newc_format() {
+        let img = release_initrd();
+        assert_eq!(img.len() % 512, 0);
+        assert!(img.starts_with(b"070701"));
+        let text = String::from_utf8_lossy(&img);
+        assert!(text.contains("var/lib/dracut/hooks/pre-pivot/99-linuxify-release.sh\0"));
+        assert!(text.contains("var/lib/dracut/hooks/pre-mount/99-linuxify-kiwi-ram.sh\0"));
+        assert!(text.contains("umount /run/initramfs/live") && text.contains("rm -f /run/initramfs/livedev"));
+        assert!(text.contains("cp \"$_lx_img\" /run/overlay/squashfs.img") && text.contains("umount /run/overlay/live"));
+        assert!(text.contains("TRAILER!!!\0"));
+        // Exactly three headers: two hooks and the trailer (no directory entries).
+        assert_eq!(text.matches("070701").count(), 3);
+        // Header fields: mode is a regular executable file, filesize matches the hook.
+        let field = |i: usize| u32::from_str_radix(&text[6 + 8 * i..14 + 8 * i], 16).unwrap();
+        assert_eq!(field(1), 0o100755);
+        assert_eq!(field(6) as usize, RELEASE_HOOK.len());
     }
 
     #[test]
     fn installer_hints_steer_away_from_shrinking_windows() {
-        assert!(installer_hint(Installer::Ubiquity).contains("alongside Windows Boot Manager"));
-        let c = installer_hint(Installer::Calamares);
+        let disk = 128 * GB; // the VM's disk: Calamares shows 128.00 GiB, Anaconda 137 GB
+        assert!(installer_hint(Installer::Ubiquity, disk).contains("alongside Windows Boot Manager"));
+        let c = installer_hint(Installer::Calamares, disk);
         assert!(c.contains("Replace a partition") && c.contains("Free Space") && c.contains("Don't pick 'Install alongside'"));
-        assert!(installer_hint(Installer::Unknown).contains("Never pick 'Erase disk'"));
+        assert!(installer_hint(Installer::Anaconda, disk).contains("leave 'Reclaim additional space' unticked"));
+        assert!(installer_hint(Installer::Unknown, disk).contains("Never pick 'Erase disk'"));
+        assert!(installer_hint(Installer::AnacondaClassic, disk).contains("keep 'Automatic'"));
+        assert!(installer_hint(Installer::Yast, disk).contains("GRUB2 for EFI"));
+        assert!(c.starts_with("In the installer pick the disk Windows is on (128 GiB, shown as 137 GB by some installers)"), "{c}");
+    }
+
+    #[test]
+    fn fat_view_merges_case_twins() {
+        let f = |p: &str, n| (p.to_string(), n);
+        let v = fat_view(&[f(r"EFI\BOOT\BOOTX64.EFI", 1026520), f(r"EFI\BOOT\bootx64.efi", 1026520), f(r"EFI\BOOT\grubx64.efi", 4144848), f("LiveOS/squashfs.img", 2_800_000_000)]);
+        assert_eq!(v.files, 3);
+        assert_eq!(v.bytes, 1026520 + 4144848 + 2_800_000_000);
+        assert_eq!(v.largest, 2_800_000_000);
+        assert_eq!(v.case_twins, vec![vec![r"EFI\BOOT\BOOTX64.EFI".to_string(), r"EFI\BOOT\bootx64.efi".to_string()]]);
+        assert!(fat_view(&[f("a", 1), f("b", 2)]).case_twins.is_empty());
+        let why = plan(&hw(), &InstallRequest { iso_case_conflicts: vec!["x/A.cfg = x/a.cfg".into()], ..req() }).unwrap_err();
+        assert!(why.iter().any(|w| w.contains("upper/lower case") && w.contains("USB stick")), "{why:?}");
     }
 }

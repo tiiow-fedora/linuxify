@@ -58,6 +58,11 @@ pub enum Installer {
     UbuntuDesktop,
     Calamares,
     Anaconda,
+    /// Anaconda from an installer ISO (`inst.stage2=`, Bazzite): installs from the hard drive,
+    /// protects only LNXINST itself, so no RAM copy is needed.
+    AnacondaClassic,
+    /// YaST (openSUSE): skips every disk with a mounted filesystem.
+    Yast,
     #[default]
     Unknown,
 }
@@ -76,6 +81,12 @@ pub struct Distro {
     #[serde(default)]
     pub installer: Installer,
     pub min_ram_gb: u32,
+    /// Lowest x86-64 level (2, 3) the distro's binaries run on; 0 = any.
+    #[serde(default)]
+    pub min_cpu_level: u8,
+    /// Why the ISO can't start from Linuxify's installer partition (USB only).
+    #[serde(default)]
+    pub usb_only: Option<String>,
     pub traits: BTreeMap<String, u8>,
     #[serde(default)]
     pub highlights: BTreeMap<String, String>,
@@ -325,6 +336,7 @@ pub fn validate_answers(a: &Answers) -> Result<(), String> {
 pub struct ScanHints {
     pub nvidia_gpu: bool,
     pub ram_gb: Option<f64>,
+    pub cpu_level: Option<u8>,
     pub secure_boot_on: bool,
     pub steam_games: usize,
     /// Programs the scan marked as "won't work on Linux".
@@ -336,6 +348,7 @@ pub fn hints_from_scan(r: &ScanReport) -> ScanHints {
     ScanHints {
         nvidia_gpu: r.hardware.gpus.iter().any(|g| !g.is_virtual && g.vendor == Vendor::Nvidia),
         ram_gb: r.hardware.ram_bytes.map(|b| b as f64 / (1u64 << 30) as f64),
+        cpu_level: r.hardware.cpu_level,
         secure_boot_on: r.hardware.secure_boot == SecureBoot::On,
         steam_games: r.user_data.steam.iter().map(|l| l.games.len()).sum(),
         blocked_programs: r
@@ -423,6 +436,14 @@ fn trait_label(t: &str) -> &'static str {
     TRAITS.iter().find(|(k, _)| *k == t).map(|(_, l)| *l).unwrap_or("?")
 }
 
+/// Why a distro can't start on this CPU, if it can't. Unknown level = no verdict.
+pub fn cpu_too_old(need: u8, have: Option<u8>) -> Option<String> {
+    let have = have?;
+    (have < need).then(|| {
+        format!("needs a newer processor (x86-64-v{need}: AVX2, roughly Intel 2013 / AMD 2015 or later); this one is x86-64-v{have}, so it would stop at boot")
+    })
+}
+
 pub fn rank(list: &DistroList, answers: &Answers, hints: Option<&ScanHints>) -> Recommendation {
     let (weights, mut scan_notes) = weights_for(answers, hints);
     let total_w: f64 = weights.values().sum();
@@ -440,6 +461,10 @@ pub fn rank(list: &DistroList, answers: &Answers, hints: Option<&ScanHints>) -> 
                 });
                 continue;
             }
+        }
+        if let Some(why) = cpu_too_old(d.min_cpu_level, hints.and_then(|h| h.cpu_level)) {
+            excluded.push(Excluded { id: d.id.clone(), name: d.name.clone(), why });
+            continue;
         }
 
         let contrib: Vec<(&str, f64)> = weights
@@ -532,6 +557,16 @@ mod tests {
 
     fn top(a: &Answers, h: Option<&ScanHints>) -> Vec<String> {
         rank(&list(), a, h).ranking.into_iter().take(3).map(|r| r.id).collect()
+    }
+
+    #[test]
+    fn old_cpu_excludes_almalinux_only() {
+        let h = ScanHints { cpu_level: Some(2), ..Default::default() };
+        let r = rank(&list(), &Answers::default(), Some(&h));
+        let alma = r.excluded.iter().find(|e| e.id == "almalinux").expect("alma excluded");
+        assert!(alma.why.contains("x86-64-v3") && alma.why.contains("x86-64-v2"));
+        assert_eq!(r.excluded.len(), 1);
+        assert!(cpu_too_old(3, Some(3)).is_none() && cpu_too_old(3, None).is_none() && cpu_too_old(0, Some(1)).is_none());
     }
 
     fn hints(nvidia: bool, ram: f64) -> ScanHints {

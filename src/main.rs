@@ -774,14 +774,14 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
     let letter = install_exec::free_letter(&hw).ok_or("no free drive letter for the installer partition")?;
     // Read-only look inside the ISO, so a file too big for FAT32 shows up in the dry run
     // rather than after the confirmation (Kubuntu 26.04's squashfs is 4.08 GiB).
-    let largest_iso_file = if iso_verified {
-        let r = install_exec::mount_iso(&iso_path);
+    let (largest_iso_file, iso_case_conflicts) = if iso_verified {
+        let r = install_exec::inspect_iso(&iso_path);
         install_exec::dismount_iso(&iso_path);
-        r.map(|(_, _, _, largest)| largest).unwrap_or(0)
+        r.map(|(_, view, conflicts)| (view.largest, conflicts)).unwrap_or_default()
     } else {
-        0
+        (0, Vec::new())
     };
-    let req = install::InstallRequest { distro_id: distro.id.clone(), iso: iso_path.display().to_string(), iso_bytes, largest_iso_file, installer: distro.installer, linux_gb: o.linux_gb, free_letter: letter };
+    let req = install::InstallRequest { distro_id: distro.id.clone(), iso: iso_path.display().to_string(), iso_bytes, largest_iso_file, iso_case_conflicts, installer: distro.installer, min_cpu_level: distro.min_cpu_level, usb_only: distro.usb_only.clone(), linux_gb: o.linux_gb, free_letter: letter };
     let mut plan = install::plan(&hw, &req);
     let mut estimate = false;
     if o.dry_run && hw.c_shrinkable.is_none() {
@@ -802,7 +802,7 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
             println!("  4. Add a ONE-TIME boot entry so the next restart starts the installer (later restarts go to Windows as usual).");
             println!("\n  diskpart script:\n    {}", p.diskpart_create().trim_end().replace("\r\n", "\n    "));
             println!("  then: robocopy <ISO> {}:\\ ; bcdedit /copy {{bootmgr}} /d \"{}\" ; bcdedit /set <id> device partition={}: ; bcdedit /set <id> path \\EFI\\BOOT\\BOOTX64.EFI ; bcdedit /set {{fwbootmgr}} bootsequence <id> ; diskpart remove letter={}", p.letter, install::BCD_DESCRIPTION, p.letter, p.letter);
-            println!("\n  {}", install::installer_hint(distro.installer));
+            println!("\n  {}", install::installer_hint(distro.installer, p.disk_size));
         }
         Err(why) => {
             println!("Linuxify can't make a plan:");
@@ -835,7 +835,7 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
     }
     let state = install_exec::execute(&plan)?;
     println!("\nReady (step: {:?}). The NEXT restart will start the {} installer; later restarts go to Windows as usual.", state.phase, distro.name);
-    println!("Restart when you're ready. {}", install::installer_hint(distro.installer));
+    println!("Restart when you're ready. {}", install::installer_hint(distro.installer, plan.disk_size));
     println!("Changed your mind? `linuxify install --undo` puts it back.");
     println!("After Linux is installed, the same command (run from Windows) removes the {} GB installer partition and gives it back to C:. Linux stays.", plan.installer_size / install::GB);
     Ok(())

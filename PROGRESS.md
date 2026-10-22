@@ -294,9 +294,30 @@ Full path, Windows to Mint dual boot to Windows removed, all in the VM:
    - Also fixed: the Linuxify installer's own UEFI entry was left behind (now removed too); sfdisk's
      harmless "re-reading failed" noise is hidden; the script now says to restart once.
 
+### Stage 5 per-distro run (2026-10-21/22): every downloadable ISO, two throwaway VMs
+Each ISO went through dry run, real install with `--linux-gb 80` (70 for Bazzite), restart into the
+installer from LNXINST, then the distro's own installer, all in the VMs (headless, driven through the
+VirtualBox API). Log: `scratch/distro-tests/results.txt`.
+
+| Distro | Installer | Result |
+|---|---|---|
+| Linux Mint 22.3 Cinnamon / Xfce | Ubiquity | PASS (toram), installed, boots |
+| Ubuntu 26.04.1 | Flutter installer | PASS, installed, GRUB lists Windows |
+| Kubuntu 26.04.1 | — | Refused as designed: 4.08 GB file can't go on FAT32 |
+| Xubuntu / Lubuntu 26.04.1 | Flutter / Calamares | PASS after fixes (toram only for Ubiquity; Calamares hint), installed; `--undo` after install verified |
+| Debian 13 | Calamares | PASS, installed, firmware lists Debian + Windows |
+| Fedora 44 KDE / Workstation | Anaconda (live) | PASS after fix: Anaconda hid the Windows disk; now `rd.live.ram=1` + release hook. KDE installed, ESP intact, GRUB lists Windows |
+| openSUSE Tumbleweed | YaST | PASS after fixes: kiwi needs `CDLABEL=`; YaST hid the Windows disk and offered to shrink the backup drive, now kiwi RAM hook; hint says pick GRUB2 (systemd-boot overfills Windows' 100 MB ESP) |
+| Bazzite | Anaconda (installer ISO) | PASS: installed from LNXINST, MOK enrolled, boots |
+| AlmaLinux 10.2 | Anaconda (live) | Can't boot in this VM (CPU is x86-64-v2, Alma 10 needs v3); new CPU-level gate refuses it on such PCs |
+| Arch | manual | PASS for Linuxify's part: boots from LNXINST (systemd-boot entries adapted), LNXINST released, free space partitionable |
+| NixOS | — | Refused as designed: its initrd only mounts an ISO 9660 filesystem with the ISO's label |
+
 ### Not tested / known limits
-- Only Linux Mint 22.3 (Ubiquity) went through the full path. Fedora (Anaconda), Calamares-based and
-  other installers are untested with LNXINST.
+- Full installs to the end were done for Mint, Ubuntu, Xubuntu, Lubuntu, Debian, Fedora KDE,
+  openSUSE and Bazzite. Fedora Workstation and AlmaLinux share Fedora KDE's path but were only
+  booted (Alma not even that, see the CPU note). Arch was checked up to partitioning, not installed.
+- AlmaLinux on a v3 CPU is untested (needs a VM backend that exposes AVX2, or real hardware).
 - `toram` tested with 6 GB RAM only. On PCs with little RAM casper may skip the copy, and Ubiquity
   could then hit the `/cdrom` error again.
 - The fixed remove-windows.sh rename step was checked as an extracted block, not with a second full

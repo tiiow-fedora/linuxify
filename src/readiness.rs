@@ -291,6 +291,7 @@ mod tests {
             is_admin: true,
             os: None,
             cpus: vec![],
+            cpu_level: Some(3),
             ram_bytes: Some(16 << 30),
             computer: None,
             gpus: vec![],
