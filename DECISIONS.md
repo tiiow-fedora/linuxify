@@ -286,9 +286,23 @@ Short record of choices made while building Linuxify, and why.
   GRUB's `search -l '<iso label>'` is changed the same way; Debian's `boot=live` gets `toram` only via the rule above;
   openSUSE's `rd.live.overlay.persistent` is removed for the same reason as `nopersistent`.
   The ISO's files keep their read-only attribute after copying, so it is cleared first.
-- **A file over 4 GB can't go on FAT32**, so the plan refuses it and says to use a USB stick
-  (Kubuntu 26.04: 4.08 GB squashfs). The dry run mounts the ISO read-only to find this, so it shows
-  up before the confirmation, not after.
+- **A file over 4 GB can't go on FAT32, so casper ISOs get a second, NTFS partition ("LNXDATA").**
+  Kubuntu 26.04's squashfs is 4.08 GiB. The firmware can only boot from FAT32, but casper doesn't
+  care where its squashfs is: it mounts every partition (`is_supported_fs` includes `ntfs`, and
+  Ubuntu's initrd ships `ntfs-3g`) and uses the first with `casper/*.squashfs`. So LNXINST gets
+  every file except the big ones (`robocopy /MAX:`) and LNXDATA, right after it, a full copy of
+  the ISO; casper skips LNXINST (no squashfs) and runs from LNXDATA. NTFS rather than exFAT or UDF
+  because Windows formats it natively and Kubuntu's initrd has `ntfs-3g` but no exFAT module.
+  LNXDATA is part of `installer_size`, so shrink, undo and the "after install" cleanup cover both
+  (undo deletes the higher partition number first). VM result: live `/cdrom` = LNXDATA (fuseblk),
+  Calamares installed into the free space, Kubuntu and Windows both boot, `--undo` gave C: back
+  all 10 GB. Other live systems find their medium by one label, so a big file there is still
+  refused ("use a USB stick"). The dry run mounts the ISO read-only to find big files, so this
+  shows up before the confirmation, not after.
+- **Fedora hides its boot menu**, even with Windows next to it. The Anaconda hint says how to get
+  to Windows (Esc, then `normal` at the `grub>` prompt).
+- **Hand-made boot loaders (Arch): Windows' ESP at `/boot/efi`, not `/boot`.** At 100 MB it can't
+  hold kernels. VM-verified: GRUB on the ESP used 28%, os-prober found Windows.
 - **Secure Boot gate.** With Secure Boot on, a distro marked `needs_disabling` or `unknown` in
   `data/distros.json` is refused before any disk change: the firmware would refuse the installer,
   leaving C: shrunk and nothing to boot. `needs_key_enrolment` (Bazzite) is allowed; its own

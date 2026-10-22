@@ -697,7 +697,8 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
     if o.undo {
         let state = install_exec::load_state().ok_or("there is no Linuxify install setup to undo")?;
         let p = &state.plan;
-        println!("Undo will: delete the {} boot entry, delete the {} installer partition (disk {}, at {} GB), and grow C: back into the free space.", install::BCD_DESCRIPTION, install::INSTALLER_LABEL, p.disk, p.installer_offset / install::GB);
+        let parts = if p.data_size > 0 { format!("{} and {} installer partitions", install::INSTALLER_LABEL, install::DATA_LABEL) } else { format!("{} installer partition", install::INSTALLER_LABEL) };
+        println!("Undo will: delete the {} boot entry, delete the {parts} (disk {}, at {} GB), and grow C: back into the free space.", install::BCD_DESCRIPTION, p.disk, p.installer_offset / install::GB);
         println!("It does NOT remove a Linux system if you already installed one into the free space.");
         if o.dry_run {
             for s in install_exec::undo(&state, true)? {
@@ -771,17 +772,32 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
     }
 
     // ---- Plan ----
-    let letter = install_exec::free_letter(&hw).ok_or("no free drive letter for the installer partition")?;
+    let letters = install_exec::free_letters(&hw);
+    let letter = *letters.first().ok_or("no free drive letter for the installer partition")?;
     // Read-only look inside the ISO, so a file too big for FAT32 shows up in the dry run
     // rather than after the confirmation (Kubuntu 26.04's squashfs is 4.08 GiB).
-    let (largest_iso_file, iso_case_conflicts) = if iso_verified {
+    let (view, iso_case_conflicts) = if iso_verified {
         let r = install_exec::inspect_iso(&iso_path);
         install_exec::dismount_iso(&iso_path);
-        r.map(|(_, view, conflicts)| (view.largest, conflicts)).unwrap_or_default()
+        r.map(|(_, view, conflicts)| (view, conflicts)).unwrap_or_default()
     } else {
-        (0, Vec::new())
+        Default::default()
     };
-    let req = install::InstallRequest { distro_id: distro.id.clone(), iso: iso_path.display().to_string(), iso_bytes, largest_iso_file, iso_case_conflicts, installer: distro.installer, min_cpu_level: distro.min_cpu_level, usb_only: distro.usb_only.clone(), linux_gb: o.linux_gb, free_letter: letter };
+    let req = install::InstallRequest {
+        distro_id: distro.id.clone(),
+        iso: iso_path.display().to_string(),
+        iso_bytes,
+        largest_iso_file: view.largest,
+        iso_case_conflicts,
+        installer: distro.installer,
+        min_cpu_level: distro.min_cpu_level,
+        usb_only: distro.usb_only.clone(),
+        linux_gb: o.linux_gb,
+        free_letter: letter,
+        big_files_bytes: view.big_bytes,
+        casper_live: view.casper,
+        data_letter: letters.get(1).copied(),
+    };
     let mut plan = install::plan(&hw, &req);
     let mut estimate = false;
     if o.dry_run && hw.c_shrinkable.is_none() {
@@ -797,7 +813,10 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
         Ok(p) => {
             println!("PLAN (disk {}){}:", p.disk, if estimate { " - ESTIMATE: run as administrator for the exact shrink size" } else { "" });
             println!("  1. Shrink C: from {} GB to {} GB (frees {} GB). Windows and your files stay.", p.c_size_before / install::GB, p.c_size_after / install::GB, p.shrink / install::GB);
-            println!("  2. Create a {} GB FAT32 partition '{}' right after C: and copy the verified {} installer onto it.", p.installer_size / install::GB, install::INSTALLER_LABEL, distro.name);
+            println!("  2. Create a {} GB FAT32 partition '{}' right after C: and copy the verified {} installer onto it.", p.fat_size() / install::GB, install::INSTALLER_LABEL, distro.name);
+            if p.data_size > 0 {
+                println!("     Its largest file is too big for FAT32, so a {} GB NTFS partition '{}' after it gets a full copy of the installer, which the live system starts from.", p.data_size / install::GB, install::DATA_LABEL);
+            }
             println!("  3. Leave {} GB unallocated for Linux.", p.linux_size / install::GB);
             println!("  4. Add a ONE-TIME boot entry so the next restart starts the installer (later restarts go to Windows as usual).");
             println!("\n  diskpart script:\n    {}", p.diskpart_create().trim_end().replace("\r\n", "\n    "));
@@ -837,7 +856,7 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
     println!("\nReady (step: {:?}). The NEXT restart will start the {} installer; later restarts go to Windows as usual.", state.phase, distro.name);
     println!("Restart when you're ready. {}", install::installer_hint(distro.installer, plan.disk_size));
     println!("Changed your mind? `linuxify install --undo` puts it back.");
-    println!("After Linux is installed, the same command (run from Windows) removes the {} GB installer partition and gives it back to C:. Linux stays.", plan.installer_size / install::GB);
+    println!("After Linux is installed, the same command (run from Windows) removes the {} GB installer partition{} and gives the space back to C:. Linux stays.", plan.installer_size / install::GB, if plan.data_size > 0 { "s" } else { "" });
     Ok(())
 }
 

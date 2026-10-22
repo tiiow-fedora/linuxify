@@ -32,9 +32,9 @@ fn ps(script: &str) -> Result<String, String> {
 }
 
 /// First free drive letter, preferring L (for Linux).
-pub fn free_letter(hw: &HardwareFacts) -> Option<char> {
+pub fn free_letters(hw: &HardwareFacts) -> Vec<char> {
     let used: Vec<char> = hw.disks.iter().flat_map(|d| d.partitions.iter().filter_map(|p| p.drive_letter)).collect();
-    "LMNOPQRSTUVWXYZHIJK".chars().find(|c| !used.contains(c) && !Path::new(&format!("{c}:\\")).exists())
+    "LMNOPQRSTUVWXYZHIJK".chars().filter(|c| !used.contains(c) && !Path::new(&format!("{c}:\\")).exists()).collect()
 }
 
 /// Disk number holding a drive letter (None for network paths / unknown).
@@ -136,9 +136,15 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
         dismount_iso(&iso);
         return Err(format!("the ISO has different files whose names differ only in case ({}), which FAT32 can't hold; nothing was changed. Use a USB stick for this distro.", conflicts.join(", ")));
     }
-    if largest >= 4 * install::GB {
+    if largest > install::FAT32_MAX_FILE && (plan.data_size == 0 || !view.casper) {
         dismount_iso(&iso);
         return Err("the ISO has a file of 4 GB or more, which FAT32 can't hold; nothing was changed. Use a USB stick for this distro.".into());
+    }
+    if let Some(l) = plan.data_letter.filter(|_| plan.data_size > 0) {
+        if Path::new(&format!("{l}:\\")).exists() {
+            dismount_iso(&iso);
+            return Err(format!("drive letter {l}: is now in use; nothing was changed. Run the command again."));
+        }
     }
     if !Path::new(&format!("{iso_letter}:\\EFI\\BOOT\\BOOTX64.EFI")).exists() {
         dismount_iso(&iso);
@@ -155,9 +161,10 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
         return Err(format!("{e}\nRun `linuxify install --undo` to put back whatever was changed."));
     }
     let hw2 = fresh_hw()?;
-    let new_part = install::find_partition_at(&hw2, plan.disk, plan.installer_offset, plan.installer_size);
+    let new_part = install::find_partition_at(&hw2, plan.disk, plan.installer_offset, plan.fat_size());
+    let data_ok = plan.data_size == 0 || install::find_partition_at(&hw2, plan.disk, plan.data_offset(), plan.data_size).is_some();
     let c_now = hw2.disks.iter().find(|d| d.number == plan.disk).and_then(|d| d.partitions.iter().find(|p| p.drive_letter == Some('C'))).map(|p| p.size);
-    if new_part.is_none() || c_now.map(|s| s.abs_diff(plan.c_size_after) > 2 * install::MB).unwrap_or(true) {
+    if new_part.is_none() || !data_ok || c_now.map(|s| s.abs_diff(plan.c_size_after) > 2 * install::MB).unwrap_or(true) {
         dismount_iso(&iso);
         return Err("after diskpart, the partitions don't look as planned; stopping. Run `linuxify install --undo`.".into());
     }
@@ -165,19 +172,36 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
     save_state(&state)?;
 
     // 3. Copy the ISO's files onto the installer partition and check them.
-    println!("  - Copying the installer files ({} files)", iso_files);
-    let out = std::process::Command::new("robocopy")
-        .args([format!("{iso_letter}:\\"), format!("{}:\\", plan.letter), "/E".into(), "/R:1".into(), "/W:1".into(), "/NFL".into(), "/NDL".into(), "/NP".into()])
-        .output()
-        .map_err(|e| e.to_string())?;
+    // With LNXDATA: a full copy there, and everything but the big files on LNXINST.
+    let data_letter = plan.data_letter.filter(|_| plan.data_size > 0);
+    let mut copies = vec![(plan.letter, data_letter.is_some())];
+    copies.extend(data_letter.map(|l| (l, false)));
+    for (letter, skip_big) in copies {
+        println!("  - Copying the installer files to {letter}: ({} files)", if skip_big { iso_files - view.big_files } else { iso_files });
+        let mut args = vec![format!("{iso_letter}:\\"), format!("{letter}:\\"), "/E".into(), "/R:1".into(), "/W:1".into(), "/NFL".into(), "/NDL".into(), "/NP".into()];
+        if skip_big {
+            args.push(format!("/MAX:{}", install::FAT32_MAX_FILE));
+        }
+        let out = std::process::Command::new("robocopy").args(&args).output().map_err(|e| e.to_string());
+        let out = match out {
+            Ok(o) => o,
+            Err(e) => {
+                dismount_iso(&iso);
+                return Err(e);
+            }
+        };
+        if out.status.code().unwrap_or(16) >= 8 {
+            dismount_iso(&iso);
+            return Err(format!("copying the installer files failed:\n{}\nRun `linuxify install --undo`.", String::from_utf8_lossy(&out.stdout)));
+        }
+        let (want_n, want_bytes) = if skip_big { (iso_files - view.big_files, iso_bytes - view.big_bytes) } else { (iso_files, iso_bytes) };
+        let (n, bytes) = count_files(&PathBuf::from(format!("{letter}:\\")));
+        if n != want_n || bytes != want_bytes {
+            dismount_iso(&iso);
+            return Err(format!("{letter}: has {n} files / {bytes} bytes but should have {want_n} / {want_bytes}; stopping. Run `linuxify install --undo`."));
+        }
+    }
     dismount_iso(&iso);
-    if out.status.code().unwrap_or(16) >= 8 {
-        return Err(format!("copying the installer files failed:\n{}\nRun `linuxify install --undo`.", String::from_utf8_lossy(&out.stdout)));
-    }
-    let (n, bytes) = count_files(&PathBuf::from(format!("{}:\\", plan.letter)));
-    if n != iso_files || bytes != iso_bytes {
-        return Err(format!("the installer partition has {n} files / {bytes} bytes but the ISO has {iso_files} / {iso_bytes}; stopping. Run `linuxify install --undo`."));
-    }
     // Make the live system run cleanly from LNXINST (see install::adapt_live_boot).
     // Plus systemd-boot entries (Arch's ISO boots with systemd-boot on UEFI).
     let entries = std::fs::read_dir(format!(r"{}:\loader\entries", plan.letter))
@@ -228,7 +252,9 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
     save_state(&state)?;
 
     // 5. Hide the installer partition from Explorer again.
-    let _ = run_diskpart(&format!("select volume {}\r\nremove letter={}\r\nexit\r\n", plan.letter, plan.letter), "hide.txt");
+    for l in std::iter::once(plan.letter).chain(data_letter) {
+        let _ = run_diskpart(&format!("select volume {l}\r\nremove letter={l}\r\nexit\r\n"), "hide.txt");
+    }
     state.phase = Phase::Ready;
     save_state(&state)?;
     Ok(state)
@@ -254,7 +280,10 @@ fn count_files(root: &Path) -> (u64, u64) {
 pub fn undo(state: &InstallState, dry_run: bool) -> Result<Vec<String>, String> {
     let p = &state.plan;
     let hw = fresh_hw()?;
-    let part = install::find_partition_at(&hw, p.disk, p.installer_offset, p.installer_size);
+    let mut parts: Vec<u32> = install::find_partition_at(&hw, p.disk, p.installer_offset, p.fat_size()).into_iter().collect();
+    if p.data_size > 0 {
+        parts.extend(install::find_partition_at(&hw, p.disk, p.data_offset(), p.data_size));
+    }
     let mut done = Vec::new();
     if let Some(g) = &state.bcd_guid {
         done.push(format!("bcdedit /delete {g}"));
@@ -262,7 +291,7 @@ pub fn undo(state: &InstallState, dry_run: bool) -> Result<Vec<String>, String> 
             let _ = bcdedit(&["/delete".into(), g.clone()]);
         }
     }
-    let script = install::diskpart_undo(p.disk, part, p.c_partition);
+    let script = install::diskpart_undo(p.disk, &parts, p.c_partition);
     done.push(format!("diskpart:\n{}", script.replace("\r\n", "\n    ")));
     if !dry_run {
         run_diskpart(&script, "undo.txt")?;

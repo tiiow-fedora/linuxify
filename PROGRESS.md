@@ -303,23 +303,25 @@ VirtualBox API). Log: `scratch/distro-tests/results.txt`.
 |---|---|---|
 | Linux Mint 22.3 Cinnamon / Xfce | Ubiquity | PASS (toram), installed, boots |
 | Ubuntu 26.04.1 | Flutter installer | PASS, installed, GRUB lists Windows |
-| Kubuntu 26.04.1 | — | Refused as designed: 4.08 GB file can't go on FAT32 |
+| Kubuntu 26.04.1 | Calamares | PASS (2026-10-22, new LNXDATA partition for its 4.08 GiB squashfs): runs from NTFS, installed, both OSes boot, `--undo` removes both partitions |
 | Xubuntu / Lubuntu 26.04.1 | Flutter / Calamares | PASS after fixes (toram only for Ubiquity; Calamares hint), installed; `--undo` after install verified |
 | Debian 13 | Calamares | PASS, installed, firmware lists Debian + Windows |
-| Fedora 44 KDE / Workstation | Anaconda (live) | PASS after fix: Anaconda hid the Windows disk; now `rd.live.ram=1` + release hook. KDE installed, ESP intact, GRUB lists Windows |
+| Fedora 44 KDE / Workstation | Anaconda (live) | PASS after fix: Anaconda hid the Windows disk; now `rd.live.ram=1` + release hook. Both installed, ESP intact, GRUB lists Windows (hidden menu on Workstation: hint says Esc), `--undo` OK |
 | openSUSE Tumbleweed | YaST | PASS after fixes: kiwi needs `CDLABEL=`; YaST hid the Windows disk and offered to shrink the backup drive, now kiwi RAM hook; hint says pick GRUB2 (systemd-boot overfills Windows' 100 MB ESP) |
 | Bazzite | Anaconda (installer ISO) | PASS: installed from LNXINST, MOK enrolled, boots |
 | AlmaLinux 10.2 | Anaconda (live) | Can't boot in this VM (CPU is x86-64-v2, Alma 10 needs v3); new CPU-level gate refuses it on such PCs |
-| Arch | manual | PASS for Linuxify's part: boots from LNXINST (systemd-boot entries adapted), LNXINST released, free space partitionable |
+| Arch | manual | PASS: boots from LNXINST (systemd-boot entries adapted); installed by hand (pacstrap, GRUB on Windows' ESP at /boot/efi), both OSes boot, `--undo` OK |
 | NixOS | — | Refused as designed: its initrd only mounts an ISO 9660 filesystem with the ISO's label |
 
 ### Not tested / known limits
-- Full installs to the end were done for Mint, Ubuntu, Xubuntu, Lubuntu, Debian, Fedora KDE,
-  openSUSE and Bazzite. Fedora Workstation and AlmaLinux share Fedora KDE's path but were only
-  booted (Alma not even that, see the CPU note). Arch was checked up to partitioning, not installed.
-- AlmaLinux on a v3 CPU is untested (needs a VM backend that exposes AVX2, or real hardware).
-- `toram` tested with 6 GB RAM only. On PCs with little RAM casper may skip the copy, and Ubiquity
-  could then hit the `/cdrom` error again.
+- Full installs to the end were done for every offered distro except AlmaLinux (refused) and
+  NixOS (refused). AlmaLinux shares Fedora's path but was never booted (see the CPU note); on a
+  v3 CPU it is untested (needs a VM backend that exposes AVX2, or real hardware).
+- Low RAM (2026-10-22): with 4 GB the plan refuses Mint (needs 5.9 GB) and Fedora Workstation
+  (5.3 GB) before any change; with 5.4 GB, just over Fedora Workstation's line, its live system
+  ran from RAM and the install completed. Ubiquity's `toram` was tested at 6 GB only.
+- LNXDATA (NTFS) was tested with Kubuntu only. Ubuntu-family ISOs that later grow past 4 GB per
+  file should work the same way, but each new one is untested until tried.
 - The fixed remove-windows.sh rename step was checked as an extracted block, not with a second full
   `--really` run from scratch.
 - Not tested on real hardware, BitLocker-encrypted disks (refused by design), or disks where C: isn't

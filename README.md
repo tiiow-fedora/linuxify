@@ -9,9 +9,9 @@ explicit confirmation) sets up a dual boot.
 > `linuxify install` **repartitions your disk**: it shrinks C:, creates a partition and adds a
 > boot entry. `remove-windows.sh` **permanently deletes Windows**. These are experimental tools:
 >
-> - They have been tested **only in a throwaway VirtualBox VM** (Windows 10 22H2, UEFI + Secure
->   Boot, Linux Mint 22.3). Never on real hardware. See `PROGRESS.md` for exactly what is and
->   isn't tested.
+> - They have been tested **only in throwaway VirtualBox VMs** (Windows 10 22H2, UEFI), once per
+>   offered distro. Never on real hardware. See `PROGRESS.md` for exactly what is and isn't
+>   tested.
 > - **Back up everything first**, to a separate disk you then unplug. Linuxify's own staged copy
 >   is not a backup.
 > - Always run `--dry-run` first and read the plan. Real runs need a typed confirmation that
@@ -22,9 +22,16 @@ explicit confirmation) sets up a dual boot.
 > No warranty (see `LICENSE`). If you're not comfortable fixing a PC that won't boot, use
 > `linuxify try` (a virtual machine, zero risk) and install Linux from a USB stick yourself.
 
+## Download
+
+Get `linuxify.exe` from the [latest release](https://github.com/tiiow-fedora/linuxify/releases/latest)
+(Windows 10/11, x64). It's one self-contained file: put it in a folder and run it from a terminal
+(`linuxify scan --open`). It isn't code-signed, so SmartScreen may warn the first time; compare it
+with the release's `SHA256SUMS.txt` (`Get-FileHash linuxify.exe`).
+
 ## Build
 
-Windows 10/11, x64. Install Rust from <https://rustup.rs> (MSVC toolchain), then:
+Or build it yourself. Windows 10/11, x64. Install Rust from <https://rustup.rs> (MSVC toolchain), then:
 
 ```
 cargo build --release
@@ -50,7 +57,8 @@ linuxify install --undo                 #    put it back (before installing Linu
 ```
 
 What `install` does: shrinks C:, puts the distro's own installer on a small FAT32 partition
-(`LNXINST`), leaves the rest unallocated, and adds a **one-time** boot entry. Restart, pick
+(`LNXINST`; plus an NTFS `LNXDATA` partition when an Ubuntu-family ISO has a file too big for
+FAT32, like Kubuntu's), leaves the rest unallocated, and adds a **one-time** boot entry. Restart, pick
 "Install alongside Windows" in the installer, and finish it there. Windows stays.
 
 On the new Linux system, open the `linuxify-migration` folder (on the drive you staged to) in a

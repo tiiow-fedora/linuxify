@@ -22,13 +22,15 @@ use serde::{Deserialize, Serialize};
 pub const GB: u64 = 1024 * 1024 * 1024;
 pub const MB: u64 = 1024 * 1024;
 pub const INSTALLER_LABEL: &str = "LNXINST";
+/// NTFS partition after LNXINST for ISOs with a file too big for FAT32 (see InstallPlan::data_size).
+pub const DATA_LABEL: &str = "LNXDATA";
 pub const BCD_DESCRIPTION: &str = "Linuxify Linux installer";
 /// Never leave Windows with less free space than this after shrinking.
 pub const KEEP_WINDOWS_FREE: u64 = 20 * GB;
 /// Smallest Linux space Linuxify will set up.
 pub const MIN_LINUX: u64 = 40 * GB;
 pub const DEFAULT_LINUX: u64 = 100 * GB;
-const FAT32_MAX_FILE: u64 = 4 * GB - 1;
+pub const FAT32_MAX_FILE: u64 = 4 * GB - 1;
 /// Memory the live desktop and installer need on top of a `toram` copy of the ISO.
 /// Xubuntu 26.04 (5.2 GB ISO) copied into 6 GB of RAM hung before its desktop
 /// appeared (VM test); Mint 22.3 (2.9 GB) in 6 GB was fine.
@@ -60,9 +62,27 @@ pub struct InstallPlan {
     /// Size of the disk C: is on, so the installer hint can name it.
     #[serde(default)]
     pub disk_size: u64,
+    /// Size of the NTFS LNXDATA partition right after LNXINST (0 = none);
+    /// counted in `installer_size`. Holds a full copy of a casper ISO whose
+    /// squashfs is too big for FAT32 (Kubuntu 26.04: 4.08 GiB). LNXINST gets
+    /// everything except that file, so casper, which looks for the squashfs on
+    /// every partition, skips LNXINST and runs from LNXDATA.
+    #[serde(default)]
+    pub data_size: u64,
+    #[serde(default)]
+    pub data_letter: Option<char>,
 }
 
 impl InstallPlan {
+    /// Size of the FAT32 LNXINST partition alone.
+    pub fn fat_size(&self) -> u64 {
+        self.installer_size - self.data_size
+    }
+
+    pub fn data_offset(&self) -> u64 {
+        self.installer_offset + self.fat_size()
+    }
+
     /// The exact words the user must type to go ahead.
     pub fn confirm_phrase(&self) -> String {
         format!("SHRINK C: ON DISK {} BY {} GB", self.disk, self.shrink / GB)
@@ -72,23 +92,30 @@ impl InstallPlan {
     /// The new partition is placed at an explicit offset (right after the
     /// shrunk C:), so diskpart can't pick some other free area.
     pub fn diskpart_create(&self) -> String {
-        format!(
+        let mut s = format!(
             "rem Linuxify: shrink C: and create the installer partition\r\n\
              select disk {disk}\r\n\
              select partition {part}\r\n\
              shrink desired={shrink_mb} minimum={shrink_mb}\r\n\
              create partition primary size={inst_mb} offset={offset_kb}\r\n\
              format quick fs=fat32 label={label}\r\n\
-             assign letter={letter}\r\n\
-             exit\r\n",
+             assign letter={letter}\r\n",
             disk = self.disk,
             part = self.c_partition,
             shrink_mb = self.shrink / MB,
-            inst_mb = self.installer_size / MB,
+            inst_mb = self.fat_size() / MB,
             offset_kb = self.installer_offset / 1024,
             label = INSTALLER_LABEL,
             letter = self.letter,
-        )
+        );
+        if let (true, Some(l)) = (self.data_size > 0, self.data_letter) {
+            s += &format!(
+                "create partition primary size={} offset={}\r\nformat quick fs=ntfs label={DATA_LABEL}\r\nassign letter={l}\r\n",
+                self.data_size / MB,
+                self.data_offset() / 1024
+            );
+        }
+        s + "exit\r\n"
     }
 }
 
@@ -109,6 +136,12 @@ pub struct InstallRequest {
     /// Linux space in GB (None = default 100 GB, or as much as fits).
     pub linux_gb: Option<u64>,
     pub free_letter: char,
+    /// Total size of the ISO's files over FAT32's 4 GB limit.
+    pub big_files_bytes: u64,
+    /// The ISO is an Ubuntu-family live system (has a casper/ folder).
+    pub casper_live: bool,
+    /// Second free letter, for LNXDATA.
+    pub data_letter: Option<char>,
 }
 
 fn round_up(x: u64, unit: u64) -> u64 {
@@ -126,7 +159,14 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
     if hw.firmware != Firmware::Uefi {
         why.push("Linuxify only prepares installs on UEFI PCs (this one isn't, or it couldn't tell). Use a USB stick instead.".to_string());
     }
-    if req.largest_iso_file > FAT32_MAX_FILE {
+    // casper finds its squashfs on any partition, so a file too big for FAT32
+    // can go on an NTFS partition beside LNXINST. Other live systems are found
+    // by a single label, so they still need everything on LNXINST.
+    let split = req.largest_iso_file > FAT32_MAX_FILE;
+    if split && req.casper_live && req.data_letter.is_none() {
+        why.push("no second free drive letter for the installer's data partition".into());
+    }
+    if split && !req.casper_live {
         why.push(format!(
             "this ISO contains a {:.2} GB file, and FAT32 (which the installer partition must use so the PC can boot it) can't hold files over 4 GB. Use a USB stick for this distro.",
             req.largest_iso_file as f64 / GB as f64
@@ -175,7 +215,8 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
         return Err(why);
     };
     let c_free = part.free.unwrap_or(0);
-    let installer = installer_size_for(req.iso_bytes);
+    let data = if split { installer_size_for(req.iso_bytes) } else { 0 };
+    let installer = installer_size_for(req.iso_bytes - if split { req.big_files_bytes } else { 0 }) + data;
     // Cap by what Windows says it can shrink, and keep 20 GB free for Windows.
     let max_total = shrinkable.min(c_free.saturating_sub(KEEP_WINDOWS_FREE));
     let max_linux = round_down_gb(max_total.saturating_sub(installer));
@@ -213,6 +254,8 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
         letter: req.free_letter,
         copy_to_ram: runs_from_ram(req.installer),
         disk_size: disk.size,
+        data_size: data,
+        data_letter: if split { req.data_letter } else { None },
     })
 }
 
@@ -359,7 +402,7 @@ pub fn installer_hint(installer: Installer, disk_size: u64) -> String {
             "Then choose 'Replace a partition' and click the grey 'Free Space' block. Don't pick 'Install alongside' (it shrinks Windows again) or 'Erase disk'."
         }
         Installer::Anaconda => {
-            "Then choose 'Share disk with other operating systems' and leave 'Reclaim additional space' unticked. A warning that the EFI partition is under 500 MiB is fine."
+            "Then choose 'Share disk with other operating systems' and leave 'Reclaim additional space' unticked. A warning that the EFI partition is under 500 MiB is fine. Fedora hides its start-up menu: to start Windows, press Esc while the PC starts, type 'normal' at the 'grub>' prompt if one appears, and pick 'Windows Boot Manager'."
         }
         Installer::AnacondaClassic => {
             "In 'Installation Destination' select only that disk, keep 'Automatic', and leave 'Free up space by removing or shrinking existing partitions' unticked."
@@ -368,7 +411,7 @@ pub fn installer_hint(installer: Installer, disk_size: u64) -> String {
             "'Suggested Partitioning' should only create partitions in the free space; if it lists any 'Shrink' or 'Delete', click 'Guided Setup' and pick only that disk. On the last screen click 'Booting' and change the boot loader to 'GRUB2 for EFI': the default (systemd-boot) stores kernels on Windows' small EFI partition, which fills up at the next update."
         }
         Installer::Unknown => {
-            "Then install into the free (unallocated) space. Never pick 'Erase disk' or anything that deletes or shrinks the Windows partition."
+            "Then install into the free (unallocated) space. Never pick 'Erase disk' or anything that deletes or shrinks the Windows partition. If you set up the boot loader by hand (Arch), mount Windows' EFI partition at /boot/efi, not /boot: it's usually only 100 MB, too small for kernels."
         }
     };
     format!("{disk} {then}")
@@ -385,6 +428,11 @@ pub struct FatView {
     pub largest: u64,
     /// Groups of paths that collapse into one name on FAT32.
     pub case_twins: Vec<Vec<String>>,
+    /// Files over FAT32's limit (left off LNXINST when there's an LNXDATA).
+    pub big_files: u64,
+    pub big_bytes: u64,
+    /// Has a casper/ folder (Ubuntu-family live system).
+    pub casper: bool,
 }
 
 pub fn fat_view(files: &[(String, u64)]) -> FatView {
@@ -399,6 +447,13 @@ pub fn fat_view(files: &[(String, u64)]) -> FatView {
         v.files += 1;
         v.bytes += size;
         v.largest = v.largest.max(size);
+        if size > FAT32_MAX_FILE {
+            v.big_files += 1;
+            v.big_bytes += size;
+        }
+        if group[0].0.to_lowercase().replace('\\', "/").starts_with("casper/") {
+            v.casper = true;
+        }
         if group.len() > 1 {
             v.case_twins.push(group.iter().map(|f| f.0.clone()).collect());
         }
@@ -628,11 +683,14 @@ pub struct InstallState {
     pub started_at: String,
 }
 
-/// diskpart script that deletes the installer partition (found by its
-/// recorded offset at undo time) and grows C: back into the free space.
-pub fn diskpart_undo(disk: u32, installer_partition_number: Option<u32>, c_partition: u32) -> String {
+/// diskpart script that deletes the installer partitions (found by their
+/// recorded offsets at undo time) and grows C: back into the free space.
+pub fn diskpart_undo(disk: u32, installer_partitions: &[u32], c_partition: u32) -> String {
     let mut s = format!("rem Linuxify: undo\r\nselect disk {disk}\r\n");
-    if let Some(n) = installer_partition_number {
+    let mut parts = installer_partitions.to_vec();
+    // Highest number first, in case diskpart renumbers the ones after a deleted partition.
+    parts.sort_unstable_by(|a, b| b.cmp(a));
+    for n in parts {
         // No "override": diskpart then refuses to delete protected/system partitions.
         s += &format!("select partition {n}\r\ndelete partition\r\n");
     }
@@ -706,7 +764,36 @@ mod tests {
     }
 
     fn req() -> InstallRequest {
-        InstallRequest { distro_id: "linux-mint".into(), iso: "mint.iso".into(), iso_bytes: 3_091_660_800, largest_iso_file: 2_900_000_000, iso_case_conflicts: vec![], installer: Installer::Ubiquity, min_cpu_level: 0, usb_only: None, linux_gb: None, free_letter: 'L' }
+        InstallRequest { distro_id: "linux-mint".into(), iso: "mint.iso".into(), iso_bytes: 3_091_660_800, largest_iso_file: 2_900_000_000, iso_case_conflicts: vec![], installer: Installer::Ubiquity, min_cpu_level: 0, usb_only: None, linux_gb: None, free_letter: 'L', big_files_bytes: 0, casper_live: true, data_letter: Some('M') }
+    }
+
+    /// Kubuntu 26.04: 4.72 GiB ISO whose casper/filesystem.squashfs is 4.08 GiB.
+    fn kubuntu() -> InstallRequest {
+        InstallRequest { distro_id: "kubuntu".into(), iso_bytes: 5_072_990_208, largest_iso_file: 4_381_224_960, big_files_bytes: 4_381_224_960, installer: Installer::Calamares, ..req() }
+    }
+
+    #[test]
+    fn big_casper_file_goes_on_an_ntfs_data_partition() {
+        let p = plan(&hw(), &kubuntu()).unwrap();
+        // LNXINST: 0.64 GB of boot files -> the 4 GB minimum. LNXDATA: full 4.72 GiB ISO + 10% + 0.5 GB -> 6 GB.
+        assert_eq!((p.fat_size(), p.data_size, p.installer_size), (4 * GB, 6 * GB, 10 * GB));
+        assert_eq!(p.shrink, 110 * GB);
+        assert_eq!(p.data_offset(), p.installer_offset + 4 * GB);
+        assert!(p.data_offset() + p.data_size + p.linux_size <= p.c_offset + p.c_size_before);
+        assert!(!p.copy_to_ram, "Calamares runs with its medium mounted");
+        let s = p.diskpart_create();
+        assert!(s.contains(&format!("create partition primary size={} offset={}\r\nformat quick fs=fat32 label=LNXINST\r\nassign letter=L\r\n", 4 * 1024, p.installer_offset / 1024)), "{s}");
+        assert!(s.contains(&format!("create partition primary size={} offset={}\r\nformat quick fs=ntfs label=LNXDATA\r\nassign letter=M\r\nexit\r\n", 6 * 1024, p.data_offset() / 1024)), "{s}");
+        for bad in ["clean", "delete", "convert", "override"] {
+            assert!(!s.to_lowercase().contains(bad));
+        }
+        // Without a second letter, or for a live system that isn't casper, it's refused.
+        assert!(plan(&hw(), &InstallRequest { data_letter: None, ..kubuntu() }).unwrap_err().iter().any(|w| w.contains("second free drive letter")));
+        assert!(plan(&hw(), &InstallRequest { casper_live: false, ..kubuntu() }).unwrap_err().iter().any(|w| w.contains("over 4 GB")));
+        // Small ISOs keep the single partition.
+        let small = plan(&hw(), &req()).unwrap();
+        assert_eq!((small.data_size, small.data_letter, small.fat_size()), (0, None, small.installer_size));
+        assert!(!small.diskpart_create().contains("ntfs"));
     }
 
     #[test]
@@ -770,6 +857,7 @@ mod tests {
         h.disks[0].partition_style = Some("MBR".into());
         let mut r = req();
         r.largest_iso_file = 5 * GB;
+        r.casper_live = false;
         let e = plan(&h, &r).unwrap_err();
         assert!(e.iter().any(|x| x.contains("UEFI")));
         assert!(e.iter().any(|x| x.contains("GPT")));
@@ -927,11 +1015,13 @@ mod tests {
 
     #[test]
     fn undo_script_and_partition_lookup() {
-        let s = diskpart_undo(0, Some(4), 3);
+        let s = diskpart_undo(0, &[4], 3);
         assert!(s.contains("select partition 4\r\ndelete partition\r\nselect partition 3\r\nextend"));
         assert!(!s.contains("override"), "undo must not force-delete protected partitions");
-        let s2 = diskpart_undo(0, None, 3);
+        let s2 = diskpart_undo(0, &[], 3);
         assert!(!s2.contains("delete"));
+        // LNXINST and LNXDATA: the higher number goes first.
+        assert!(diskpart_undo(0, &[4, 5], 3).contains("select partition 5\r\ndelete partition\r\nselect partition 4\r\ndelete partition\r\nselect partition 3\r\nextend"));
         let mut h = hw();
         let p = plan(&h, &req()).unwrap();
         h.disks[0].partitions.push(part(5, Some('L'), BASIC, p.installer_offset, p.installer_size, None));
@@ -1052,6 +1142,10 @@ mod tests {
         assert_eq!(v.largest, 2_800_000_000);
         assert_eq!(v.case_twins, vec![vec![r"EFI\BOOT\BOOTX64.EFI".to_string(), r"EFI\BOOT\bootx64.efi".to_string()]]);
         assert!(fat_view(&[f("a", 1), f("b", 2)]).case_twins.is_empty());
+        assert!(!v.casper && v.big_files == 0);
+        let k = fat_view(&[f(r"casper\filesystem.squashfs", 4_381_224_960), f(r"casper\vmlinuz", 17_295_752), f(r"EFI\boot\bootx64.efi", 1)]);
+        assert!(k.casper);
+        assert_eq!((k.big_files, k.big_bytes), (1, 4_381_224_960));
         let why = plan(&hw(), &InstallRequest { iso_case_conflicts: vec!["x/A.cfg = x/a.cfg".into()], ..req() }).unwrap_err();
         assert!(why.iter().any(|w| w.contains("upper/lower case") && w.contains("USB stick")), "{why:?}");
     }
