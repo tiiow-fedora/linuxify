@@ -41,6 +41,6 @@ jobs:
           $notes = @"
           **Experimental.** ``linuxify install`` repartitions your disk. It has only been tested in VirtualBox VMs, never on real hardware. Read the safety warning in the README and back up first.
 
-          Download ``linuxify.exe`` (Windows 10/11, x64) and run it from a terminal, e.g. ``linuxify scan --open``. It isn't code-signed, so Windows SmartScreen may warn the first time. Check the file against ``SHA256SUMS.txt``.
+          Download ``linuxify.exe`` (Windows 10/11, x64) and double-click it to open the window, or run it from a terminal, e.g. ``linuxify scan --open``. It isn't code-signed, so Windows SmartScreen may warn the first time. Check the file against ``SHA256SUMS.txt``.
           "@
           gh release create $env:GITHUB_REF_NAME dist\linuxify.exe dist\SHA256SUMS.txt --title "Linuxify $env:GITHUB_REF_NAME" --notes $notes --prerelease

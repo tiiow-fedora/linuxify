@@ -1,6 +1,6 @@
 [package]
 name = "linuxify"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Helps you move from Windows to Linux: scan, choose a distro, try it, stage your data, install."
 license = "MIT"
