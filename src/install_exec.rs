@@ -303,5 +303,15 @@ pub fn undo(state: &InstallState, dry_run: bool) -> Result<Vec<String>, String> 
         let done_path = state_path()?.with_extension("undone.json");
         let _ = std::fs::rename(state_path()?, done_path);
     }
+    // Deleting partitions renumbers the ones after them; re-save the firmware
+    // entries (e.g. a Linux installed after LNXINST) so they still start.
+    if dry_run {
+        done.push("fix the partition numbers in firmware boot entries that moved".into());
+    } else {
+        match crate::fwboot::refresh_boot_entries(&[p.disk], true) {
+            Ok(fixed) => done.extend(fixed),
+            Err(e) => eprintln!("  ! couldn't check the firmware boot entries ({e}). If a Linux you installed no longer starts, run `linuxify install --fix-boot-entries`."),
+        }
+    }
     Ok(done)
 }

@@ -111,6 +111,10 @@ enum Command {
         /// Remove the installer partition and boot entry and grow C: back.
         #[arg(long)]
         undo: bool,
+        /// Re-point firmware boot entries whose partition number changed (e.g. a Linux
+        /// that stopped starting after an --undo by Linuxify 0.1.0). Works with --dry-run.
+        #[arg(long)]
+        fix_boot_entries: bool,
         /// Check whether removing Windows can be unlocked (it never deletes anything itself).
         #[arg(long)]
         replace_windows: bool,
@@ -132,8 +136,8 @@ fn main() -> ExitCode {
         Command::Migrate { target, dry_run, verify, no_verify, from_folder, stop_after } => {
             run_migrate(MigrateOpts { target, dry_run, verify_only: verify, no_verify, from_folder, stop_after })
         }
-        Command::Install { distro, linux_gb, dry_run, undo, replace_windows } => {
-            run_install(cli.data_dir, InstallOpts { distro, linux_gb, dry_run, undo, replace_windows })
+        Command::Install { distro, linux_gb, dry_run, undo, fix_boot_entries, replace_windows } => {
+            run_install(cli.data_dir, InstallOpts { distro, linux_gb, dry_run, undo, fix_boot_entries, replace_windows })
         }
     };
     match result {
@@ -607,6 +611,7 @@ struct InstallOpts {
     linux_gb: Option<u64>,
     dry_run: bool,
     undo: bool,
+    fix_boot_entries: bool,
     replace_windows: bool,
 }
 
@@ -619,6 +624,26 @@ fn read_typed_line() -> String {
 fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> {
     if o.replace_windows {
         return run_replace_windows();
+    }
+    if o.fix_boot_entries {
+        if !o.dry_run {
+            if let Some(lock) = flow::install_lock() {
+                return Err(format!("this PC is locked against disk changes ({} exists); nothing was changed", lock.display()));
+            }
+        }
+        let (hw, err) = linuxify::scan::hardware::scan();
+        if let Some(e) = err {
+            return Err(format!("could not read the disks: {e}"));
+        }
+        let disks: Vec<u32> = hw.disks.iter().map(|d| d.number).collect();
+        let fixed = linuxify::fwboot::refresh_boot_entries(&disks, !o.dry_run)?;
+        if fixed.is_empty() {
+            println!("All firmware boot entries already point at the right partitions.");
+        }
+        for f in fixed {
+            println!("  {}{f}", if o.dry_run { "would fix: " } else { "fixed: " });
+        }
+        return Ok(());
     }
     if o.undo {
         let state = install_exec::load_state().ok_or("there is no Linuxify install setup to undo")?;

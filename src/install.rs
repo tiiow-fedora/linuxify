@@ -416,7 +416,7 @@ pub fn installer_hint(installer: Installer, disk_size: u64) -> String {
             "'Suggested Partitioning' should only create partitions in the free space; if it lists any 'Shrink' or 'Delete', click 'Guided Setup' and pick only that disk. On the last screen click 'Booting' and change the boot loader to 'GRUB2 for EFI': the default (systemd-boot) stores kernels on Windows' small EFI partition, which fills up at the next update."
         }
         Installer::Omarchy => {
-            "Then choose 'Free space install' (never the whole-disk option). Omarchy encrypts its partition, so it asks for a passphrase at every start-up. Windows isn't in its start-up menu at first: once Omarchy is running, open a terminal and run 'sudo limine-scan' to add it."
+            "Then choose 'Free space install' (never the whole-disk option). Omarchy encrypts its partition, so it asks for a passphrase at every start-up. Windows isn't in its start-up menu at first: once Omarchy is running, open a terminal, run 'sudo limine-scan' and pick 'Windows Boot Manager' (not the Linuxify installer). Omarchy may skip that menu; to show it for 3 seconds, run: sudo sed -i 's/^#timeout: 3/timeout: 3/' /efi/limine.conf"
         }
         Installer::Unknown => {
             "Then install into the free (unallocated) space. Never pick 'Erase disk' or anything that deletes or shrinks the Windows partition. If you set up the boot loader by hand (Arch), mount Windows' EFI partition at /boot/efi, not /boot: it's usually only 100 MB, too small for kernels."

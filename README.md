@@ -72,7 +72,7 @@ linuxify migrate --target E:\
 
 linuxify install linux-mint --dry-run   # 5. show the dual-boot plan; changes nothing
 linuxify install linux-mint             #    do it (admin, typed confirmation)
-linuxify install --undo                 #    put it back (before installing Linux)
+linuxify install --undo                 #    remove the installer partitions, grow C: back
 ```
 
 What `install` does: shrinks C:, puts the distro's own installer on a small FAT32 partition

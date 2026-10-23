@@ -327,7 +327,7 @@ VirtualBox API). Log: `scratch/distro-tests/results.txt`.
 | Bazzite | Anaconda (installer ISO) | PASS: installed from LNXINST, MOK enrolled, boots |
 | AlmaLinux 10.2 | Anaconda (live) | Can't boot in this VM (CPU is x86-64-v2, Alma 10 needs v3); new CPU-level gate refuses it on such PCs |
 | Arch | manual | PASS: boots from LNXINST (systemd-boot entries adapted); installed by hand (pacstrap, GRUB on Windows' ESP at /boot/efi), both OSes boot, `--undo` OK |
-| Omarchy 4.0.6 | Omarchy (archinstall) | PARTIAL (2026-10-22): LNXINST + LNXDATA created, live system boots and runs from LNXDATA (ntfs3). First run showed its installer hides the Windows disk; fixed with `copytoram=y` (needs ~9 GB RAM). The full install with that fix is not yet confirmed |
+| Omarchy 4.0.6 | Omarchy (archinstall) | PASS (2026-10-23): LNXINST + LNXDATA, live system from LNXDATA (ntfs3) copied to RAM (`copytoram=y`, ~9 GB RAM; without it the installer hides the Windows disk). "Free space install" filled exactly the free space; Omarchy and Windows (after `limine-scan`) both start from Limine. Installed unencrypted: in this VM LUKS fails ("Not compatible PBKDF2 options") because VirtualBox-on-Hyper-V's clock breaks cryptsetup's benchmark, not a Linuxify issue. `--undo` grew C: back by 12 GB but left Omarchy unbootable (firmware entry pointed at the old partition slot); fixed in fwboot.rs, after which Omarchy starts again |
 | NixOS | — | Refused as designed: its initrd only mounts an ISO 9660 filesystem with the ISO's label |
 
 ### Not tested / known limits
@@ -337,8 +337,7 @@ VirtualBox API). Log: `scratch/distro-tests/results.txt`.
 - Low RAM (2026-10-22): with 4 GB the plan refuses Mint (needs 5.9 GB) and Fedora Workstation
   (5.3 GB) before any change; with 5.4 GB, just over Fedora Workstation's line, its live system
   ran from RAM and the install completed. Ubiquity's `toram` was tested at 6 GB only.
-- LNXDATA (NTFS) was tested to the end with Kubuntu; Omarchy boots and runs from it, but its
-  install (with `copytoram`) and `--undo` are not yet confirmed. Ubuntu-family ISOs that later
+- LNXDATA (NTFS) was tested to the end with Kubuntu and Omarchy. Ubuntu-family ISOs that later
   grow past 4 GB per file should work the same way, but each new one is untested until tried.
 - The fixed remove-windows.sh rename step was checked as an extracted block, not with a second full
   `--really` run from scratch.

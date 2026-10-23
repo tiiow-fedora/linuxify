@@ -323,6 +323,14 @@ Short record of choices made while building Linuxify, and why.
   disk), so it gets `copytoram=y` (archiso copies the image to RAM, then unmounts the medium)
   and the RAM check (image + 3 GB, about 9 GB). Omarchy's free-space install makes its own ESP
   and never touches Windows', and Windows is added to its Limine menu with `limine-scan`.
+- **`--undo` re-points firmware boot entries afterwards (fwboot.rs).** Deleting LNXINST/LNXDATA
+  from Windows packs the GPT, so a Linux installed after them moves down (Omarchy's ESP went from
+  slot 7 to 5). UEFI boot entries store HD(slot, GPT, partition GUID) and EDK2-based firmware
+  matches the slot too, so the VM fell through to Windows ("failed to load Boot0006 … Not Found").
+  Undo now reads the raw GPT, finds each Boot#### whose GUID sits in another slot, and rewrites
+  only that number (SetFirmwareEnvironmentVariableExW with SeSystemEnvironmentPrivilege). Tried
+  first: `bcdedit /set {entry} device …` reports success but leaves the firmware's copy as it was.
+  `linuxify install --fix-boot-entries` does the same on its own, for undos run with 0.1.0.
 - **A file over 4 GB can't go on FAT32, so casper ISOs get a second, NTFS partition ("LNXDATA").**
   Kubuntu 26.04's squashfs is 4.08 GiB. The firmware can only boot from FAT32, but casper doesn't
   care where its squashfs is: it mounts every partition (`is_supported_fs` includes `ntfs`, and

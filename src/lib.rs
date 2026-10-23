@@ -5,6 +5,7 @@ pub mod appdirs;
 pub mod chooser;
 pub mod download;
 pub mod flow;
+pub mod fwboot;
 pub mod gui;
 pub mod install;
 pub mod install_exec;
