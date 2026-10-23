@@ -560,12 +560,14 @@ mod tests {
     }
 
     #[test]
-    fn old_cpu_excludes_almalinux_only() {
+    fn old_cpu_excludes_only_v3_distros() {
         let h = ScanHints { cpu_level: Some(2), ..Default::default() };
         let r = rank(&list(), &Answers::default(), Some(&h));
         let alma = r.excluded.iter().find(|e| e.id == "almalinux").expect("alma excluded");
         assert!(alma.why.contains("x86-64-v3") && alma.why.contains("x86-64-v2"));
-        assert_eq!(r.excluded.len(), 1);
+        let mut ids: Vec<_> = r.excluded.iter().map(|e| e.id.as_str()).collect();
+        ids.sort_unstable();
+        assert_eq!(ids, ["almalinux", "pikaos"]);
         assert!(cpu_too_old(3, Some(3)).is_none() && cpu_too_old(3, None).is_none() && cpu_too_old(0, Some(1)).is_none());
     }
 

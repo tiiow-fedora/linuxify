@@ -56,6 +56,14 @@ Short record of choices made while building Linuxify, and why.
   MCA Selector (Java), Supersonic (cross-platform), GitHub Desktop (community build only, so
   "alternative"), Skype (shut down in May 2025), plus pattern fixes (Deadlock was catching
   "Deadlock Mod Manager"; Java(TM), Unity 6, Outlook for Windows, whkd weren't matching).
+- **2026-10-22: app_map.json grown to 590 apps** from checked sources instead of memory: the Flathub
+  API for every Flatpak ID (three IDs had gone end-of-life: Thunderbird is now
+  `org.mozilla.thunderbird`, Sublime Text `com.sublimehq.SublimeText`, Wire's Flatpak is gone),
+  areweanticheatyet for anti-cheat games, ProtonDB gold/platinum for `wine_ok`, and Steam's platform
+  data for native games. Games with ProtonDB silver/bronze (Halo Infinite, Lost Ark, New World) were
+  left unmapped rather than called `wine_ok`. Patterns avoid known traps: `=grand theft auto v`
+  (contains-matching would catch Vice City), `=battlefield 1` (not 1942), `moonlight game streaming`
+  (not the game Moonlighter), `^vnc viewer` (TightVNC Viewer would otherwise go to RealVNC).
 
 ## Stage 2 — distro chooser
 
@@ -95,6 +103,26 @@ Short record of choices made while building Linuxify, and why.
   gets Mint Cinnamon ahead of Mint Xfce instead of a tie.
 - openSUSE Tumbleweed's stability went 3→4 and maintenance 2→3. It is the most heavily tested
   rolling release (openQA plus automatic snapshots), and rating it like Arch was unfair.
+
+### 2026-10-22: 35 distros
+- **Added Aurora and Bluefin** (Universal Blue, the Bazzite team's KDE and GNOME desktops), which
+  are often recommended as hands-off daily drivers, and **PikaOS** and **AnduinOS**, which sit at
+  #12–17 on DistroWatch's 6- and 12-month rankings. Everything above them was already in the list.
+  Left out on purpose: Omarchy (being added separately), SteamOS (no general-PC installer), KDE neon
+  (being wound down in favour of KDE Linux), and smaller or regional projects (Q4OS, BigLinux,
+  TUXEDO OS, Artix).
+- **None of the four gets an automatic download.** Aurora's and Bluefin's live ISOs (Titanoboa + Anaconda
+  WebUI) have not been tried on LNXINST. PikaOS has no Microsoft-signed boot loader, doesn't support
+  Ventoy, and its live-boot method is unchecked. AnduinOS's checksum file is a bare
+  `SHA256: <hash>` line with no file name, which Linuxify's checksum parser can't use, and AnduinOS 2.0.2
+  replaced Ubiquity with its own installer. So all four keep `installer` unset (generic hint),
+  like Zorin, elementary and Nobara.
+- PikaOS needs a Haswell/Ryzen CPU, so it is `min_cpu_level: 3`. The old-CPU test now expects AlmaLinux
+  and PikaOS to be excluded. Aurora/Bluefin are `needs_key_enrolment` like Bazzite (Universal Blue
+  signs its own kernels).
+- Aurora and Bluefin first rated `creative` 3 and `out_of_box` 5. That put Bluefin in the enterprise
+  worker's top 3 and second for the creator. Pro apps such as DaVinci Resolve are harder on an atomic
+  system, and their extras are more limited than Bazzite's, so they are now 2 and 4.
 
 ## Stage 3 — try before installing
 

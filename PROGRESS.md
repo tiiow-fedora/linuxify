@@ -15,7 +15,7 @@ Output: `%LOCALAPPDATA%\Linuxify\reports\scan-<time>\report.html` + `report.json
 - Installed programs: HKLM 64/32-bit and HKCU uninstall keys, merged with `winget list` (which adds
   Store/MSIX apps such as Fortnite and Minecraft). Duplicates are removed, and hidden components,
   updates and hotfixes are filtered out.
-- Mapping against `data/app_map.json`: 223 apps plus 20 ignore rules. Statuses are native / alternative /
+- Mapping against `data/app_map.json`: 590 apps plus 38 ignore rules. Statuses are native / alternative /
   wine_ok / blocked / unknown. Steam games get ProtonDB links.
 - Hardware/boot: CPU, RAM, GPUs (virtual adapters ignored), disks with their partitions, UEFI/BIOS,
   Secure Boot, BitLocker per volume, Intel RST/VMD detection, C: free space (exact shrink size when
@@ -55,9 +55,9 @@ Output: `%LOCALAPPDATA%\Linuxify\reports\scan-<time>\report.html` + `report.json
 - winget column parsing assumes single-width characters. A program name in CJK/emoji would make
   that one row's columns shift. Registry data is unaffected.
 - `.kdbx`/`.pst` files are only found inside the six library folders, not anywhere on disk.
-- app_map.json: apt/dnf package names and some Flatpak IDs came from memory (mine and the seeding
-  agent's) and have not been checked against live repositories. That matters from Stage 4
-  (`restore.sh`), so verify them before generating install commands.
+- app_map.json: every Flatpak ID was checked against the Flathub API on 2026-10-22 (all exist, none
+  end-of-life). apt/dnf package names are still from memory and not checked against live
+  repositories.
 - Browser profile sizes include caches, so they overstate what needs migrating.
 
 ## Stage 2 — Distro chooser: DONE (2026-10-18)
@@ -136,6 +136,21 @@ Output: `%LOCALAPPDATA%\Linuxify\choice.html` + `choice.json`. Uses the latest s
 - Uncertain facts are marked rather than guessed: Secure Boot support is `unknown` for elementary,
   Nobara, antiX, Linux Lite and Solus. Arch-family distros, NixOS, Void and Gentoo are marked
   "needs Secure Boot turned off to install".
+
+### Update 2026-10-22: 35 distros, 590 apps
+- **Distros 31 → 35:** Aurora, Bluefin, PikaOS and AnduinOS. They were picked from DistroWatch's
+  page-hit ranking (12-month, 6-month and 1-month), the Steam survey's Linux breakdown and current
+  beginner recommendations. All of them are chooser-only, with no `isos.json` entry and the installer
+  untested. Details are in DECISIONS.md. Top 3 per profile (AMD, 32 GB) after the change: newcomer Mint /
+  Mint Xfce / Zorin; gamer Bazzite / Pop!_OS / Mint; creator Pop!_OS / Ubuntu / Bluefin;
+  gaming_tinkerer CachyOS / Garuda / PikaOS; every other profile is unchanged.
+- **app_map.json 223 → 590 apps, ignore rules 20 → 38.** Sources: Flathub API (every Flatpak ID),
+  areweanticheatyet.com's games.json (anti-cheat statuses), the ProtonDB summary API (every `wine_ok`
+  game is gold or platinum), Steam's appdetails API ("native" games), and vendor pages or 2026 news
+  for apps whose Linux status changed recently (Claude, ChatGPT, Opera GX, GeForce NOW have Linux
+  apps now; Messenger's desktop app is gone; Proton Drive still has no Linux app). Checked against
+  this PC's 357 registry names: no existing match changed except fixes, and the new patterns were
+  tested against about 300 realistic display names.
 
 ## Stage 3 — Try before installing: DONE (2026-10-20), VM trial only
 
