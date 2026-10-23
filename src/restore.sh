@@ -145,7 +145,7 @@ done
 for p in mail/thunderbird/*/; do
   [ -d "$p" ] || continue
   found=1
-  add_mozilla_profile "${p%/}" "$(moz_root org.mozilla.Thunderbird .thunderbird)" Thunderbird "Thunderbird's Profile Manager (thunderbird -P)"
+  add_mozilla_profile "${p%/}" "$(moz_root org.mozilla.thunderbird .thunderbird)" Thunderbird "Thunderbird's Profile Manager (thunderbird -P)"
 done
 for b in browsers/google-chrome browsers/microsoft-edge browsers/brave browsers/vivaldi browsers/chromium; do
   [ -d "$b" ] || continue
