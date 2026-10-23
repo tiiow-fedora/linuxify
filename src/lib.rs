@@ -1,9 +1,11 @@
-//! Linuxify: helps a user move from Windows to Linux.
-//! Stage 1 (this build): read-only scan + Linux Readiness Report.
+//! Linuxify: helps a user move from Windows to Linux. The same library
+//! drives the command line (main.rs) and the window (gui/).
 
 pub mod appdirs;
 pub mod chooser;
 pub mod download;
+pub mod flow;
+pub mod gui;
 pub mod install;
 pub mod install_exec;
 pub mod iso;

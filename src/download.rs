@@ -101,43 +101,91 @@ pub fn human(bytes: u64) -> String {
     }
 }
 
-fn verify_with_progress(path: &Path, expected: &str) -> Result<bool, String> {
-    let total = std::fs::metadata(path).map(|m| m.len()).unwrap_or(0).max(1);
+/// What a download or check is doing, for a progress display.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Event {
+    /// A one-line status message.
+    Note(String),
+    DownloadStart { resume_at: u64, total: u64, host: String },
+    /// Sent for every 1 MB read; the receiver throttles.
+    Downloading { done: u64, total: u64, bytes_per_sec: f64 },
+    DownloadDone { bytes: u64 },
+    HashStart { total: u64 },
+    Hashing { done: u64, total: u64 },
+    HashDone,
+}
+
+/// Prints events the way the command line always has: a progress line
+/// rewritten in place every 2 seconds.
+pub fn console_progress() -> impl FnMut(Event) {
     let mut last = Instant::now();
-    print!("  Checking SHA-256...");
-    let got = sha256_file(path, |done| {
-        if last.elapsed() > Duration::from_secs(2) {
-            print!("\r  Checking SHA-256... {:>3}%", done * 100 / total);
-            let _ = std::io::stdout().flush();
-            last = Instant::now();
+    move |e| {
+        match e {
+            Event::Note(m) => println!("  {m}"),
+            Event::DownloadStart { resume_at, total, host } => println!(
+                "  {} {} from {host}",
+                if resume_at > 0 { format!("Resuming at {} of", human(resume_at)) } else { "Downloading".to_string() },
+                human(total)
+            ),
+            Event::Downloading { done, total, bytes_per_sec } => {
+                if last.elapsed() > Duration::from_secs(2) {
+                    let pct = (done * 100).checked_div(total).unwrap_or(0);
+                    print!("\r  {pct:>3}%  {} / {}  {:.1} MB/s   ", human(done), human(total), bytes_per_sec / 1e6);
+                    last = Instant::now();
+                }
+            }
+            Event::DownloadDone { bytes } => println!("\r  Downloaded {}.                              ", human(bytes)),
+            Event::HashStart { .. } => {
+                print!("  Checking SHA-256...");
+                last = Instant::now();
+            }
+            Event::Hashing { done, total } => {
+                if last.elapsed() > Duration::from_secs(2) {
+                    print!("\r  Checking SHA-256... {:>3}%", done * 100 / total.max(1));
+                    last = Instant::now();
+                }
+            }
+            Event::HashDone => println!("\r  Checking SHA-256... done      "),
         }
-    })?;
-    println!("\r  Checking SHA-256... done      ");
+        let _ = std::io::stdout().flush();
+    }
+}
+
+fn verify_with_progress(path: &Path, expected: &str, on: &mut dyn FnMut(Event)) -> Result<bool, String> {
+    let total = std::fs::metadata(path).map(|m| m.len()).unwrap_or(0).max(1);
+    on(Event::HashStart { total });
+    let got = sha256_file(path, |done| on(Event::Hashing { done, total }))?;
+    on(Event::HashDone);
     Ok(got.eq_ignore_ascii_case(expected))
 }
 
 /// Makes sure `dir/<file_name>` exists and matches the official SHA-256,
 /// downloading (with resume) if needed. Never returns an unverified path.
 pub fn ensure_iso(r: &ResolvedIso, dir: &Path, reverify: bool) -> Result<PathBuf, String> {
+    ensure_iso_with(r, dir, reverify, &mut console_progress())
+}
+
+/// [`ensure_iso`], reporting progress to `on` instead of the console.
+pub fn ensure_iso_with(r: &ResolvedIso, dir: &Path, reverify: bool, on: &mut dyn FnMut(Event)) -> Result<PathBuf, String> {
     std::fs::create_dir_all(dir).map_err(|e| format!("could not create {}: {e}", dir.display()))?;
     let iso = dir.join(&r.file_name);
     if iso.exists() {
         if !reverify && already_verified(&iso, &r.sha256) {
-            println!("  Already downloaded and verified: {}", iso.display());
+            on(Event::Note(format!("Already downloaded and verified: {}", iso.display())));
             return Ok(iso);
         }
-        if verify_with_progress(&iso, &r.sha256)? {
+        if verify_with_progress(&iso, &r.sha256, on)? {
             write_marker(&iso, &r.sha256)?;
-            println!("  Existing download verified.");
+            on(Event::Note("Existing download verified.".into()));
             return Ok(iso);
         }
-        println!("  The existing file does not match the official checksum; downloading it again.");
+        on(Event::Note("The existing file does not match the official checksum; downloading it again.".into()));
         std::fs::remove_file(&iso).map_err(|e| e.to_string())?;
     }
 
     let part = dir.join(format!("{}.part", r.file_name));
-    let resumed = download_to_part(r, dir, &part)?;
-    if !verify_with_progress(&part, &r.sha256)? {
+    let resumed = download_to_part(r, dir, &part, on)?;
+    if !verify_with_progress(&part, &r.sha256, on)? {
         // Our own temporary files inside %LOCALAPPDATA%\Linuxify: safe to remove.
         let _ = std::fs::remove_file(&part);
         let _ = std::fs::remove_file(ok_path(&part));
@@ -145,9 +193,9 @@ pub fn ensure_iso(r: &ResolvedIso, dir: &Path, reverify: bool) -> Result<PathBuf
             return Err("the download does NOT match the official SHA-256 checksum, so it was deleted and will not be used. Try again later or from another network.".into());
         }
         // A resumed download can carry damage from a crash; try once from scratch.
-        println!("  The resumed download didn't match the checksum; downloading it again from the start.");
-        download_to_part(r, dir, &part)?;
-        if !verify_with_progress(&part, &r.sha256)? {
+        on(Event::Note("The resumed download didn't match the checksum; downloading it again from the start.".into()));
+        download_to_part(r, dir, &part, on)?;
+        if !verify_with_progress(&part, &r.sha256, on)? {
             let _ = std::fs::remove_file(&part);
             let _ = std::fs::remove_file(ok_path(&part));
             return Err("the download does NOT match the official SHA-256 checksum, so it was deleted and will not be used. Try again later or from another network.".into());
@@ -156,7 +204,7 @@ pub fn ensure_iso(r: &ResolvedIso, dir: &Path, reverify: bool) -> Result<PathBuf
     std::fs::rename(&part, &iso).map_err(|e| e.to_string())?;
     let _ = std::fs::remove_file(ok_path(&part));
     write_marker(&iso, &r.sha256)?;
-    println!("  Verified against the official checksum.");
+    on(Event::Note("Verified against the official checksum.".into()));
     Ok(iso)
 }
 
@@ -179,7 +227,7 @@ pub fn resume_point(part_len: u64, checkpoint: Option<u64>) -> u64 {
 
 /// Downloads into `part`, resuming from the last checkpoint. Returns true if
 /// it resumed (rather than starting from zero).
-fn download_to_part(r: &ResolvedIso, dir: &Path, part: &Path) -> Result<bool, String> {
+fn download_to_part(r: &ResolvedIso, dir: &Path, part: &Path, on: &mut dyn FnMut(Event)) -> Result<bool, String> {
     let part_len = std::fs::metadata(part).map(|m| m.len()).unwrap_or(0);
     let checkpoint = std::fs::read_to_string(ok_path(part)).ok().and_then(|t| t.trim().parse::<u64>().ok());
     let have = resume_point(part_len, checkpoint);
@@ -201,12 +249,7 @@ fn download_to_part(r: &ResolvedIso, dir: &Path, part: &Path) -> Result<bool, St
             return Err(format!("not enough free space in {}: need {} more, have {}", dir.display(), human(remaining), human(free)));
         }
     }
-    println!(
-        "  {} {} from {}",
-        if resuming { format!("Resuming at {} of", human(have)) } else { "Downloading".to_string() },
-        human(total),
-        iso::host_of(resp.url().as_str()).unwrap_or("?")
-    );
+    on(Event::DownloadStart { resume_at: if resuming { have } else { 0 }, total, host: iso::host_of(resp.url().as_str()).unwrap_or("?").to_string() });
 
     let mut out = std::fs::OpenOptions::new()
         .create(true)
@@ -223,7 +266,6 @@ fn download_to_part(r: &ResolvedIso, dir: &Path, part: &Path) -> Result<bool, St
     let mut done = start_at;
     let mut since_checkpoint = 0u64;
     let start = Instant::now();
-    let mut last = Instant::now();
     let mut buf = vec![0u8; 1 << 20];
     loop {
         let n = resp.read(&mut buf).map_err(|e| format!("download interrupted ({e}); run the same command again to resume"))?;
@@ -238,18 +280,13 @@ fn download_to_part(r: &ResolvedIso, dir: &Path, part: &Path) -> Result<bool, St
             std::fs::write(ok_path(part), done.to_string()).map_err(|e| e.to_string())?;
             since_checkpoint = 0;
         }
-        if last.elapsed() > Duration::from_secs(2) {
-            let rate = (done - start_at) as f64 / start.elapsed().as_secs_f64().max(0.1);
-            let pct = (done * 100).checked_div(total).unwrap_or(0);
-            print!("\r  {pct:>3}%  {} / {}  {:.1} MB/s   ", human(done), human(total), rate / 1e6);
-            let _ = std::io::stdout().flush();
-            last = Instant::now();
-        }
+        let bytes_per_sec = (done - start_at) as f64 / start.elapsed().as_secs_f64().max(0.1);
+        on(Event::Downloading { done, total, bytes_per_sec });
     }
     out.sync_data().map_err(|e| e.to_string())?;
     drop(out);
     std::fs::write(ok_path(part), done.to_string()).map_err(|e| e.to_string())?;
-    println!("\r  Downloaded {}.                              ", human(done));
+    on(Event::DownloadDone { bytes: done });
     if total > 0 && done != total {
         return Err(format!("download ended early ({} of {}); run the same command again to resume", human(done), human(total)));
     }
@@ -259,10 +296,15 @@ fn download_to_part(r: &ResolvedIso, dir: &Path, part: &Path) -> Result<bool, St
 /// Uses an ISO the user already has (e.g. on a NAS) only if it matches the
 /// official checksum. The file is read, never moved or changed.
 pub fn verify_local(path: &Path, r: &ResolvedIso) -> Result<PathBuf, String> {
+    verify_local_with(path, r, &mut console_progress())
+}
+
+/// [`verify_local`], reporting progress to `on`.
+pub fn verify_local_with(path: &Path, r: &ResolvedIso, on: &mut dyn FnMut(Event)) -> Result<PathBuf, String> {
     if !path.is_file() {
         return Err(format!("{} is not a file", path.display()));
     }
-    if verify_with_progress(path, &r.sha256)? {
+    if verify_with_progress(path, &r.sha256, on)? {
         Ok(path.to_path_buf())
     } else {
         Err(format!("{} does not match the official checksum for {} ({}); not using it", path.display(), r.file_name, r.sha256))

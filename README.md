@@ -25,8 +25,8 @@ explicit confirmation) sets up a dual boot.
 ## Download
 
 Get `linuxify.exe` from the [latest release](https://github.com/tiiow-fedora/linuxify/releases/latest)
-(Windows 10/11, x64). It's one self-contained file: put it in a folder and run it from a terminal
-(`linuxify scan --open`). It isn't code-signed, so SmartScreen may warn the first time; compare it
+(Windows 10/11, x64). It's one self-contained file: put it in a folder and double-click it to
+open the window, or run it from a terminal (`linuxify scan --open`). It isn't code-signed, so SmartScreen may warn the first time; compare it
 with the release's `SHA256SUMS.txt` (`Get-FileHash linuxify.exe`).
 
 ## Build
@@ -43,6 +43,25 @@ The result is one self-contained `target\release\linuxify.exe` (the C runtime is
 ## Use
 
 Every stage is useful on its own. Stages 1–4 never change your disks.
+
+### In a window
+
+Double-click `linuxify.exe` (or run `linuxify gui`) and it walks you through the five steps:
+scan, a short quiz, a trial in a virtual machine, copying your files, and the install. It runs the
+same code as the commands below, with the same safety rules: the install step always shows its
+plan first, lists anything that blocks it, and only starts once you type the phrase that names the
+disk; it re-checks everything when you click, and offers Undo afterwards. `linuxify gui --page
+install` opens a given step (`welcome`, `scan`, `choose`, `try`, `migrate`, `install`).
+
+| | |
+|---|---|
+| ![Welcome](docs/gui/1-welcome.png) | ![Scan results](docs/gui/2-scan.png) |
+| ![Quiz](docs/gui/3-choose-quiz.png) | ![Distro picks](docs/gui/3-choose-results.png) |
+| ![Try it in a VM](docs/gui/4-try.png) | ![What will be copied](docs/gui/5-copy-plan.png) |
+| ![Install plan and confirmation](docs/gui/6-install-plan-confirm.png) | ![Install blocked](docs/gui/6-install-blockers.png) |
+| ![Install running](docs/gui/6-install-progress.png) | ![Install done, with Undo](docs/gui/6-install-done.png) |
+
+### From a terminal
 
 ```
 linuxify scan --open                    # 1. read-only scan + Linux readiness report (HTML)
