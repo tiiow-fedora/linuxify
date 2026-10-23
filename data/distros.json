@@ -1346,6 +1346,180 @@
         "Built for servers and workstations, not gaming or the newest hardware.",
         "Desktop software is old; many apps come from EPEL or Flatpak."
       ]
+    },
+    {
+      "id": "aurora",
+      "name": "Aurora",
+      "homepage": "https://getaurora.dev/",
+      "desktop": "KDE Plasma",
+      "family": "rpm-ostree",
+      "flatpak_ready": true,
+      "secure_boot": "needs_key_enrolment",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 4,
+        "gaming": 3,
+        "nvidia": 5,
+        "light": 2,
+        "stable": 4,
+        "fresh": 4,
+        "windows_like": 4,
+        "modern_look": 4,
+        "privacy": 4,
+        "low_maintenance": 5,
+        "customizable": 3,
+        "dev": 4,
+        "community": 3,
+        "creative": 2,
+        "diy": 1,
+        "software_range": 3,
+        "out_of_box": 4,
+        "foss": 2,
+        "enterprise": 2,
+        "rhel_family": 1
+      },
+      "highlights": {
+        "low_maintenance": "Updates arrive as a whole system image in the background and can be rolled back from the boot menu.",
+        "nvidia": "Has a ready-made NVIDIA edition, so the driver is already there.",
+        "out_of_box": "Media codecs, drivers and Flathub are set up from the start.",
+        "dev": "An optional developer mode adds containers, VS Code and other tools.",
+        "windows_like": "KDE Plasma with a taskbar and start menu in the usual places."
+      },
+      "caveats": [
+        "The read-only core makes classic 'install any package' tinkering harder; apps come from Flatpak, Homebrew or containers.",
+        "With Secure Boot on, you enrol a key once during install.",
+        "Run by the volunteer Universal Blue project (the makers of Bazzite) on top of Fedora."
+      ]
+    },
+    {
+      "id": "bluefin",
+      "name": "Bluefin",
+      "homepage": "https://projectbluefin.io/",
+      "desktop": "GNOME",
+      "family": "rpm-ostree",
+      "flatpak_ready": true,
+      "secure_boot": "needs_key_enrolment",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 4,
+        "gaming": 3,
+        "nvidia": 5,
+        "light": 2,
+        "stable": 4,
+        "fresh": 4,
+        "windows_like": 2,
+        "modern_look": 5,
+        "privacy": 4,
+        "low_maintenance": 5,
+        "customizable": 2,
+        "dev": 4,
+        "community": 3,
+        "creative": 2,
+        "diy": 1,
+        "software_range": 3,
+        "out_of_box": 4,
+        "foss": 2,
+        "enterprise": 2,
+        "rhel_family": 1
+      },
+      "highlights": {
+        "low_maintenance": "Updates arrive as a whole system image in the background and can be rolled back from the boot menu.",
+        "nvidia": "Has a ready-made NVIDIA edition, so the driver is already there.",
+        "out_of_box": "Media codecs, drivers and Flathub are set up from the start.",
+        "dev": "An optional developer mode adds containers, VS Code and other tools.",
+        "modern_look": "A polished GNOME desktop with a dock and a few helpful extensions."
+      },
+      "caveats": [
+        "The read-only core makes classic 'install any package' tinkering harder; apps come from Flatpak, Homebrew or containers.",
+        "With Secure Boot on, you enrol a key once during install.",
+        "Run by the volunteer Universal Blue project (the makers of Bazzite) on top of Fedora."
+      ]
+    },
+    {
+      "id": "pikaos",
+      "name": "PikaOS",
+      "homepage": "https://pika-os.com/",
+      "desktop": "KDE Plasma (GNOME and Hyprland editions available)",
+      "family": "apt",
+      "flatpak_ready": true,
+      "secure_boot": "needs_disabling",
+      "min_ram_gb": 4,
+      "min_cpu_level": 3,
+      "traits": {
+        "beginner": 3,
+        "gaming": 5,
+        "nvidia": 5,
+        "light": 2,
+        "stable": 2,
+        "fresh": 5,
+        "windows_like": 4,
+        "modern_look": 3,
+        "privacy": 4,
+        "low_maintenance": 3,
+        "customizable": 4,
+        "dev": 3,
+        "community": 2,
+        "creative": 3,
+        "diy": 1,
+        "software_range": 4,
+        "out_of_box": 5,
+        "foss": 1,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "gaming": "Built for gaming: a tuned kernel and the latest Mesa, Steam and Proton tools.",
+        "nvidia": "Has a ready-made NVIDIA edition, so the driver is already there.",
+        "fresh": "Ships very new kernels and graphics drivers on a Debian base.",
+        "out_of_box": "Drivers, codecs and gaming tools are installed from the start."
+      },
+      "caveats": [
+        "Run by a very small team; fixes depend on a few people.",
+        "Needs Secure Boot turned off to install.",
+        "Needs a 2013-or-newer CPU (Intel Haswell or AMD Ryzen)."
+      ]
+    },
+    {
+      "id": "anduinos",
+      "name": "AnduinOS",
+      "homepage": "https://www.anduinos.com/",
+      "desktop": "GNOME (Windows 11-style layout)",
+      "family": "apt",
+      "flatpak_ready": true,
+      "secure_boot": "supported",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 4,
+        "gaming": 3,
+        "nvidia": 3,
+        "light": 3,
+        "stable": 4,
+        "fresh": 3,
+        "windows_like": 5,
+        "modern_look": 5,
+        "privacy": 4,
+        "low_maintenance": 4,
+        "customizable": 3,
+        "dev": 3,
+        "community": 2,
+        "creative": 3,
+        "diy": 1,
+        "software_range": 4,
+        "out_of_box": 4,
+        "foss": 2,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "windows_like": "Laid out like Windows 11: centred taskbar, start menu and system tray.",
+        "modern_look": "A clean, modern GNOME desktop out of the box.",
+        "stable": "The LTS branch is based on Ubuntu 26.04 LTS.",
+        "privacy": "No Snap store; apps come from apt and Flathub."
+      },
+      "caveats": [
+        "Essentially a one-person project, so its future depends on a single developer.",
+        "Uses its own installer, which Linuxify hasn't tested yet."
+      ]
     }
   ]
 }
