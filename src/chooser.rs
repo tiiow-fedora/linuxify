@@ -63,6 +63,9 @@ pub enum Installer {
     AnacondaClassic,
     /// YaST (openSUSE): skips every disk with a mounted filesystem.
     Yast,
+    /// Omarchy's own text-mode installer (archinstall underneath), with a
+    /// "Free space install" mode; boots with Limine.
+    Omarchy,
     #[default]
     Unknown,
 }

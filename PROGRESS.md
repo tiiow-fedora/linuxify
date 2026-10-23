@@ -149,8 +149,9 @@ target\release\linuxify.exe try --list
 ```
 
 ### What works
-- Official ISO download for 14 distros (Mint, Mint Xfce, Ubuntu, Kubuntu, Xubuntu, Lubuntu,
-  Fedora Workstation, Fedora KDE, Debian, Arch, Bazzite, openSUSE Tumbleweed, NixOS, AlmaLinux),
+- Official ISO download for 15 distros (Mint, Mint Xfce, Ubuntu, Kubuntu, Xubuntu, Lubuntu,
+  Fedora Workstation, Fedora KDE, Debian, Arch, Bazzite, openSUSE Tumbleweed, NixOS, AlmaLinux,
+  Omarchy; Omarchy added 2026-10-22, pinned to 4.0.6),
   always picking the newest file in the official checksum list. Every one of the 14 was resolved live
   and HEAD-checked (all HTTP 200, 1.2-7.4 GB).
 - SHA-256 verification before use, resumable downloads, a free-space check, and `--iso-file` for ISOs
@@ -311,6 +312,7 @@ VirtualBox API). Log: `scratch/distro-tests/results.txt`.
 | Bazzite | Anaconda (installer ISO) | PASS: installed from LNXINST, MOK enrolled, boots |
 | AlmaLinux 10.2 | Anaconda (live) | Can't boot in this VM (CPU is x86-64-v2, Alma 10 needs v3); new CPU-level gate refuses it on such PCs |
 | Arch | manual | PASS: boots from LNXINST (systemd-boot entries adapted); installed by hand (pacstrap, GRUB on Windows' ESP at /boot/efi), both OSes boot, `--undo` OK |
+| Omarchy 4.0.6 | Omarchy (archinstall) | PARTIAL (2026-10-22): LNXINST + LNXDATA created, live system boots and runs from LNXDATA (ntfs3). First run showed its installer hides the Windows disk; fixed with `copytoram=y` (needs ~9 GB RAM). The full install with that fix is not yet confirmed |
 | NixOS | — | Refused as designed: its initrd only mounts an ISO 9660 filesystem with the ISO's label |
 
 ### Not tested / known limits
@@ -320,8 +322,9 @@ VirtualBox API). Log: `scratch/distro-tests/results.txt`.
 - Low RAM (2026-10-22): with 4 GB the plan refuses Mint (needs 5.9 GB) and Fedora Workstation
   (5.3 GB) before any change; with 5.4 GB, just over Fedora Workstation's line, its live system
   ran from RAM and the install completed. Ubiquity's `toram` was tested at 6 GB only.
-- LNXDATA (NTFS) was tested with Kubuntu only. Ubuntu-family ISOs that later grow past 4 GB per
-  file should work the same way, but each new one is untested until tried.
+- LNXDATA (NTFS) was tested to the end with Kubuntu; Omarchy boots and runs from it, but its
+  install (with `copytoram`) and `--undo` are not yet confirmed. Ubuntu-family ISOs that later
+  grow past 4 GB per file should work the same way, but each new one is untested until tried.
 - The fixed remove-windows.sh rename step was checked as an extracted block, not with a second full
   `--really` run from scratch.
 - Not tested on real hardware, BitLocker-encrypted disks (refused by design), or disks where C: isn't

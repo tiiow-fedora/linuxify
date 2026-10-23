@@ -795,7 +795,7 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
         linux_gb: o.linux_gb,
         free_letter: letter,
         big_files_bytes: view.big_bytes,
-        casper_live: view.casper,
+        data_live: view.runs_from_data(),
         data_letter: letters.get(1).copied(),
     };
     let mut plan = install::plan(&hw, &req);

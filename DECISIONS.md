@@ -286,6 +286,15 @@ Short record of choices made while building Linuxify, and why.
   GRUB's `search -l '<iso label>'` is changed the same way; Debian's `boot=live` gets `toram` only via the rule above;
   openSUSE's `rd.live.overlay.persistent` is removed for the same reason as `nopersistent`.
   The ISO's files keep their read-only attribute after copying, so it is cleared first.
+- **Omarchy (archiso) uses LNXDATA too, and runs from RAM.** Omarchy 4.0.6's `airootfs.sfs` is
+  6.1 GB. archiso finds its medium by label, so its boot line gets `archisolabel=LNXDATA` (not
+  LNXINST); its initramfs has the kernel's `ntfs3` and `ntfs-3g`. VM result: live
+  `/run/archiso/bootmnt` = LNXDATA (ntfs3). archiso's GRUB finds its config by a
+  `/boot/<uuid>.uuid` file that's on both partitions, so the configs on LNXDATA are patched the
+  same way. Omarchy's installer leaves out the disk `/run/archiso/bootmnt` is on (the Windows
+  disk), so it gets `copytoram=y` (archiso copies the image to RAM, then unmounts the medium)
+  and the RAM check (image + 3 GB, about 9 GB). Omarchy's free-space install makes its own ESP
+  and never touches Windows', and Windows is added to its Limine menu with `limine-scan`.
 - **A file over 4 GB can't go on FAT32, so casper ISOs get a second, NTFS partition ("LNXDATA").**
   Kubuntu 26.04's squashfs is 4.08 GiB. The firmware can only boot from FAT32, but casper doesn't
   care where its squashfs is: it mounts every partition (`is_supported_fs` includes `ntfs`, and

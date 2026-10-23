@@ -136,7 +136,7 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
         dismount_iso(&iso);
         return Err(format!("the ISO has different files whose names differ only in case ({}), which FAT32 can't hold; nothing was changed. Use a USB stick for this distro.", conflicts.join(", ")));
     }
-    if largest > install::FAT32_MAX_FILE && (plan.data_size == 0 || !view.casper) {
+    if largest > install::FAT32_MAX_FILE && (plan.data_size == 0 || !view.runs_from_data()) {
         dismount_iso(&iso);
         return Err("the ISO has a file of 4 GB or more, which FAT32 can't hold; nothing was changed. Use a USB stick for this distro.".into());
     }
@@ -204,28 +204,33 @@ pub fn execute(plan: &InstallPlan) -> Result<InstallState, String> {
     dismount_iso(&iso);
     // Make the live system run cleanly from LNXINST (see install::adapt_live_boot).
     // Plus systemd-boot entries (Arch's ISO boots with systemd-boot on UEFI).
-    let entries = std::fs::read_dir(format!(r"{}:\loader\entries", plan.letter))
-        .into_iter()
-        .flatten()
-        .flatten()
-        .filter_map(|e| e.file_name().into_string().ok())
-        .filter(|n| n.to_ascii_lowercase().ends_with(".conf"))
-        .map(|n| format!(r"loader\entries\{n}"));
-    for cfg in install::LIVE_BOOT_CONFIGS.iter().map(|c| c.to_string()).chain(entries) {
-        let p = PathBuf::from(format!(r"{}:\{cfg}", plan.letter));
-        if let Ok(text) = std::fs::read_to_string(&p) {
-            let (patched, n) = install::adapt_live_boot(&text, install::INSTALLER_LABEL, plan.copy_to_ram);
-            if n > 0 {
-                // Files copied off an ISO keep its read-only attribute.
-                if let Ok(meta) = std::fs::metadata(&p) {
-                    let mut perms = meta.permissions();
-                    #[allow(clippy::permissions_set_readonly_false)]
-                    perms.set_readonly(false);
-                    let _ = std::fs::set_permissions(&p, perms);
+    // LNXDATA's copy gets the same changes: archiso's GRUB finds its config by
+    // a file that's on both partitions, so it may read either one.
+    let archiso_label = if data_letter.is_some() { install::DATA_LABEL } else { install::INSTALLER_LABEL };
+    for letter in std::iter::once(plan.letter).chain(data_letter) {
+        let entries = std::fs::read_dir(format!(r"{letter}:\loader\entries"))
+            .into_iter()
+            .flatten()
+            .flatten()
+            .filter_map(|e| e.file_name().into_string().ok())
+            .filter(|n| n.to_ascii_lowercase().ends_with(".conf"))
+            .map(|n| format!(r"loader\entries\{n}"));
+        for cfg in install::LIVE_BOOT_CONFIGS.iter().map(|c| c.to_string()).chain(entries) {
+            let p = PathBuf::from(format!(r"{letter}:\{cfg}"));
+            if let Ok(text) = std::fs::read_to_string(&p) {
+                let (patched, n) = install::adapt_live_boot_with(&text, install::INSTALLER_LABEL, archiso_label, plan.copy_to_ram);
+                if n > 0 {
+                    // Files copied off an ISO keep its read-only attribute.
+                    if let Ok(meta) = std::fs::metadata(&p) {
+                        let mut perms = meta.permissions();
+                        #[allow(clippy::permissions_set_readonly_false)]
+                        perms.set_readonly(false);
+                        let _ = std::fs::set_permissions(&p, perms);
+                    }
+                    std::fs::write(&p, patched)
+                        .map_err(|e| format!("could not update {}: {e}\nRun `linuxify install --undo`.", p.display()))?;
+                    println!("  - Adapted {letter}:\\{cfg} to start from the installer partition ({n} lines)");
                 }
-                std::fs::write(&p, patched)
-                    .map_err(|e| format!("could not update {}: {e}\nRun `linuxify install --undo`.", p.display()))?;
-                println!("  - Adapted {cfg} to start from the installer partition ({n} lines)");
             }
         }
     }

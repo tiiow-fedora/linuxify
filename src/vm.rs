@@ -110,7 +110,7 @@ pub fn vbox_ostype(distro_id: &str) -> &'static str {
         id if id.contains("ubuntu") || id.starts_with("linux-mint") || id == "pop-os" || id == "zorin-os" || id == "elementary-os" || id == "linux-lite" => "Ubuntu_64",
         id if id.starts_with("fedora") || id == "nobara" || id == "bazzite" => "Fedora_64",
         id if id == "debian" || id == "mx-linux" || id == "antix" => "Debian_64",
-        id if id == "arch" || id == "endeavouros" || id == "manjaro" || id == "cachyos" || id == "garuda" => "ArchLinux_64",
+        id if id == "arch" || id == "omarchy" || id == "endeavouros" || id == "manjaro" || id == "cachyos" || id == "garuda" => "ArchLinux_64",
         _ => "Linux_64",
     }
 }

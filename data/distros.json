@@ -888,6 +888,49 @@
       ]
     },
     {
+      "id": "omarchy",
+      "name": "Omarchy",
+      "homepage": "https://omarchy.org/",
+      "desktop": "Hyprland (tiling, keyboard-driven)",
+      "family": "pacman",
+      "installer": "omarchy",
+      "flatpak_ready": false,
+      "secure_boot": "needs_disabling",
+      "min_ram_gb": 4,
+      "traits": {
+        "beginner": 2,
+        "gaming": 3,
+        "nvidia": 3,
+        "light": 3,
+        "stable": 2,
+        "fresh": 5,
+        "windows_like": 1,
+        "modern_look": 5,
+        "privacy": 4,
+        "low_maintenance": 2,
+        "customizable": 4,
+        "dev": 5,
+        "community": 4,
+        "creative": 3,
+        "diy": 2,
+        "software_range": 5,
+        "out_of_box": 5,
+        "foss": 3,
+        "enterprise": 1,
+        "rhel_family": 0
+      },
+      "highlights": {
+        "dev": "Set up for programmers out of the box: editors, terminals, Docker and dev tools ready.",
+        "modern_look": "Polished themes you switch with one key; the whole desktop follows.",
+        "out_of_box": "Arch with every choice already made: no assembly needed."
+      },
+      "caveats": [
+        "Tiling desktop driven by keyboard shortcuts: very different from Windows.",
+        "Opinionated: it picks your apps and look, and expects you to learn its hotkeys.",
+        "Needs Secure Boot turned off; its partition is encrypted, so you type a passphrase at every start-up."
+      ]
+    },
+    {
       "id": "endeavouros",
       "name": "EndeavourOS",
       "homepage": "https://endeavouros.com/",

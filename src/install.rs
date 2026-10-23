@@ -53,8 +53,8 @@ pub struct InstallPlan {
     pub linux_size: u64,
     pub letter: char,
     /// Ask the live system to copy itself into RAM (frees LNXINST for the installer).
-    /// Only for Ubiquity and Anaconda, the installers that won't touch a disk
-    /// while their live medium sits on it: Calamares breaks with it (Lubuntu:
+    /// Only for the installers that won't touch a disk while their live medium
+    /// sits on it (Ubiquity, Anaconda, YaST, Omarchy): Calamares breaks with it (Lubuntu:
     /// unpackfs can't loop-mount the RAM copy) and the others install fine with
     /// LNXINST still mounted.
     #[serde(default)]
@@ -63,10 +63,11 @@ pub struct InstallPlan {
     #[serde(default)]
     pub disk_size: u64,
     /// Size of the NTFS LNXDATA partition right after LNXINST (0 = none);
-    /// counted in `installer_size`. Holds a full copy of a casper ISO whose
-    /// squashfs is too big for FAT32 (Kubuntu 26.04: 4.08 GiB). LNXINST gets
-    /// everything except that file, so casper, which looks for the squashfs on
-    /// every partition, skips LNXINST and runs from LNXDATA.
+    /// counted in `installer_size`. Holds a full copy of an ISO whose squashfs
+    /// is too big for FAT32 (Kubuntu 26.04: 4.08 GiB, Omarchy 4: 6.1 GB).
+    /// LNXINST gets everything except that file and does the booting; the live
+    /// system runs from LNXDATA. casper looks for its squashfs on every
+    /// partition, so it skips LNXINST by itself; archiso is told LNXDATA's label.
     #[serde(default)]
     pub data_size: u64,
     #[serde(default)]
@@ -138,8 +139,8 @@ pub struct InstallRequest {
     pub free_letter: char,
     /// Total size of the ISO's files over FAT32's 4 GB limit.
     pub big_files_bytes: u64,
-    /// The ISO is an Ubuntu-family live system (has a casper/ folder).
-    pub casper_live: bool,
+    /// The live system can run from LNXDATA (see FatView::runs_from_data).
+    pub data_live: bool,
     /// Second free letter, for LNXDATA.
     pub data_letter: Option<char>,
 }
@@ -159,14 +160,15 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
     if hw.firmware != Firmware::Uefi {
         why.push("Linuxify only prepares installs on UEFI PCs (this one isn't, or it couldn't tell). Use a USB stick instead.".to_string());
     }
-    // casper finds its squashfs on any partition, so a file too big for FAT32
-    // can go on an NTFS partition beside LNXINST. Other live systems are found
-    // by a single label, so they still need everything on LNXINST.
+    // casper finds its squashfs on any partition, and archiso can be pointed at
+    // another label, so for them a file too big for FAT32 can go on an NTFS
+    // partition beside LNXINST. Other live systems find their kernel and image
+    // by one label, so they still need everything on LNXINST.
     let split = req.largest_iso_file > FAT32_MAX_FILE;
-    if split && req.casper_live && req.data_letter.is_none() {
+    if split && req.data_live && req.data_letter.is_none() {
         why.push("no second free drive letter for the installer's data partition".into());
     }
-    if split && !req.casper_live {
+    if split && !req.data_live {
         why.push(format!(
             "this ISO contains a {:.2} GB file, and FAT32 (which the installer partition must use so the PC can boot it) can't hold files over 4 GB. Use a USB stick for this distro.",
             req.largest_iso_file as f64 / GB as f64
@@ -187,8 +189,10 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
     if runs_from_ram(req.installer) {
         // casper's `toram` copies the whole ISO; dracut's `rd.live.ram` only the
         // squashfs, which is the ISO's largest file (Fedora KDE: 3.0 of 3.4 GB,
-        // fine in the 6 GB VM). The kiwi hook (openSUSE) copies the same file.
-        let squashfs_only = matches!(req.installer, Installer::Anaconda | Installer::Yast);
+        // fine in the 6 GB VM). The kiwi hook (openSUSE) and archiso's `copytoram`
+        // (Omarchy) copy the same file; archiso's RAM disk is capped at 75% of
+        // memory, which the headroom covers for any image under 9 GB.
+        let squashfs_only = matches!(req.installer, Installer::Anaconda | Installer::Yast | Installer::Omarchy);
         let copied = if squashfs_only && req.largest_iso_file > 0 { req.largest_iso_file } else { req.iso_bytes };
         let need = copied.saturating_add(TORAM_HEADROOM);
         let ram = hw.ram_bytes.unwrap_or(0);
@@ -263,9 +267,10 @@ pub fn plan(hw: &HardwareFacts, req: &InstallRequest) -> Result<InstallPlan, Vec
 /// from it, and Anaconda (Fedora, AlmaLinux) hides that disk altogether: it
 /// protects the whole disk holding the live device; YaST (openSUSE) skips any
 /// disk with a mounted filesystem. All need the live system in RAM and LNXINST
-/// let go (VM tests).
+/// let go (VM tests). Omarchy's installer leaves out the disk archiso's medium
+/// is mounted from, so it needs archiso's `copytoram` (which unmounts it).
 fn runs_from_ram(installer: Installer) -> bool {
-    matches!(installer, Installer::Ubiquity | Installer::Anaconda | Installer::Yast)
+    matches!(installer, Installer::Ubiquity | Installer::Anaconda | Installer::Yast | Installer::Omarchy)
 }
 
 fn round_down_gb(x: u64) -> u64 {
@@ -410,6 +415,9 @@ pub fn installer_hint(installer: Installer, disk_size: u64) -> String {
         Installer::Yast => {
             "'Suggested Partitioning' should only create partitions in the free space; if it lists any 'Shrink' or 'Delete', click 'Guided Setup' and pick only that disk. On the last screen click 'Booting' and change the boot loader to 'GRUB2 for EFI': the default (systemd-boot) stores kernels on Windows' small EFI partition, which fills up at the next update."
         }
+        Installer::Omarchy => {
+            "Then choose 'Free space install' (never the whole-disk option). Omarchy encrypts its partition, so it asks for a passphrase at every start-up. Windows isn't in its start-up menu at first: once Omarchy is running, open a terminal and run 'sudo limine-scan' to add it."
+        }
         Installer::Unknown => {
             "Then install into the free (unallocated) space. Never pick 'Erase disk' or anything that deletes or shrinks the Windows partition. If you set up the boot loader by hand (Arch), mount Windows' EFI partition at /boot/efi, not /boot: it's usually only 100 MB, too small for kernels."
         }
@@ -433,6 +441,15 @@ pub struct FatView {
     pub big_bytes: u64,
     /// Has a casper/ folder (Ubuntu-family live system).
     pub casper: bool,
+    /// Has archiso's arch/<platform>/airootfs image (Arch, Omarchy).
+    pub archiso: bool,
+}
+
+impl FatView {
+    /// Whether the live system can run from a copy on LNXDATA (see InstallPlan::data_size).
+    pub fn runs_from_data(&self) -> bool {
+        self.casper || self.archiso
+    }
 }
 
 pub fn fat_view(files: &[(String, u64)]) -> FatView {
@@ -451,8 +468,12 @@ pub fn fat_view(files: &[(String, u64)]) -> FatView {
             v.big_files += 1;
             v.big_bytes += size;
         }
-        if group[0].0.to_lowercase().replace('\\', "/").starts_with("casper/") {
+        let path = group[0].0.to_lowercase().replace('\\', "/");
+        if path.starts_with("casper/") {
             v.casper = true;
+        }
+        if path.starts_with("arch/") && path.contains("/airootfs.") {
+            v.archiso = true;
         }
         if group.len() > 1 {
             v.case_twins.push(group.iter().map(|f| f.0.clone()).collect());
@@ -482,6 +503,9 @@ pub const LIVE_BOOT_CONFIGS: [&str; 4] = [r"boot\grub\grub.cfg", r"boot\grub\loo
 ///   openSUSE turns on a persistent overlay (`rd.live.overlay.persistent`),
 ///   which is removed for the same reason as casper's.
 /// - GRUB's own `search ... -l '<label>'` gets the new label too.
+/// - archiso (Arch, Omarchy) finds its medium by the ISO's UUID
+///   (`archisosearchuuid=`), which becomes `archisolabel=<archiso_label>`:
+///   LNXINST, or LNXDATA when the airootfs image only fits there.
 /// - dracut live images when `to_ram` (Anaconda: Fedora, AlmaLinux):
 ///   `rd.live.ram=1` (and no `rd.live.check`, which would read the whole
 ///   image twice), plus `release_initrd` on every `initrd` line, whose hook
@@ -491,12 +515,17 @@ pub const LIVE_BOOT_CONFIGS: [&str; 4] = [r"boot\grub\grub.cfg", r"boot\grub\loo
 ///
 /// Returns the patched text and how many lines were changed. Idempotent.
 pub fn adapt_live_boot(cfg: &str, label: &str, to_ram: bool) -> (String, usize) {
+    adapt_live_boot_with(cfg, label, label, to_ram)
+}
+
+/// `adapt_live_boot`, with archiso sent to `archiso_label` instead of `label`.
+pub fn adapt_live_boot_with(cfg: &str, label: &str, archiso_label: &str, to_ram: bool) -> (String, usize) {
     let mut changed = 0;
     let release = to_ram && cfg.contains("root=live:");
     let out: Vec<String> = cfg
         .split_inclusive('\n')
         .map(|line| {
-            let new = adapt_line(line, label, to_ram, release);
+            let new = adapt_line(line, label, archiso_label, to_ram, release);
             if new != line {
                 changed += 1;
             }
@@ -506,7 +535,7 @@ pub fn adapt_live_boot(cfg: &str, label: &str, to_ram: bool) -> (String, usize) 
     (out.concat(), changed)
 }
 
-fn adapt_line(line: &str, label: &str, to_ram: bool, release: bool) -> String {
+fn adapt_line(line: &str, label: &str, archiso_label: &str, to_ram: bool, release: bool) -> String {
     let body = line.trim_end_matches(['\r', '\n']);
     let ending = &line[body.len()..];
     let indent = &body[..body.len() - body.trim_start().len()];
@@ -526,8 +555,14 @@ fn adapt_line(line: &str, label: &str, to_ram: bool, release: bool) -> String {
     if words.iter().any(|w| w.starts_with("archisosearchuuid=")) {
         // archiso finds its medium by the ISO's UUID (systemd-boot `options` and GRUB `linux`
         // lines); LNXINST has none, so look it up by label instead.
-        let fixed: Vec<String> =
-            words.iter().map(|w| if w.starts_with("archisosearchuuid=") { format!("archisolabel={label}") } else { w.to_string() }).collect();
+        // With `to_ram`, `copytoram=y` copies the image to RAM and unmounts the medium.
+        let mut fixed: Vec<String> = words
+            .iter()
+            .map(|w| if w.starts_with("archisosearchuuid=") { format!("archisolabel={archiso_label}") } else { w.to_string() })
+            .collect();
+        if to_ram && !words.iter().any(|w| w.starts_with("copytoram=")) {
+            fixed.push("copytoram=y".into());
+        }
         return format!("{indent}{}{ending}", fixed.join(" "));
     }
     if cmd == "search" {
@@ -764,7 +799,7 @@ mod tests {
     }
 
     fn req() -> InstallRequest {
-        InstallRequest { distro_id: "linux-mint".into(), iso: "mint.iso".into(), iso_bytes: 3_091_660_800, largest_iso_file: 2_900_000_000, iso_case_conflicts: vec![], installer: Installer::Ubiquity, min_cpu_level: 0, usb_only: None, linux_gb: None, free_letter: 'L', big_files_bytes: 0, casper_live: true, data_letter: Some('M') }
+        InstallRequest { distro_id: "linux-mint".into(), iso: "mint.iso".into(), iso_bytes: 3_091_660_800, largest_iso_file: 2_900_000_000, iso_case_conflicts: vec![], installer: Installer::Ubiquity, min_cpu_level: 0, usb_only: None, linux_gb: None, free_letter: 'L', big_files_bytes: 0, data_live: true, data_letter: Some('M') }
     }
 
     /// Kubuntu 26.04: 4.72 GiB ISO whose casper/filesystem.squashfs is 4.08 GiB.
@@ -789,7 +824,7 @@ mod tests {
         }
         // Without a second letter, or for a live system that isn't casper, it's refused.
         assert!(plan(&hw(), &InstallRequest { data_letter: None, ..kubuntu() }).unwrap_err().iter().any(|w| w.contains("second free drive letter")));
-        assert!(plan(&hw(), &InstallRequest { casper_live: false, ..kubuntu() }).unwrap_err().iter().any(|w| w.contains("over 4 GB")));
+        assert!(plan(&hw(), &InstallRequest { data_live: false, ..kubuntu() }).unwrap_err().iter().any(|w| w.contains("over 4 GB")));
         // Small ISOs keep the single partition.
         let small = plan(&hw(), &req()).unwrap();
         assert_eq!((small.data_size, small.data_letter, small.fat_size()), (0, None, small.installer_size));
@@ -857,7 +892,7 @@ mod tests {
         h.disks[0].partition_style = Some("MBR".into());
         let mut r = req();
         r.largest_iso_file = 5 * GB;
-        r.casper_live = false;
+        r.data_live = false;
         let e = plan(&h, &r).unwrap_err();
         assert!(e.iter().any(|x| x.contains("UEFI")));
         assert!(e.iter().any(|x| x.contains("GPT")));
@@ -1076,6 +1111,22 @@ mod tests {
     }
 
     #[test]
+    fn archiso_runs_from_lnxdata_when_split() {
+        // Omarchy 4.0.6's GRUB entry; its 6.1 GB airootfs.sfs is only on LNXDATA.
+        let omarchy = "    linux /arch/boot/x86_64/vmlinuz-linux-t2 archisobasedir=arch archisosearchuuid=2026-10-19-22-18-53-00 quiet splash\n";
+        let (out, n) = adapt_live_boot_with(omarchy, INSTALLER_LABEL, DATA_LABEL, false);
+        assert_eq!((out.as_str(), n), ("    linux /arch/boot/x86_64/vmlinuz-linux-t2 archisobasedir=arch archisolabel=LNXDATA quiet splash\n", 1));
+        assert_eq!(adapt_live_boot_with(&out, INSTALLER_LABEL, DATA_LABEL, false).1, 0);
+        // Omarchy's installer hides the disk the medium is mounted from: copy to RAM.
+        let (ram, _) = adapt_live_boot_with(omarchy, INSTALLER_LABEL, DATA_LABEL, true);
+        assert!(ram.ends_with("archisolabel=LNXDATA quiet splash copytoram=y\n"), "{ram}");
+        assert_eq!(adapt_live_boot_with(&ram, INSTALLER_LABEL, DATA_LABEL, true).1, 0);
+        let f = |p: &str, n| (p.to_string(), n);
+        let v = fat_view(&[f(r"arch\x86_64\airootfs.sfs", 6_129_025_024), f(r"arch\boot\x86_64\vmlinuz-linux-t2", 17_535_488)]);
+        assert!(v.archiso && !v.casper && v.runs_from_data() && v.big_files == 1);
+    }
+
+    #[test]
     fn archiso_finds_lnxinst_by_label() {
         // Arch 2026.10.01: systemd-boot entry and GRUB loopback.cfg.
         let entry = "options  archisobasedir=arch archisosearchuuid=2026-10-01-14-49-03-00 \n";
@@ -1128,6 +1179,7 @@ mod tests {
         assert!(c.contains("Replace a partition") && c.contains("Free Space") && c.contains("Don't pick 'Install alongside'"));
         assert!(installer_hint(Installer::Anaconda, disk).contains("leave 'Reclaim additional space' unticked"));
         assert!(installer_hint(Installer::Unknown, disk).contains("Never pick 'Erase disk'"));
+        assert!(installer_hint(Installer::Omarchy, disk).contains("'Free space install'"));
         assert!(installer_hint(Installer::AnacondaClassic, disk).contains("keep 'Automatic'"));
         assert!(installer_hint(Installer::Yast, disk).contains("GRUB2 for EFI"));
         assert!(c.starts_with("In the installer pick the disk Windows is on (128 GiB, shown as 137 GB by some installers)"), "{c}");
