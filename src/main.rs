@@ -2,7 +2,8 @@ use clap::{Parser, Subcommand};
 use linuxify::chooser::{self, Answers, DistroList, QUESTIONS};
 use linuxify::mapping::{AppMap, Group, Status};
 use linuxify::readiness::Severity;
-use linuxify::{appdirs, download, install, install_exec, iso, migrate, readiness, report, restore, scan, vm};
+use linuxify::flow::{self, latest_scan};
+use linuxify::{appdirs, download, install, install_exec, iso, migrate, report, scan, vm};
 use std::collections::BTreeMap;
 use std::io::{BufRead, Write};
 use std::path::{Path, PathBuf};
@@ -15,11 +16,17 @@ struct Cli {
     #[arg(long, global = true)]
     data_dir: Option<PathBuf>,
     #[command(subcommand)]
-    command: Command,
+    command: Option<Command>,
 }
 
 #[derive(Subcommand)]
 enum Command {
+    /// Open the Linuxify window (the default when no command is given).
+    Gui {
+        /// Page to open on: welcome, scan, choose, try, migrate or install.
+        #[arg(long)]
+        page: Option<String>,
+    },
     /// Read-only scan of programs, hardware and data; writes a readiness report.
     Scan {
         /// Skip `winget list` (registry only).
@@ -112,7 +119,11 @@ enum Command {
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
-    let result = match cli.command {
+    let Some(command) = cli.command else {
+        return run_gui(cli.data_dir, None);
+    };
+    let result = match command {
+        Command::Gui { page } => return run_gui(cli.data_dir, page),
         Command::Scan { no_winget, open } => run_scan(cli.data_dir, !no_winget, open),
         Command::Choose { answers, no_scan, open } => run_choose(cli.data_dir, answers, no_scan, open),
         Command::Try { distro, vm, disk, iso_file, dry_run, reverify, remove, list, download_only } => {
@@ -126,6 +137,19 @@ fn main() -> ExitCode {
         }
     };
     match result {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(e) => {
+            eprintln!("error: {e}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
+fn run_gui(data_dir: Option<PathBuf>, page: Option<String>) -> ExitCode {
+    if linuxify::gui::restart_without_console() {
+        return ExitCode::SUCCESS;
+    }
+    match linuxify::gui::run(data_dir, page.as_deref()) {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
             eprintln!("error: {e}");
@@ -220,7 +244,6 @@ fn ask_questions() -> Result<Option<Answers>, String> {
 
 fn run_choose(data_dir: Option<PathBuf>, answers_file: Option<PathBuf>, no_scan: bool, open: bool) -> Result<(), String> {
     let (list, _) = DistroList::load(data_dir.as_deref())?;
-    let home = appdirs::home()?;
 
     let scan_path = appdirs::reports_dir()?.join("latest").join("report.json");
     let scan_report: Option<scan::ScanReport> = if no_scan {
@@ -281,20 +304,8 @@ fn run_choose(data_dir: Option<PathBuf>, answers_file: Option<PathBuf>, no_scan:
         println!("Left out: {}\n", names.join("; "));
     }
 
-    // Save under %LOCALAPPDATA%\Linuxify only (safety rule 1).
-    std::fs::create_dir_all(&home).map_err(|e| e.to_string())?;
-    let generated_at = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-    let saved = serde_json::json!({
-        "generated_at": generated_at,
-        "scan_used": scan_report.is_some(),
-        "answers": answers,
-        "top": rec.ranking.iter().take(3).map(|r| r.id.clone()).collect::<Vec<_>>(),
-        "recommendation": rec,
-    });
-    let json_path = home.join("choice.json");
-    let html_path = home.join("choice.html");
-    std::fs::write(&json_path, serde_json::to_string_pretty(&saved).map_err(|e| e.to_string())?).map_err(|e| e.to_string())?;
-    std::fs::write(&html_path, report::render_choice_html(&rec, &generated_at, scan_report.is_some())).map_err(|e| e.to_string())?;
+    // Saved under %LOCALAPPDATA%\Linuxify only (safety rule 1).
+    let (json_path, html_path) = flow::save_choice(&answers, &rec, scan_report.is_some())?;
     println!("Saved: {}", html_path.display());
     println!("       {} (your answers are in here; re-use them with --answers)", json_path.display());
     if open {
@@ -313,11 +324,6 @@ struct TryOpts {
     remove: bool,
     list: bool,
     download_only: bool,
-}
-
-fn latest_scan() -> Option<scan::ScanReport> {
-    let p = appdirs::reports_dir().ok()?.join("latest").join("report.json");
-    serde_json::from_str(&std::fs::read_to_string(p).ok()?).ok()
 }
 
 fn print_plan(title: &str, steps: &[vm::Step]) {
@@ -355,12 +361,7 @@ fn run_try(data_dir: Option<PathBuf>, o: TryOpts) -> Result<(), String> {
     // Which distro? Default: the top pick from `linuxify choose`.
     let distro_id = match o.distro {
         Some(d) => d,
-        None => {
-            let text = std::fs::read_to_string(home.join("choice.json"))
-                .map_err(|_| "say which distro to try (e.g. `linuxify try linux-mint`), or run `linuxify choose` first".to_string())?;
-            let v: serde_json::Value = serde_json::from_str(&text).map_err(|e| e.to_string())?;
-            v.pointer("/top/0").and_then(|x| x.as_str()).ok_or("choice.json has no top pick")?.to_string()
-        }
+        None => flow::top_pick().ok_or("say which distro to try (e.g. `linuxify try linux-mint`), or run `linuxify choose` first")?,
     };
     let distro = distros
         .distros
@@ -386,24 +387,7 @@ Ready: {}", p.display());
         return Ok(());
     }
 
-    // Which VM program? Default order: VirtualBox, Hyper-V, QEMU.
-    let chosen = match &o.vm {
-        Some(name) => {
-            let want = vm::Backend::parse(name).ok_or_else(|| format!("unknown VM program '{name}' (use virtualbox, hyperv or qemu)"))?;
-            backends.iter().find(|b| b.backend == want).ok_or_else(|| format!("{} was not found on this PC", want.label()))?
-        }
-        None => [vm::Backend::VirtualBox, vm::Backend::HyperV, vm::Backend::Qemu]
-            .iter()
-            .find_map(|w| backends.iter().find(|b| b.backend == *w && b.unusable.is_none()))
-            .ok_or_else(|| {
-                "no usable VM program found. The easiest fix is `winget install Oracle.VirtualBox` (free), then run this again. \
-                 Alternatives: QEMU (`winget install SoftwareFreedomConservancy.QEMU`) or Hyper-V from an administrator terminal."
-                    .to_string()
-            })?,
-    };
-    if let Some(u) = &chosen.unusable {
-        return Err(u.clone());
-    }
+    let chosen = flow::pick_backend(&backends, o.vm.as_deref())?;
 
     if o.remove {
         if chosen.backend != vm::Backend::VirtualBox {
@@ -469,16 +453,9 @@ Ready: {}", p.display());
     };
 
     // Plan the VM.
-    let (memory_mb, cpus) = vm::size_for_host(
-        scan_report.as_ref().and_then(|r| r.hardware.ram_bytes).map(|b| b as f64 / (1u64 << 30) as f64),
-        scan_report.as_ref().and_then(|r| r.hardware.cpus.first()).and_then(|c| c.threads),
-    );
-    let spec = vm::TrialSpec { distro_id: distro.id.clone(), iso: iso_path, memory_mb, cpus, disk_gb: o.disk, vm_dir: home.join("vms") };
-    let steps = match chosen.backend {
-        vm::Backend::VirtualBox => vm::plan_virtualbox(&chosen.exe, &spec, !o.dry_run && vm::vbox_vm_exists(&chosen.exe, &distro.id)),
-        vm::Backend::Qemu => vm::plan_qemu(&chosen.exe, &spec),
-        vm::Backend::HyperV => vm::plan_hyperv(&chosen.exe, &spec, !o.dry_run && vm::hyperv_vm_exists(&distro.id)),
-    };
+    let spec = flow::trial_spec(&distro.id, iso_path, o.disk)?;
+    let (memory_mb, cpus) = (spec.memory_mb, spec.cpus);
+    let steps = flow::trial_steps(chosen, &spec, o.dry_run);
     if o.dry_run {
         let disk = o.disk.map(|g| format!(", {g} GB virtual disk")).unwrap_or_default();
         print_plan(&format!("\nDry run: would run these {} commands ({memory_mb} MB RAM, {cpus} CPUs{disk}):", chosen.backend.label()), &steps);
@@ -505,18 +482,6 @@ struct MigrateOpts {
     no_verify: bool,
     from_folder: Vec<PathBuf>,
     stop_after: Option<u64>,
-}
-
-/// File system of the target's drive (e.g. "NTFS", "FAT32"); None for network paths.
-fn drive_filesystem(p: &Path) -> Option<String> {
-    let s = p.to_string_lossy();
-    let letter = s.chars().next().filter(|c| c.is_ascii_alphabetic() && s[1..].starts_with(':'))?;
-    let out = std::process::Command::new("powershell")
-        .args(["-NoProfile", "-NonInteractive", "-Command", &format!("(Get-Volume -DriveLetter {letter}).FileSystem")])
-        .output()
-        .ok()?;
-    let fs = String::from_utf8_lossy(&out.stdout).trim().to_string();
-    (!fs.is_empty()).then_some(fs)
 }
 
 fn print_verify(r: &migrate::VerifyReport) -> bool {
@@ -585,10 +550,7 @@ fn run_migrate(o: MigrateOpts) -> Result<(), String> {
     if let Some(f) = free {
         println!("\nFree space on the target: {}", download::human(f));
     }
-    let fs = drive_filesystem(&o.target);
-    if fs.as_deref() == Some("FAT32") && plan.files.iter().any(|f| f.size >= 4 * 1024 * 1024 * 1024) {
-        return Err("the target drive is FAT32, which can't hold files of 4 GB or more; use an exFAT or NTFS drive".into());
-    }
+    flow::check_target_filesystem(&o.target, &plan)?;
     if o.target.to_string_lossy().to_ascii_uppercase().starts_with("C:") {
         println!("Note: the target is on C:, the Windows drive. Linux can read it in a dual boot only if BitLocker and Fast Startup are off.");
     }
@@ -596,8 +558,7 @@ fn run_migrate(o: MigrateOpts) -> Result<(), String> {
         println!("\nDry run: nothing was copied. Run the same command without --dry-run to copy.");
         return Ok(());
     }
-    let already = std::fs::read_to_string(staging.join(migrate::PROGRESS_FILE)).map(|t| migrate::parse_progress(&t)).unwrap_or_default();
-    let reusable: u64 = plan.files.iter().filter(|f| already.get(&f.rel).is_some_and(|c| c.size == f.size && c.mtime == f.mtime)).map(|f| f.size).sum();
+    let reusable = flow::reusable_bytes(&plan, &staging);
     if let Some(f) = free {
         if total - reusable + 512 * 1024 * 1024 > f {
             return Err(format!("not enough space on the target: need {} more, {} free", download::human(total - reusable), download::human(f)));
@@ -614,32 +575,7 @@ fn run_migrate(o: MigrateOpts) -> Result<(), String> {
         }
     })?;
     println!("\r  Copied {} new files, reused {} from an earlier run.          ", out.newly_copied, out.reused);
-    let mut skipped = plan.skipped.clone();
-    skipped.extend(out.failed.iter().cloned());
-
-    let manifest = migrate::write_manifest(&staging, &out.copied, &skipped)?;
-    // Linux side: restore.sh must keep Unix line endings.
-    std::fs::write(staging.join("restore.sh"), restore::RESTORE_SH.replace("\r\n", "\n")).map_err(|e| e.to_string())?;
-    std::fs::write(staging.join("remove-windows.sh"), restore::REMOVE_WINDOWS_SH.replace("\r\n", "\n")).map_err(|e| e.to_string())?;
-    let programs = latest_scan().map(|r| r.programs).unwrap_or_default();
-    let lines = restore::app_lines(&programs);
-    std::fs::write(staging.join("apps.txt"), restore::apps_txt(&lines)).map_err(|e| e.to_string())?;
-    let distro = std::fs::read_to_string(appdirs::home()?.join("choice.json"))
-        .ok()
-        .and_then(|t| serde_json::from_str::<serde_json::Value>(&t).ok())
-        .and_then(|v| v.pointer("/top/0").and_then(|x| x.as_str()).map(String::from));
-    std::fs::write(staging.join("README.txt"), restore::readme_txt(distro.as_deref(), manifest.total_files, &download::human(manifest.total_bytes))).map_err(|e| e.to_string())?;
-
-    // Remember where the staged copy is (Stage 5's "remove Windows" gate needs it).
-    let home = appdirs::home()?;
-    std::fs::create_dir_all(&home).map_err(|e| e.to_string())?;
-    let record = serde_json::json!({
-        "staging": staging.display().to_string(),
-        "created_at": manifest.created_at,
-        "total_files": manifest.total_files,
-        "total_bytes": manifest.total_bytes,
-    });
-    std::fs::write(home.join("migration.json"), serde_json::to_string_pretty(&record).unwrap()).map_err(|e| e.to_string())?;
+    let (manifest, app_count) = flow::finish_staging(&staging, &out, &plan.skipped)?;
 
     if !out.failed.is_empty() {
         println!("\n{} files could not be copied (see flagged.txt), e.g.:", out.failed.len());
@@ -661,7 +597,7 @@ fn run_migrate(o: MigrateOpts) -> Result<(), String> {
         manifest.total_files,
         download::human(manifest.total_bytes),
         staging.display(),
-        lines.len()
+        app_count
     );
     Ok(())
 }
@@ -680,25 +616,13 @@ fn read_typed_line() -> String {
     s.trim().trim_start_matches('\u{feff}').to_string()
 }
 
-/// Verifies the staged copy from `linuxify migrate`; returns (report, staging path).
-fn verify_recorded_migration() -> Option<(migrate::VerifyReport, PathBuf, u64)> {
-    let rec: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(appdirs::home().ok()?.join("migration.json")).ok()?).ok()?;
-    let staging = PathBuf::from(rec.get("staging")?.as_str()?);
-    let total = rec.get("total_files").and_then(|v| v.as_u64()).unwrap_or(0);
-    println!("Verifying your staged copy in {} (re-reading every file)...", staging.display());
-    let r = migrate::verify(&staging, |_, _| {}).ok()?;
-    Some((r, staging, total))
-}
-
 fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> {
     if o.replace_windows {
         return run_replace_windows();
     }
     if o.undo {
         let state = install_exec::load_state().ok_or("there is no Linuxify install setup to undo")?;
-        let p = &state.plan;
-        let parts = if p.data_size > 0 { format!("{} and {} installer partitions", install::INSTALLER_LABEL, install::DATA_LABEL) } else { format!("{} installer partition", install::INSTALLER_LABEL) };
-        println!("Undo will: delete the {} boot entry, delete the {parts} (disk {}, at {} GB), and grow C: back into the free space.", install::BCD_DESCRIPTION, p.disk, p.installer_offset / install::GB);
+        println!("{}", flow::undo_summary(&state));
         println!("It does NOT remove a Linux system if you already installed one into the free space.");
         if o.dry_run {
             for s in install_exec::undo(&state, true)? {
@@ -706,121 +630,38 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
             }
             return Ok(());
         }
-        let lock = appdirs::home()?.join("no-install.lock");
-        if lock.exists() {
+        if let Some(lock) = flow::install_lock() {
             return Err(format!("this PC is locked against disk changes ({} exists); nothing was changed", lock.display()));
         }
-        let phrase = format!("UNDO LINUXIFY ON DISK {}", p.disk);
-        println!("\nType exactly  {phrase}  to continue:");
-        if read_typed_line() != phrase {
-            return Err("confirmation didn't match; nothing was changed".into());
-        }
-        for s in install_exec::undo(&state, false)? {
+        println!("\nType exactly  {}  to continue:", flow::undo_phrase(&state));
+        for s in flow::undo_confirmed(&state, &read_typed_line())? {
             println!("  done: {s}");
         }
         println!("Undo finished.");
         return Ok(());
     }
 
-    // ---- Which distro and ISO ----
-    let (distros, _) = DistroList::load(data_dir.as_deref())?;
-    let home = appdirs::home()?;
+    // ---- Which distro ----
     let distro_id = match o.distro {
         Some(d) => d,
-        None => {
-            let v: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(home.join("choice.json")).map_err(|_| "say which distro to install, or run `linuxify choose` first".to_string())?).map_err(|e| e.to_string())?;
-            v.pointer("/top/0").and_then(|x| x.as_str()).ok_or("choice.json has no top pick")?.to_string()
-        }
+        None => flow::top_pick().ok_or("say which distro to install, or run `linuxify choose` first")?,
     };
-    let distro = distros.distros.iter().find(|d| d.id == distro_id).ok_or(format!("unknown distro '{distro_id}'"))?;
-    let isos = iso::IsoList::load(data_dir.as_deref())?;
-    let src = isos.find(&distro.id).ok_or(format!("Linuxify can't fetch a verified ISO for {} yet, so it won't install it. Use a USB stick.", distro.name))?;
-    println!("Linuxify install: {} as a DUAL BOOT (Windows stays).\n", distro.name);
-    println!("Checking the official ISO...");
-    let resolved = download::resolve(src)?;
-    let iso_path = home.join("isos").join(&resolved.file_name);
-    let iso_verified = download::already_verified(&iso_path, &resolved.sha256);
-    let iso_bytes = std::fs::metadata(&iso_path).map(|m| m.len()).unwrap_or(resolved_size_guess(&resolved));
+    let (distros, _) = DistroList::load(data_dir.as_deref())?;
+    let name = flow::find_distro(&distros, &distro_id)?.name.clone();
+    println!("Linuxify install: {name} as a DUAL BOOT (Windows stays).\n");
 
-    // ---- Fresh scan + gates ----
-    println!("Re-scanning disks and boot settings...");
-    let (hw, hw_err) = scan::hardware::scan();
-    let findings = readiness::assess(&hw, hw_err.as_deref(), &[], &scan::userdata::UserData::default());
-    let backup = verify_recorded_migration();
-    let windows_disk = hw.disks.iter().find(|d| d.partitions.iter().any(|p| p.drive_letter == Some('C'))).map(|d| d.number);
-    let backup_ok = backup.as_ref().map(|(r, _, _)| r.missing.is_empty() && r.mismatched.is_empty() && r.ok > 0);
-    let backup_on_windows_disk = backup.as_ref().is_some_and(|(_, staging, _)| {
-        windows_disk.is_some() && staging.to_string_lossy().chars().next().and_then(|l| install_exec::disk_of_letter(&hw, l)) == windows_disk
-    });
-    let pre = install::Preflight {
-        is_admin: hw.is_admin,
-        blockers: install::blockers_from(&findings),
-        iso_verified,
-        backup_verified: backup_ok,
-        backup_on_windows_disk,
-        already_installed_state: install_exec::load_state().is_some(),
-        secure_boot_on: hw.secure_boot == scan::hardware::SecureBoot::On,
-        distro_secure_boot: distro.secure_boot,
-        distro_name: distro.name.clone(),
-        on_battery: hw.on_battery,
-    };
-    let mut problems = install::preflight_problems(&pre);
-    // A machine owner can lock Linuxify out of changing disks entirely.
-    let lock = home.join("no-install.lock");
-    if lock.exists() {
-        problems.insert(0, format!("this PC is locked against installs ({} exists); delete that file only if you really want Linuxify to change this PC's disks", lock.display()));
-    }
-
-    // ---- Plan ----
-    let letters = install_exec::free_letters(&hw);
-    let letter = *letters.first().ok_or("no free drive letter for the installer partition")?;
-    // Read-only look inside the ISO, so a file too big for FAT32 shows up in the dry run
-    // rather than after the confirmation (Kubuntu 26.04's squashfs is 4.08 GiB).
-    let (view, iso_case_conflicts) = if iso_verified {
-        let r = install_exec::inspect_iso(&iso_path);
-        install_exec::dismount_iso(&iso_path);
-        r.map(|(_, view, conflicts)| (view, conflicts)).unwrap_or_default()
-    } else {
-        Default::default()
-    };
-    let req = install::InstallRequest {
-        distro_id: distro.id.clone(),
-        iso: iso_path.display().to_string(),
-        iso_bytes,
-        largest_iso_file: view.largest,
-        iso_case_conflicts,
-        installer: distro.installer,
-        min_cpu_level: distro.min_cpu_level,
-        usb_only: distro.usb_only.clone(),
-        linux_gb: o.linux_gb,
-        free_letter: letter,
-        big_files_bytes: view.big_bytes,
-        data_live: view.runs_from_data(),
-        data_letter: letters.get(1).copied(),
-    };
-    let mut plan = install::plan(&hw, &req);
-    let mut estimate = false;
-    if o.dry_run && hw.c_shrinkable.is_none() {
-        // Preview only: without admin, assume C: can shrink by its free space.
-        let mut guess = hw.clone();
-        guess.c_shrinkable = hw.disks.iter().flat_map(|d| d.partitions.iter()).find(|p| p.drive_letter == Some('C')).and_then(|p| p.free);
-        plan = install::plan(&guess, &req);
-        estimate = true;
-    }
+    // ---- Fresh scan, gates and plan (changes nothing) ----
+    let prep = flow::prepare_install(data_dir.as_deref(), &distro_id, o.linux_gb, o.dry_run, &mut |m| println!("{m}"), &mut |_, _| {})?;
+    let distro = &prep.distro;
 
     println!();
-    match &plan {
+    match &prep.plan {
         Ok(p) => {
-            println!("PLAN (disk {}){}:", p.disk, if estimate { " - ESTIMATE: run as administrator for the exact shrink size" } else { "" });
-            println!("  1. Shrink C: from {} GB to {} GB (frees {} GB). Windows and your files stay.", p.c_size_before / install::GB, p.c_size_after / install::GB, p.shrink / install::GB);
-            println!("  2. Create a {} GB FAT32 partition '{}' right after C: and copy the verified {} installer onto it.", p.fat_size() / install::GB, install::INSTALLER_LABEL, distro.name);
-            if p.data_size > 0 {
-                println!("     Its largest file is too big for FAT32, so a {} GB NTFS partition '{}' after it gets a full copy of the installer, which the live system starts from.", p.data_size / install::GB, install::DATA_LABEL);
+            println!("PLAN (disk {}){}:", p.disk, if prep.estimate { " - ESTIMATE: run as administrator for the exact shrink size" } else { "" });
+            for (i, step) in flow::plan_steps(p, &distro.name).iter().enumerate() {
+                println!("  {}. {step}", i + 1);
             }
-            println!("  3. Leave {} GB unallocated for Linux.", p.linux_size / install::GB);
-            println!("  4. Add a ONE-TIME boot entry so the next restart starts the installer (later restarts go to Windows as usual).");
-            println!("\n  diskpart script:\n    {}", p.diskpart_create().trim_end().replace("\r\n", "\n    "));
-            println!("  then: robocopy <ISO> {}:\\ ; bcdedit /copy {{bootmgr}} /d \"{}\" ; bcdedit /set <id> device partition={}: ; bcdedit /set <id> path \\EFI\\BOOT\\BOOTX64.EFI ; bcdedit /set {{fwbootmgr}} bootsequence <id> ; diskpart remove letter={}", p.letter, install::BCD_DESCRIPTION, p.letter, p.letter);
+            println!("\n  {}", flow::plan_commands(p).replace('\n', "\n  "));
             println!("\n  {}", install::installer_hint(distro.installer, p.disk_size));
         }
         Err(why) => {
@@ -830,9 +671,9 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
             }
         }
     }
-    if !problems.is_empty() {
+    if !prep.problems.is_empty() {
         println!("\n{} it would refuse to run because:", if o.dry_run { "Dry run:" } else { "Stopped:" });
-        for pr in &problems {
+        for pr in &prep.problems {
             println!("  - {pr}");
         }
     }
@@ -840,19 +681,18 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
         println!("\nDry run: nothing was changed.");
         return Ok(());
     }
-    let plan = plan.map_err(|w| w.join("; "))?;
-    if !problems.is_empty() {
+    let plan = prep.plan.as_ref().map_err(|w| w.join("; "))?;
+    if !prep.problems.is_empty() {
         return Err("not safe to continue; nothing was changed".into());
     }
 
     // ---- Typed confirmation ----
-    let phrase = plan.confirm_phrase();
-    println!("\nThis changes your disk. Your files were verified on {} and Windows will stay installed.", backup.as_ref().map(|b| b.1.display().to_string()).unwrap_or_default());
-    println!("Type exactly  {phrase}  to continue (anything else cancels):");
-    if read_typed_line() != phrase {
-        return Err("confirmation didn't match; nothing was changed".into());
-    }
-    let state = install_exec::execute(&plan)?;
+    println!(
+        "\nThis changes your disk. Your files were verified on {} and Windows will stay installed.",
+        prep.backup_staging.as_ref().map(|b| b.display().to_string()).unwrap_or_default()
+    );
+    println!("Type exactly  {}  to continue (anything else cancels):", plan.confirm_phrase());
+    let state = flow::install_confirmed(&prep, &read_typed_line())?;
     println!("\nReady (step: {:?}). The NEXT restart will start the {} installer; later restarts go to Windows as usual.", state.phase, distro.name);
     println!("Restart when you're ready. {}", install::installer_hint(distro.installer, plan.disk_size));
     println!("Changed your mind? `linuxify install --undo` puts it back.");
@@ -860,30 +700,15 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
     Ok(())
 }
 
-fn resolved_size_guess(_r: &download::ResolvedIso) -> u64 {
-    // Only used for a dry run before the ISO is downloaded: assume a 6 GB ISO.
-    6 * install::GB
-}
-
 /// Windows-side half of "remove Windows": refuses unless the staged copy
 /// verifies completely (count + hashes) and doesn't live on the Windows disk.
 /// It never deletes anything itself.
 fn run_replace_windows() -> Result<(), String> {
     println!("Checking whether it's safe to remove Windows later...\n");
-    let (hw, _) = scan::hardware::scan();
-    let windows_disk = hw.disks.iter().find(|d| d.partitions.iter().any(|p| p.drive_letter == Some('C'))).map(|d| d.number);
-    let gate = match verify_recorded_migration() {
-        None => install::ReplaceGate::default(),
-        Some((r, staging, total)) => install::ReplaceGate {
-            migration_recorded: true,
-            staging_files_ok: r.ok,
-            staging_missing: r.missing.len() as u64,
-            staging_mismatched: r.mismatched.len() as u64,
-            manifest_files: total,
-            staging_on_windows_disk: windows_disk.is_some() && staging.to_string_lossy().chars().next().and_then(|l| install_exec::disk_of_letter(&hw, l)) == windows_disk,
-        },
-    };
-    let problems = install::replace_gate_problems(&gate);
+    if let Some((staging, _)) = flow::recorded_migration() {
+        println!("Verifying your staged copy in {} (re-reading every file)...", staging.display());
+    }
+    let (gate, problems) = flow::replace_windows_gate(|_, _| {});
     if !problems.is_empty() {
         println!("REFUSED: removing Windows stays locked because:");
         for p in &problems {

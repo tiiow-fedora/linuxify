@@ -348,3 +348,28 @@ VirtualBox API). Log: `scratch/distro-tests/results.txt`.
   Boot on until the module is signed/enrolled. That's the distro's MOK flow, not Linuxify.
 - The "Résumé" file name in the VM test data was mangled by the test-setup script (PowerShell 5.1
   read it as ANSI); restore.sh kept the bytes exactly, as before.
+
+## The window (GUI): DONE (2026-10-22)
+
+`linuxify.exe` with no arguments (or `linuxify gui`) opens a window that walks through the five
+steps; screenshots in `docs/gui/`. Built with egui/eframe (see `DECISIONS.md`).
+
+### Verified (throwaway Windows 10 VM "testbed B", 1440×900, no 3D acceleration)
+- Every page renders and fits the window; the scan, quiz, VM trial check, migration plan and
+  install dry run all run from the window, with progress shown for the long steps.
+- Install end to end from the window, twice: the dry run showed the plan and "every check passed",
+  the button stayed disabled until the exact phrase was typed, the install re-checked everything,
+  then shrank C:, created LNXINST and added the one-time boot entry (Mint Cinnamon). Undo from the
+  window (its own dry run, then the typed phrase) gave C: back its full size and removed the boot
+  entry.
+- Blockers show in red with what to do (e.g. "the ISO hasn't been downloaded" with a button that
+  downloads and verifies it; "not enough RAM for this distro" refuses before any plan).
+- `cargo test` and `cargo clippy --all-targets -- -D warnings` pass.
+
+### Not tested / known limits
+- The restart-as-administrator path (UAC prompt) was not clicked through: the VM user is an admin
+  already.
+- Starting a VM trial from the window wasn't run in the VM (it has no VM program); the same code
+  path as `linuxify try` is used, and the "no VM program" message was checked.
+- No high-DPI check beyond 100% scaling, and no screen reader test (AccessKit is enabled).
+- Only English; window size is fixed at 1160×780 to start (resizable, minimum 900×600).

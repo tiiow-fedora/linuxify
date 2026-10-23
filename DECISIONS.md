@@ -346,3 +346,32 @@ Short record of choices made while building Linuxify, and why.
   installer guides the enrolment.
 - **Battery gate.** On a laptop running on battery (`Win32_Battery` status discharging/low/critical)
   the install refuses until the charger is plugged in; the scan shows it as a warning.
+
+## The window (GUI)
+
+- **egui/eframe, not WebView2/Tauri, Slint or native Win32.** It is pure Rust, so it builds with
+  the same `+crt-static` and stays one `linuxify.exe` with no runtime to install. WebView2 isn't
+  on every Windows 10 (LTSC editions don't ship it), which rules out Tauri/wry; Slint adds its own
+  markup language and build step; raw Win32 or WinUI would be a lot of `unsafe` code for a dated or
+  heavy result. egui draws its own widgets, so the dark zinc/green look is the same everywhere.
+- **wgpu first, then OpenGL (glow).** eframe tries Direct3D 12/Vulkan through wgpu. If that fails
+  (old drivers, a VM without 3D), the program restarts itself with `LINUXIFY_RENDERER=glow`,
+  because winit can't create a second event loop in the same process. Verified in a VirtualBox VM
+  with no 3D acceleration.
+- **One exe, console program.** It stays a console program so the CLI's typed confirmations work.
+  When the window opens from a double-click (or `linuxify gui`), it starts itself again without a
+  console (`CREATE_NO_WINDOW`) and exits, so no black window sits behind it, and the PowerShell,
+  diskpart and VBoxManage children don't flash windows either. No `unsafe` code.
+- **Shared steps in `flow.rs`.** Everything the CLI and the window both do (saving quiz results,
+  finishing the staged copy, preparing the install plan, the install and undo gates) lives in
+  `src/flow.rs`, and `main.rs` was rewritten on top of it. The window can't skip a check the CLI
+  makes: `flow::install_confirmed` refuses while there is any blocker, while the plan is an
+  estimate, while `no-install.lock` exists, or unless the typed phrase matches exactly.
+- **Re-check on click.** Clicking Install runs the whole preparation again (fresh disk scan, ISO
+  hash, staged-copy verify) and the gate compares the phrase against the *new* plan. A window
+  left open for an hour can't approve a plan for a disk that has since changed.
+- **Progress from the library, not parsed text.** `download.rs` reports `Event`s (download start,
+  bytes, hashing) to a callback; the CLI prints them as before and the window draws a bar. The
+  install itself reports through the phase it saves to `install-state.json`.
+- **Admin.** The window doesn't ask for admin up front: steps 1–4 don't need it. When the install
+  plan needs it, "Restart as administrator" relaunches with `RunAs` straight to the install step.
