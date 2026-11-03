@@ -317,6 +317,7 @@ mod tests {
         assert!(p[3].args.contains(&spec(None).iso.display().to_string()));
     }
 
+    #[cfg(windows)]
     #[test]
     fn virtualbox_disk_lives_in_vm_folder() {
         let p = plan_virtualbox(Path::new(VB), &spec(Some(25)), false);
@@ -342,6 +343,7 @@ mod tests {
         assert!(p[2].retries > 0, "delete must wait for the VM to unlock");
     }
 
+    #[cfg(windows)]
     #[test]
     fn qemu_plan() {
         let p = plan_qemu(Path::new(r"C:\Program Files\qemu\qemu-system-x86_64.exe"), &spec(None));

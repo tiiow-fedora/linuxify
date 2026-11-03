@@ -409,6 +409,11 @@ pub struct CopyOutcome {
     pub failed: Vec<Skipped>,
 }
 
+/// Manifest paths always use `/`; on Windows the staging copy uses `\`.
+fn native_rel(rel: &str) -> String {
+    if cfg!(windows) { rel.replace('/', "\\") } else { rel.to_string() }
+}
+
 /// Copies every planned file into `staging`, resuming from the progress log.
 /// `stop_after` (testing aid) stops after copying that many new files, as if
 /// interrupted.
@@ -422,7 +427,7 @@ pub fn copy_all(plan: &Plan, staging: &Path, stop_after: Option<u64>, mut progre
     let mut bytes_done = 0u64;
     let mut out = CopyOutcome { copied: vec![], reused: 0, newly_copied: 0, failed: vec![] };
     for f in &plan.files {
-        let dest = staging.join(f.rel.replace('/', "\\"));
+        let dest = staging.join(native_rel(&f.rel));
         // Resume: same source size + mtime, and the copy is still there with the right size.
         if let Some(prev) = done.get(&f.rel) {
             let same_src = prev.size == f.size && prev.mtime == f.mtime;
@@ -511,7 +516,7 @@ pub fn verify(staging: &Path, mut progress: impl FnMut(u64, u64)) -> Result<Veri
     let total = m.total_bytes.max(1);
     let mut done = 0u64;
     for f in &m.files {
-        let p = staging.join(f.path.replace('/', "\\"));
+        let p = staging.join(native_rel(&f.path));
         match crate::download::sha256_file(&p, |_| {}) {
             Ok(h) if h == f.sha256 => r.ok += 1,
             Ok(_) => r.mismatched.push(f.path.clone()),
@@ -527,7 +532,7 @@ pub fn verify(staging: &Path, mut progress: impl FnMut(u64, u64)) -> Result<Veri
         if root.is_dir() {
             let _ = crate::scan::userdata::walk(&root, |p, _| {
                 if let Ok(rel) = p.strip_prefix(staging) {
-                    let rel = rel.to_string_lossy().replace('\\', "/");
+                    let rel = if cfg!(windows) { rel.to_string_lossy().replace('\\', "/") } else { rel.to_string_lossy().into_owned() };
                     if !known.contains(rel.as_str()) && !rel.ends_with(PARTIAL_SUFFIX) {
                         r.extra.push(rel);
                     }
