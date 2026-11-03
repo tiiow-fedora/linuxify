@@ -877,34 +877,7 @@
     "confidence": "high"
    }
   },
-  "afterburner-rtss::MangoHud": {
-   "fedora": {
-    "source": "repo",
-    "pkg": "mangohud",
-    "confidence": "high"
-   },
-   "arch": {
-    "source": "repo",
-    "pkg": "mangohud",
-    "confidence": "high"
-   },
-   "debian": {
-    "source": "repo",
-    "pkg": "mangohud",
-    "confidence": "medium"
-   },
-   "ubuntu": {
-    "source": "repo",
-    "pkg": "mangohud",
-    "confidence": "medium"
-   },
-   "opensuse": {
-    "source": "repo",
-    "pkg": "mangohud",
-    "confidence": "medium"
-   }
-  },
-  "afterburner-rtss::CoreCtrl": {
+  "rtss::CoreCtrl": {
    "fedora": {
     "source": "repo",
     "pkg": "corectrl",

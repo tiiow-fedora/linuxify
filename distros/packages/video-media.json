@@ -571,33 +571,6 @@
     "confidence": "high"
    }
   },
-  "xnviewmp": {
-   "fedora": {
-    "source": "download",
-    "url": "https://www.xnview.com/en/xnviewmp/",
-    "confidence": "medium"
-   },
-   "arch": {
-    "source": "aur",
-    "pkg": "xnviewmp",
-    "confidence": "medium"
-   },
-   "debian": {
-    "source": "download",
-    "url": "https://www.xnview.com/en/xnviewmp/",
-    "confidence": "medium"
-   },
-   "ubuntu": {
-    "source": "download",
-    "url": "https://www.xnview.com/en/xnviewmp/",
-    "confidence": "medium"
-   },
-   "opensuse": {
-    "source": "download",
-    "url": "https://www.xnview.com/en/xnviewmp/",
-    "confidence": "medium"
-   }
-  },
   "audacious": {
    "fedora": {
     "source": "repo",

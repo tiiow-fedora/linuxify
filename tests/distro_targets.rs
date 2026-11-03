@@ -26,7 +26,7 @@ fn shard_files(dir: &str) -> Vec<PathBuf> {
     let mut v: Vec<PathBuf> = match fs::read_dir(&d) {
         Ok(rd) => rd
             .filter_map(|e| e.ok().map(|e| e.path()))
-            .filter(|p| p.extension().map_or(false, |x| x == "json"))
+            .filter(|p| p.extension().is_some_and(|x| x == "json"))
             .collect(),
         Err(_) => vec![],
     };
@@ -192,7 +192,7 @@ fn check_entry(label: &str, target: &str, e: &Value, targets: &Value) -> Vec<Str
         "none" => {
             if o.get("reason")
                 .and_then(Value::as_str)
-                .map_or(true, |r| r.trim().len() < 10)
+                .is_none_or(|r| r.trim().len() < 10)
             {
                 p.push(format!(
                     "{label}: source none needs a 'reason' (>= 10 chars)"
@@ -255,7 +255,7 @@ fn check_entry(label: &str, target: &str, e: &Value, targets: &Value) -> Vec<Str
             Some(a)
                 if !a.is_empty()
                     && a.iter()
-                        .all(|x| x.as_str().map_or(false, |s| known.contains(s))) => {}
+                        .all(|x| x.as_str().is_some_and(|s| known.contains(s))) => {}
             _ => p.push(format!(
                 "{label}: 'needs' must be a non-empty list of repo ids defined for {target}"
             )),
@@ -289,7 +289,7 @@ fn targets_file_is_well_formed() {
             "refresh_cmd",
         ] {
             assert!(
-                x[k].as_str().map_or(false, |s| !s.is_empty()),
+                x[k].as_str().is_some_and(|s| !s.is_empty()),
                 "{id}: missing {k}"
             );
         }
@@ -308,7 +308,7 @@ fn targets_file_is_well_formed() {
             );
             for k in ["name", "enable", "note"] {
                 assert!(
-                    r[k].as_str().map_or(false, |s| !s.is_empty()),
+                    r[k].as_str().is_some_and(|s| !s.is_empty()),
                     "{id}/{}: missing {k}",
                     r["id"]
                 );
@@ -468,16 +468,15 @@ fn mappings_agree_with_the_catalog() {
                     }
                 }
             }
-            if src == "none" && cat_fp.is_some() {
+            if let (true, Some(fp)) = (src == "none", cat_fp) {
                 problems.push(format!(
-                    "{id}/{tg}: catalog has flatpak '{}' but mapping says none",
-                    cat_fp.unwrap()
+                    "{id}/{tg}: catalog has flatpak '{fp}' but mapping says none"
                 ));
             }
             if x.get("catalog_override").is_some()
                 && x["catalog_override"]
                     .as_str()
-                    .map_or(true, |s| s.len() < 10)
+                    .is_none_or(|s| s.len() < 10)
             {
                 problems.push(format!("{id}/{tg}: catalog_override needs a reason"));
             }
@@ -508,7 +507,7 @@ fn every_app_is_installable_somewhere_and_notes_are_sane() {
                 Some(a)
                     if a.iter().all(|s| {
                         s.as_str()
-                            .map_or(false, |s| s.len() >= 15 && s.ends_with('.'))
+                            .is_some_and(|s| s.len() >= 15 && s.ends_with('.'))
                     }) => {}
                 _ => problems.push(format!("{id}: notes must be sentences ending with '.'")),
             }
