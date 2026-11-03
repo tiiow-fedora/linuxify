@@ -516,29 +516,41 @@
   },
   "adobe-dreamweaver::Visual Studio Code": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "com.visualstudio.code",
-    "confidence": "medium"
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
    },
    "arch": {
-    "source": "flatpak",
-    "pkg": "com.visualstudio.code",
+    "source": "aur",
+    "pkg": "visual-studio-code-bin",
     "confidence": "medium"
    },
    "debian": {
-    "source": "flatpak",
-    "pkg": "com.visualstudio.code",
-    "confidence": "medium"
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
    },
    "ubuntu": {
-    "source": "flatpak",
-    "pkg": "com.visualstudio.code",
-    "confidence": "medium"
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "com.visualstudio.code",
-    "confidence": "medium"
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
    }
   },
   "adobe-dreamweaver::Bluefish": {
@@ -1462,28 +1474,28 @@
   },
   "asus-armoury-crate::OpenRGB": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
+    "source": "repo",
+    "pkg": "openrgb",
     "confidence": "medium"
    },
    "arch": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
-    "confidence": "medium"
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "high"
    },
    "debian": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
+    "source": "repo",
+    "pkg": "openrgb",
     "confidence": "medium"
    },
    "ubuntu": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
+    "source": "repo",
+    "pkg": "openrgb",
     "confidence": "medium"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
+    "source": "repo",
+    "pkg": "openrgb",
     "confidence": "medium"
    }
   },
@@ -1565,7 +1577,7 @@
    "opensuse": {
     "source": "repo",
     "pkg": "freecad",
-    "confidence": "low"
+    "confidence": "medium"
    }
   },
   "autocad-lt::LibreCAD": {
@@ -1619,7 +1631,7 @@
    "opensuse": {
     "source": "repo",
     "pkg": "freecad",
-    "confidence": "low"
+    "confidence": "medium"
    }
   },
   "autohotkey::AutoKey": {
@@ -2360,28 +2372,28 @@
   },
   "cakewalk::Ardour": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "org.ardour.Ardour",
+    "source": "repo",
+    "pkg": "ardour8",
     "confidence": "medium"
    },
    "arch": {
-    "source": "flatpak",
-    "pkg": "org.ardour.Ardour",
-    "confidence": "medium"
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "high"
    },
    "debian": {
-    "source": "flatpak",
-    "pkg": "org.ardour.Ardour",
-    "confidence": "medium"
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "high"
    },
    "ubuntu": {
-    "source": "flatpak",
-    "pkg": "org.ardour.Ardour",
-    "confidence": "medium"
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "high"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "org.ardour.Ardour",
+    "source": "repo",
+    "pkg": "ardour",
     "confidence": "medium"
    }
   },
@@ -2611,18 +2623,18 @@
     "confidence": "medium"
    },
    "arch": {
-    "source": "flatpak",
-    "pkg": "org.shotcut.Shotcut",
+    "source": "repo",
+    "pkg": "shotcut",
     "confidence": "medium"
    },
    "debian": {
-    "source": "flatpak",
-    "pkg": "org.shotcut.Shotcut",
+    "source": "repo",
+    "pkg": "shotcut",
     "confidence": "medium"
    },
    "ubuntu": {
-    "source": "flatpak",
-    "pkg": "org.shotcut.Shotcut",
+    "source": "repo",
+    "pkg": "shotcut",
     "confidence": "medium"
    },
    "opensuse": {

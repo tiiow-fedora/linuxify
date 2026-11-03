@@ -30,8 +30,8 @@
   },
   "glasswire-fw::OpenSnitch": {
    "fedora": {
-    "source": "repo",
-    "pkg": "opensnitch",
+    "source": "download",
+    "url": "https://github.com/evilsocket/opensnitch/releases",
     "confidence": "medium"
    },
    "arch": {
@@ -50,9 +50,9 @@
     "confidence": "medium"
    },
    "opensuse": {
-    "source": "repo",
-    "pkg": "opensnitch",
-    "confidence": "low"
+    "source": "download",
+    "url": "https://github.com/evilsocket/opensnitch/releases",
+    "confidence": "medium"
    }
   },
   "gog-galaxy::Heroic Games Launcher": {
@@ -94,13 +94,13 @@
     "confidence": "high"
    },
    "debian": {
-    "source": "flatpak",
-    "pkg": "net.lutris.Lutris",
+    "source": "repo",
+    "pkg": "lutris",
     "confidence": "medium"
    },
    "ubuntu": {
-    "source": "flatpak",
-    "pkg": "net.lutris.Lutris",
+    "source": "repo",
+    "pkg": "lutris",
     "confidence": "medium"
    },
    "opensuse": {
@@ -835,7 +835,7 @@
    "opensuse": {
     "source": "repo",
     "pkg": "openrgb",
-    "confidence": "low"
+    "confidence": "medium"
    }
   },
   "icloud::iCloud in a browser": {
@@ -1157,8 +1157,8 @@
     "confidence": "high"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "org.freecadweb.FreeCAD",
+    "source": "repo",
+    "pkg": "freecad",
     "confidence": "medium"
    }
   },
@@ -1223,8 +1223,8 @@
     "confidence": "medium"
    },
    "arch": {
-    "source": "flatpak",
-    "pkg": "com.xnview.XnViewMP",
+    "source": "aur",
+    "pkg": "xnviewmp",
     "confidence": "medium"
    },
    "debian": {
@@ -1806,8 +1806,8 @@
    },
    "opensuse": {
     "source": "repo",
-    "pkg": "liquidctl",
-    "confidence": "low"
+    "pkg": "python3-liquidctl",
+    "confidence": "medium"
    }
   },
   "lightshot::Flameshot": {
@@ -2180,12 +2180,12 @@
    "ubuntu": {
     "source": "snap",
     "pkg": "thunderbird",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "org.mozilla.thunderbird",
-    "confidence": "medium"
+    "source": "repo",
+    "pkg": "MozillaThunderbird",
+    "confidence": "high"
    }
   },
   "mailbird::Geary": {
@@ -2234,12 +2234,12 @@
    "ubuntu": {
     "source": "snap",
     "pkg": "thunderbird",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "org.mozilla.thunderbird",
-    "confidence": "medium"
+    "source": "repo",
+    "pkg": "MozillaThunderbird",
+    "confidence": "high"
    }
   },
   "malwarebytes::ClamAV": {
@@ -2325,8 +2325,11 @@
   },
   "medal::OBS Studio": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "com.obsproject.Studio",
+    "source": "rpmfusion",
+    "pkg": "obs-studio",
+    "needs": [
+     "rpmfusion"
+    ],
     "confidence": "medium"
    },
    "arch": {
@@ -2345,8 +2348,8 @@
     "confidence": "high"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "com.obsproject.Studio",
+    "source": "repo",
+    "pkg": "obs-studio",
     "confidence": "medium"
    }
   },
@@ -2381,7 +2384,7 @@
    "fedora": {
     "source": "repo",
     "pkg": "ardour8",
-    "confidence": "low"
+    "confidence": "medium"
    },
    "arch": {
     "source": "repo",

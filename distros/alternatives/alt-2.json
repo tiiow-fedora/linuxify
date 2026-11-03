@@ -327,8 +327,8 @@
   },
   "corsair-icue::OpenRGB": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
+    "source": "repo",
+    "pkg": "openrgb",
     "confidence": "medium"
    },
    "arch": {
@@ -337,18 +337,18 @@
     "confidence": "high"
    },
    "debian": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
+    "source": "repo",
+    "pkg": "openrgb",
     "confidence": "medium"
    },
    "ubuntu": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
+    "source": "repo",
+    "pkg": "openrgb",
     "confidence": "medium"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
+    "source": "repo",
+    "pkg": "openrgb",
     "confidence": "medium"
    }
   },
@@ -572,22 +572,22 @@
    "fedora": {
     "source": "repo",
     "pkg": "ardour8",
-    "confidence": "low"
+    "confidence": "medium"
    },
    "arch": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "debian": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
     "source": "repo",
@@ -602,8 +602,8 @@
     "confidence": "medium"
    },
    "arch": {
-    "source": "flatpak",
-    "pkg": "org.prismlauncher.PrismLauncher",
+    "source": "repo",
+    "pkg": "prismlauncher",
     "confidence": "medium"
    },
    "debian": {
@@ -625,23 +625,28 @@
   "daemon-tools::Built-in mounting": {
    "fedora": {
     "source": "none",
-    "reason": "ISO mounting in the file manager is built into the desktop; no separate package needed."
+    "reason": "ISO mounting in the file manager is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "ISO mounting in the file manager is built into the desktop; no separate package needed."
+    "reason": "ISO mounting in the file manager is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "ISO mounting in the file manager is built into the desktop; no separate package needed."
+    "reason": "ISO mounting in the file manager is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "ISO mounting in the file manager is built into the desktop; no separate package needed."
+    "reason": "ISO mounting in the file manager is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "ISO mounting in the file manager is built into the desktop; no separate package needed."
+    "reason": "ISO mounting in the file manager is built into the desktop; no separate package needed.",
+    "confidence": "high"
    }
   },
   "daemon-tools::K3b / Brasero": {
@@ -701,23 +706,28 @@
   "deezer::Deezer in a browser": {
    "fedora": {
     "source": "none",
-    "reason": "Web app at deezer.com; nothing to install, use any browser."
+    "reason": "Web app at deezer.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "Web app at deezer.com; nothing to install, use any browser."
+    "reason": "Web app at deezer.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "Web app at deezer.com; nothing to install, use any browser."
+    "reason": "Web app at deezer.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "Web app at deezer.com; nothing to install, use any browser."
+    "reason": "Web app at deezer.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "Web app at deezer.com; nothing to install, use any browser."
+    "reason": "Web app at deezer.com; nothing to install, use any browser.",
+    "confidence": "high"
    }
   },
   "defraggler::fstrim (built in)": {
@@ -885,23 +895,28 @@
   "dexpot::Built-in workspaces": {
    "fedora": {
     "source": "none",
-    "reason": "Virtual desktops (workspaces) is built into the desktop; no separate package needed."
+    "reason": "Virtual desktops (workspaces) is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "Virtual desktops (workspaces) is built into the desktop; no separate package needed."
+    "reason": "Virtual desktops (workspaces) is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "Virtual desktops (workspaces) is built into the desktop; no separate package needed."
+    "reason": "Virtual desktops (workspaces) is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "Virtual desktops (workspaces) is built into the desktop; no separate package needed."
+    "reason": "Virtual desktops (workspaces) is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "Virtual desktops (workspaces) is built into the desktop; no separate package needed."
+    "reason": "Virtual desktops (workspaces) is built into the desktop; no separate package needed.",
+    "confidence": "high"
    }
   },
   "directory-opus::Dolphin": {
@@ -961,23 +976,28 @@
   "disney-plus::Disney+ in a browser": {
    "fedora": {
     "source": "none",
-    "reason": "Web app at disneyplus.com; nothing to install, use any browser."
+    "reason": "Web app at disneyplus.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "Web app at disneyplus.com; nothing to install, use any browser."
+    "reason": "Web app at disneyplus.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "Web app at disneyplus.com; nothing to install, use any browser."
+    "reason": "Web app at disneyplus.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "Web app at disneyplus.com; nothing to install, use any browser."
+    "reason": "Web app at disneyplus.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "Web app at disneyplus.com; nothing to install, use any browser."
+    "reason": "Web app at disneyplus.com; nothing to install, use any browser.",
+    "confidence": "high"
    }
   },
   "ditto::CopyQ": {
@@ -1145,23 +1165,28 @@
   "duolingo-pwa::Duolingo website": {
    "fedora": {
     "source": "none",
-    "reason": "Web app at duolingo.com; nothing to install, use any browser."
+    "reason": "Web app at duolingo.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "Web app at duolingo.com; nothing to install, use any browser."
+    "reason": "Web app at duolingo.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "Web app at duolingo.com; nothing to install, use any browser."
+    "reason": "Web app at duolingo.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "Web app at duolingo.com; nothing to install, use any browser."
+    "reason": "Web app at duolingo.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "Web app at duolingo.com; nothing to install, use any browser."
+    "reason": "Web app at duolingo.com; nothing to install, use any browser.",
+    "confidence": "high"
    }
   },
   "eagle-pcb::KiCad": {
@@ -1215,7 +1240,7 @@
    "opensuse": {
     "source": "repo",
     "pkg": "clonezilla",
-    "confidence": "low"
+    "confidence": "medium"
    }
   },
   "easeus-todo::TestDisk / PhotoRec": {
@@ -1275,23 +1300,28 @@
   "elgato-tools::Built-in camera and audio settings": {
    "fedora": {
     "source": "none",
-    "reason": "Camera and audio configuration is built into the desktop; no separate package needed."
+    "reason": "Camera and audio configuration is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "Camera and audio configuration is built into the desktop; no separate package needed."
+    "reason": "Camera and audio configuration is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "Camera and audio configuration is built into the desktop; no separate package needed."
+    "reason": "Camera and audio configuration is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "Camera and audio configuration is built into the desktop; no separate package needed."
+    "reason": "Camera and audio configuration is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "Camera and audio configuration is built into the desktop; no separate package needed."
+    "reason": "Camera and audio configuration is built into the desktop; no separate package needed.",
+    "confidence": "high"
    }
   },
   "em-client::Thunderbird": {
@@ -1513,23 +1543,28 @@
   "evernote::Evernote in a browser": {
    "fedora": {
     "source": "none",
-    "reason": "Web app at evernote.com; nothing to install, use any browser."
+    "reason": "Web app at evernote.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "Web app at evernote.com; nothing to install, use any browser."
+    "reason": "Web app at evernote.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "Web app at evernote.com; nothing to install, use any browser."
+    "reason": "Web app at evernote.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "Web app at evernote.com; nothing to install, use any browser."
+    "reason": "Web app at evernote.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "Web app at evernote.com; nothing to install, use any browser."
+    "reason": "Web app at evernote.com; nothing to install, use any browser.",
+    "confidence": "high"
    }
   },
   "evernote::Joplin": {
@@ -1589,23 +1624,28 @@
   "everything-alt::Plasma KRunner / GNOME Search": {
    "fedora": {
     "source": "none",
-    "reason": "KRunner and GNOME Search is built into the desktop; no separate package needed."
+    "reason": "KRunner and GNOME Search is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "KRunner and GNOME Search is built into the desktop; no separate package needed."
+    "reason": "KRunner and GNOME Search is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "KRunner and GNOME Search is built into the desktop; no separate package needed."
+    "reason": "KRunner and GNOME Search is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "KRunner and GNOME Search is built into the desktop; no separate package needed."
+    "reason": "KRunner and GNOME Search is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "KRunner and GNOME Search is built into the desktop; no separate package needed."
+    "reason": "KRunner and GNOME Search is built into the desktop; no separate package needed.",
+    "confidence": "high"
    }
   },
   "everything-alt::FSearch": {
@@ -1750,8 +1790,8 @@
     "confidence": "medium"
    },
    "arch": {
-    "source": "flatpak",
-    "pkg": "com.xnview.XnViewMP",
+    "source": "aur",
+    "pkg": "xnviewmp",
     "confidence": "medium"
    },
    "debian": {
@@ -1881,23 +1921,28 @@
   "figma::Figma in a browser": {
    "fedora": {
     "source": "none",
-    "reason": "Web app at figma.com; nothing to install, use any browser."
+    "reason": "Web app at figma.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "Web app at figma.com; nothing to install, use any browser."
+    "reason": "Web app at figma.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "Web app at figma.com; nothing to install, use any browser."
+    "reason": "Web app at figma.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "Web app at figma.com; nothing to install, use any browser."
+    "reason": "Web app at figma.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "Web app at figma.com; nothing to install, use any browser."
+    "reason": "Web app at figma.com; nothing to install, use any browser.",
+    "confidence": "high"
    }
   },
   "filmora::Kdenlive": {
@@ -1939,13 +1984,13 @@
     "confidence": "medium"
    },
    "debian": {
-    "source": "flatpak",
-    "pkg": "org.shotcut.Shotcut",
+    "source": "repo",
+    "pkg": "shotcut",
     "confidence": "medium"
    },
    "ubuntu": {
-    "source": "flatpak",
-    "pkg": "org.shotcut.Shotcut",
+    "source": "repo",
+    "pkg": "shotcut",
     "confidence": "medium"
    },
    "opensuse": {
@@ -2066,45 +2111,55 @@
   "flow-launcher::KRunner (KDE) / Activities search (GNOME)": {
    "fedora": {
     "source": "none",
-    "reason": "KRunner and GNOME Activities search is built into the desktop; no separate package needed."
+    "reason": "KRunner and GNOME Activities search is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "KRunner and GNOME Activities search is built into the desktop; no separate package needed."
+    "reason": "KRunner and GNOME Activities search is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "KRunner and GNOME Activities search is built into the desktop; no separate package needed."
+    "reason": "KRunner and GNOME Activities search is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "KRunner and GNOME Activities search is built into the desktop; no separate package needed."
+    "reason": "KRunner and GNOME Activities search is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "KRunner and GNOME Activities search is built into the desktop; no separate package needed."
+    "reason": "KRunner and GNOME Activities search is built into the desktop; no separate package needed.",
+    "confidence": "high"
    }
   },
   "flux::Night Light (built in)": {
    "fedora": {
     "source": "none",
-    "reason": "Night Light / night colour is built into the desktop; no separate package needed."
+    "reason": "Night Light / night colour is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "Night Light / night colour is built into the desktop; no separate package needed."
+    "reason": "Night Light / night colour is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "Night Light / night colour is built into the desktop; no separate package needed."
+    "reason": "Night Light / night colour is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "Night Light / night colour is built into the desktop; no separate package needed."
+    "reason": "Night Light / night colour is built into the desktop; no separate package needed.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "Night Light / night colour is built into the desktop; no separate package needed."
+    "reason": "Night Light / night colour is built into the desktop; no separate package needed.",
+    "confidence": "high"
    }
   },
   "focusrite::alsa-scarlett-gui": {
@@ -2376,30 +2431,35 @@
    },
    "opensuse": {
     "source": "repo",
-    "pkg": "FreeCAD",
-    "confidence": "low"
+    "pkg": "freecad",
+    "confidence": "medium"
    }
   },
   "fusion-360::Onshape": {
    "fedora": {
     "source": "none",
-    "reason": "Web app at onshape.com; nothing to install, use any browser."
+    "reason": "Web app at onshape.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "Web app at onshape.com; nothing to install, use any browser."
+    "reason": "Web app at onshape.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "Web app at onshape.com; nothing to install, use any browser."
+    "reason": "Web app at onshape.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "Web app at onshape.com; nothing to install, use any browser."
+    "reason": "Web app at onshape.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "Web app at onshape.com; nothing to install, use any browser."
+    "reason": "Web app at onshape.com; nothing to install, use any browser.",
+    "confidence": "high"
    }
   },
   "garageband::LMMS": {
@@ -2433,22 +2493,22 @@
    "fedora": {
     "source": "repo",
     "pkg": "ardour8",
-    "confidence": "low"
+    "confidence": "medium"
    },
    "arch": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "debian": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
     "source": "repo",
@@ -2459,23 +2519,28 @@
   "garmin-express::Garmin Connect in a browser": {
    "fedora": {
     "source": "none",
-    "reason": "Web app at connect.garmin.com; nothing to install, use any browser."
+    "reason": "Web app at connect.garmin.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "arch": {
     "source": "none",
-    "reason": "Web app at connect.garmin.com; nothing to install, use any browser."
+    "reason": "Web app at connect.garmin.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "debian": {
     "source": "none",
-    "reason": "Web app at connect.garmin.com; nothing to install, use any browser."
+    "reason": "Web app at connect.garmin.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "none",
-    "reason": "Web app at connect.garmin.com; nothing to install, use any browser."
+    "reason": "Web app at connect.garmin.com; nothing to install, use any browser.",
+    "confidence": "high"
    },
    "opensuse": {
     "source": "none",
-    "reason": "Web app at connect.garmin.com; nothing to install, use any browser."
+    "reason": "Web app at connect.garmin.com; nothing to install, use any browser.",
+    "confidence": "high"
    }
   },
   "git-bash::Your normal terminal": {

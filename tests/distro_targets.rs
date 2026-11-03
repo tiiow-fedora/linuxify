@@ -584,6 +584,62 @@ fn alternatives_shards_are_valid_if_present() {
 }
 
 #[test]
+fn every_catalog_alternative_is_mapped() {
+    let cat = catalog();
+    let (map, _) = load_shards("alternatives");
+    let mut want = BTreeSet::new();
+    for (id, l) in &cat.alts {
+        for (n, _) in l {
+            want.insert(format!("{id}::{n}"));
+        }
+    }
+    let have: BTreeSet<String> = map.keys().cloned().collect();
+    let missing: Vec<_> = want.difference(&have).collect();
+    assert!(
+        missing.is_empty(),
+        "{} unmapped alternatives: {missing:?}",
+        missing.len()
+    );
+}
+
+#[test]
+fn same_named_alternatives_agree_across_apps() {
+    // "LibreOffice" suggested for two programs must not map to two different packages.
+    let (map, _) = load_shards("alternatives");
+    let mut seen: BTreeMap<String, (String, Value)> = BTreeMap::new();
+    let mut problems = vec![];
+    for (key, e) in &map {
+        let name = key
+            .split_once("::")
+            .map_or(key.as_str(), |x| x.1)
+            .to_lowercase();
+        for tg in TARGETS {
+            let sig = format!("{tg}:{name}");
+            let cur = (e[tg]["source"].to_string(), e[tg]["pkg"].clone());
+            let _ = &cur;
+            match seen.get(&sig) {
+                Some((k0, v0)) if v0["source"] != e[tg]["source"] || v0["pkg"] != e[tg]["pkg"] => {
+                    // a catalog flatpak id may exist under only one key; that is the only allowed divergence
+                    if v0["source"] != "flatpak" && e[tg]["source"] != "flatpak" {
+                        problems.push(format!("{key}/{tg} differs from {k0}"));
+                    }
+                }
+                Some(_) => {}
+                None => {
+                    seen.insert(sig, (key.clone(), e[tg].clone()));
+                }
+            }
+        }
+    }
+    assert!(
+        problems.is_empty(),
+        "{} problems:\n{}",
+        problems.len(),
+        problems.join("\n")
+    );
+}
+
+#[test]
 fn coverage_report() {
     // Not an assertion on content: prints coverage so `cargo test -- --nocapture` shows it.
     let cat = catalog();

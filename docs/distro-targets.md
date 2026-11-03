@@ -94,8 +94,10 @@ Before the installer acts on a mapping, a runtime check (`dnf info`, `pacman -Si
    target is never `none` when the catalog already offers a Flatpak or native
    package for it.
 6. Every program is installable on at least one target.
-7. Alternatives shards (if present) reference real catalog alternatives and obey
-   the same entry rules.
+7. **Alternatives coverage.** Every `alternatives` entry in the catalog (606 across
+   all programs) has a `distros/alternatives` mapping that obeys the same entry
+   rules, and the same alternative name suggested for several programs maps to the
+   same package everywhere (unless only one of them has a catalog Flathub id).
 
 `cargo test --test distro_targets -- --nocapture coverage_report` prints
 coverage counts by source.

@@ -140,7 +140,7 @@
    "fedora": {
     "source": "repo",
     "pkg": "ardour8",
-    "confidence": "low"
+    "confidence": "medium"
    },
    "arch": {
     "source": "repo",
@@ -150,12 +150,12 @@
    "debian": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
     "source": "repo",
@@ -489,8 +489,8 @@
   },
   "radmin-vpn::ZeroTier": {
    "fedora": {
-    "source": "repo",
-    "pkg": "zerotier-one",
+    "source": "download",
+    "url": "https://www.zerotier.com/download/",
     "confidence": "medium"
    },
    "arch": {
@@ -499,25 +499,19 @@
     "confidence": "high"
    },
    "debian": {
-    "source": "vendor-repo",
-    "pkg": "zerotier-one",
-    "confidence": "medium",
-    "needs": [
-     "vendor-repo"
-    ]
+    "source": "download",
+    "url": "https://www.zerotier.com/download/",
+    "confidence": "medium"
    },
    "ubuntu": {
-    "source": "vendor-repo",
-    "pkg": "zerotier-one",
-    "confidence": "medium",
-    "needs": [
-     "vendor-repo"
-    ]
+    "source": "download",
+    "url": "https://www.zerotier.com/download/",
+    "confidence": "medium"
    },
    "opensuse": {
-    "source": "repo",
-    "pkg": "zerotier-one",
-    "confidence": "low"
+    "source": "download",
+    "url": "https://www.zerotier.com/download/",
+    "confidence": "medium"
    }
   },
   "radmin-vpn::Tailscale": {
@@ -532,20 +526,14 @@
     "confidence": "high"
    },
    "debian": {
-    "source": "vendor-repo",
-    "pkg": "tailscale",
-    "confidence": "medium",
-    "needs": [
-     "vendor-repo"
-    ]
+    "source": "download",
+    "url": "https://tailscale.com/download/linux",
+    "confidence": "medium"
    },
    "ubuntu": {
-    "source": "vendor-repo",
-    "pkg": "tailscale",
-    "confidence": "medium",
-    "needs": [
-     "vendor-repo"
-    ]
+    "source": "download",
+    "url": "https://tailscale.com/download/linux",
+    "confidence": "medium"
    },
    "opensuse": {
     "source": "repo",
@@ -665,7 +653,7 @@
    "fedora": {
     "source": "repo",
     "pkg": "ardour8",
-    "confidence": "low"
+    "confidence": "medium"
    },
    "arch": {
     "source": "repo",
@@ -675,12 +663,12 @@
    "debian": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
     "source": "repo",
@@ -899,8 +887,8 @@
     "confidence": "medium"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
+    "source": "repo",
+    "pkg": "openrgb",
     "confidence": "medium"
    }
   },
@@ -1204,8 +1192,8 @@
   "samsung-smart-switch::KDE Connect": {
    "fedora": {
     "source": "repo",
-    "pkg": "kdeconnect",
-    "confidence": "medium"
+    "pkg": "kde-connect",
+    "confidence": "high"
    },
    "arch": {
     "source": "repo",
@@ -1311,8 +1299,11 @@
   },
   "screenpresso::OBS Studio": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "com.obsproject.Studio",
+    "source": "rpmfusion",
+    "pkg": "obs-studio",
+    "needs": [
+     "rpmfusion"
+    ],
     "confidence": "medium"
    },
    "arch": {
@@ -1530,8 +1521,11 @@
   },
   "shadowplay::OBS Studio": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "com.obsproject.Studio",
+    "source": "rpmfusion",
+    "pkg": "obs-studio",
+    "needs": [
+     "rpmfusion"
+    ],
     "confidence": "medium"
    },
    "arch": {
@@ -1631,8 +1625,8 @@
     "confidence": "medium"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
+    "source": "repo",
+    "pkg": "openrgb",
     "confidence": "medium"
    }
   },
@@ -2323,13 +2317,13 @@
     "confidence": "medium"
    },
    "debian": {
-    "source": "flatpak",
-    "pkg": "com.gitlab.davem.ClamTk",
+    "source": "repo",
+    "pkg": "clamtk",
     "confidence": "medium"
    },
    "ubuntu": {
-    "source": "flatpak",
-    "pkg": "com.gitlab.davem.ClamTk",
+    "source": "repo",
+    "pkg": "clamtk",
     "confidence": "medium"
    },
    "opensuse": {
@@ -2345,8 +2339,8 @@
     "confidence": "medium"
    },
    "arch": {
-    "source": "flatpak",
-    "pkg": "io.dbeaver.DBeaverCommunity",
+    "source": "repo",
+    "pkg": "dbeaver",
     "confidence": "medium"
    },
    "debian": {
@@ -2441,8 +2435,8 @@
     "confidence": "medium"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "org.openrgb.OpenRGB",
+    "source": "repo",
+    "pkg": "openrgb",
     "confidence": "medium"
    }
   },
@@ -2477,7 +2471,7 @@
    "fedora": {
     "source": "repo",
     "pkg": "ardour8",
-    "confidence": "low"
+    "confidence": "medium"
    },
    "arch": {
     "source": "repo",
@@ -2487,12 +2481,12 @@
    "debian": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
     "source": "repo",
@@ -2556,8 +2550,11 @@
   },
   "streamlabs::OBS Studio": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "com.obsproject.Studio",
+    "source": "rpmfusion",
+    "pkg": "obs-studio",
+    "needs": [
+     "rpmfusion"
+    ],
     "confidence": "medium"
    },
    "arch": {

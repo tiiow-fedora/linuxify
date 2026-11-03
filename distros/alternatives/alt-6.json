@@ -153,14 +153,14 @@
     "confidence": "medium"
    },
    "ubuntu": {
-    "source": "repo",
+    "source": "snap",
     "pkg": "thunderbird",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
     "source": "repo",
     "pkg": "MozillaThunderbird",
-    "confidence": "medium"
+    "confidence": "high"
    }
   },
   "throttlestop::thermald / TLP": {
@@ -300,8 +300,11 @@
   },
   "tiktok-live-studio::OBS Studio": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "com.obsproject.Studio",
+    "source": "rpmfusion",
+    "pkg": "obs-studio",
+    "needs": [
+     "rpmfusion"
+    ],
     "confidence": "medium"
    },
    "arch": {
@@ -320,8 +323,8 @@
     "confidence": "high"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "com.obsproject.Studio",
+    "source": "repo",
+    "pkg": "obs-studio",
     "confidence": "medium"
    }
   },
@@ -375,7 +378,7 @@
    },
    "opensuse": {
     "source": "repo",
-    "pkg": "FreeCAD",
+    "pkg": "freecad",
     "confidence": "medium"
    }
   },
@@ -440,23 +443,23 @@
     "confidence": "medium"
    },
    "arch": {
-    "source": "flatpak",
-    "pkg": "org.synfig.SynfigStudio",
+    "source": "repo",
+    "pkg": "synfigstudio",
     "confidence": "medium"
    },
    "debian": {
     "source": "repo",
-    "pkg": "synfig",
+    "pkg": "synfigstudio",
     "confidence": "medium"
    },
    "ubuntu": {
     "source": "repo",
-    "pkg": "synfig",
+    "pkg": "synfigstudio",
     "confidence": "medium"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "org.synfig.SynfigStudio",
+    "source": "repo",
+    "pkg": "synfigstudio",
     "confidence": "medium"
    }
   },
@@ -1778,18 +1781,18 @@
     "confidence": "medium"
    },
    "debian": {
-    "source": "flatpak",
-    "pkg": "net.lutris.Lutris",
+    "source": "repo",
+    "pkg": "lutris",
     "confidence": "medium"
    },
    "ubuntu": {
-    "source": "flatpak",
-    "pkg": "net.lutris.Lutris",
+    "source": "repo",
+    "pkg": "lutris",
     "confidence": "medium"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "net.lutris.Lutris",
+    "source": "repo",
+    "pkg": "lutris",
     "confidence": "medium"
    }
   },
@@ -2026,14 +2029,14 @@
     "confidence": "medium"
    },
    "ubuntu": {
-    "source": "repo",
+    "source": "snap",
     "pkg": "thunderbird",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
     "source": "repo",
     "pkg": "MozillaThunderbird",
-    "confidence": "medium"
+    "confidence": "high"
    }
   },
   "windows-media-player::VLC": {
@@ -2336,7 +2339,7 @@
   "wordperfect::LibreOffice": {
    "fedora": {
     "source": "repo",
-    "pkg": "libreoffice-writer",
+    "pkg": "libreoffice",
     "confidence": "medium"
    },
    "arch": {
@@ -2632,8 +2635,11 @@
   },
   "xsplit::OBS Studio": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "com.obsproject.Studio",
+    "source": "rpmfusion",
+    "pkg": "obs-studio",
+    "needs": [
+     "rpmfusion"
+    ],
     "confidence": "medium"
    },
    "arch": {
@@ -2652,8 +2658,8 @@
     "confidence": "high"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "com.obsproject.Studio",
+    "source": "repo",
+    "pkg": "obs-studio",
     "confidence": "medium"
    }
   },

@@ -307,17 +307,17 @@
    "arch": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "debian": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "ubuntu": {
     "source": "repo",
     "pkg": "ardour",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
     "source": "repo",
@@ -725,12 +725,12 @@
    "ubuntu": {
     "source": "snap",
     "pkg": "thunderbird",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
     "source": "repo",
     "pkg": "MozillaThunderbird",
-    "confidence": "medium"
+    "confidence": "high"
    }
   },
   "ms-mail-calendar::GNOME Evolution": {
@@ -816,8 +816,8 @@
   },
   "ms-office-viewer::LibreOffice": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "org.libreoffice.LibreOffice",
+    "source": "repo",
+    "pkg": "libreoffice",
     "confidence": "medium"
    },
    "arch": {
@@ -1170,10 +1170,9 @@
   },
   "msi-afterburner::LACT": {
    "fedora": {
-    "source": "copr",
-    "pkg": "lact",
-    "repo": "ilyaz/LACT",
-    "confidence": "low"
+    "source": "download",
+    "url": "https://github.com/ilya-zlobintsev/LACT/releases",
+    "confidence": "medium"
    },
    "arch": {
     "source": "repo",
@@ -1238,7 +1237,7 @@
    "arch": {
     "source": "repo",
     "pkg": "openrgb",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "debian": {
     "source": "repo",
@@ -1339,8 +1338,8 @@
   },
   "musehub::Audacity": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "org.audacityteam.Audacity",
+    "source": "repo",
+    "pkg": "audacity",
     "confidence": "medium"
    },
    "arch": {
@@ -1349,18 +1348,18 @@
     "confidence": "high"
    },
    "debian": {
-    "source": "flatpak",
-    "pkg": "org.audacityteam.Audacity",
-    "confidence": "medium"
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "high"
    },
    "ubuntu": {
-    "source": "flatpak",
-    "pkg": "org.audacityteam.Audacity",
-    "confidence": "medium"
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "high"
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "org.audacityteam.Audacity",
+    "source": "repo",
+    "pkg": "audacity",
     "confidence": "medium"
    }
   },
@@ -1414,8 +1413,8 @@
     "confidence": "low"
    },
    "opensuse": {
-    "source": "download",
-    "url": "https://asus-linux.org/",
+    "source": "repo",
+    "pkg": "asusctl",
     "confidence": "low"
    }
   },
@@ -1428,7 +1427,7 @@
    "arch": {
     "source": "repo",
     "pkg": "openrgb",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "debian": {
     "source": "repo",
@@ -1583,29 +1582,41 @@
   },
   "notepad-plus-plus::VS Code": {
    "fedora": {
-    "source": "flatpak",
-    "pkg": "com.visualstudio.code",
-    "confidence": "medium"
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
    },
    "arch": {
-    "source": "flatpak",
-    "pkg": "com.visualstudio.code",
+    "source": "aur",
+    "pkg": "visual-studio-code-bin",
     "confidence": "medium"
    },
    "debian": {
-    "source": "flatpak",
-    "pkg": "com.visualstudio.code",
-    "confidence": "medium"
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
    },
    "ubuntu": {
-    "source": "flatpak",
-    "pkg": "com.visualstudio.code",
-    "confidence": "medium"
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
    },
    "opensuse": {
-    "source": "flatpak",
-    "pkg": "com.visualstudio.code",
-    "confidence": "medium"
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
    }
   },
   "notepad-plus-plus::gedit": {
@@ -2236,9 +2247,9 @@
     "confidence": "medium"
    },
    "opensuse": {
-    "source": "download",
-    "url": "https://clonezilla.org/downloads.php",
-    "confidence": "low"
+    "source": "repo",
+    "pkg": "clonezilla",
+    "confidence": "medium"
    }
   },
   "partition-tools::GParted": {
@@ -2638,12 +2649,12 @@
    "ubuntu": {
     "source": "snap",
     "pkg": "thunderbird",
-    "confidence": "medium"
+    "confidence": "high"
    },
    "opensuse": {
     "source": "repo",
     "pkg": "MozillaThunderbird",
-    "confidence": "medium"
+    "confidence": "high"
    }
   },
   "potplayer::VLC media player": {
