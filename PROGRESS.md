@@ -397,8 +397,8 @@ run on Windows. Details of choices are in DECISIONS.md.
 - **app_map.json 590 -> 963 apps** (373 new): Windows built-in apps, office/PDF/LaTeX, science and
   education, dev tools and CLIs, remote access, security and backup, system utilities, creative
   (photo/CAD/3D printing), audio/video/DJ, peripherals and vendor tools, emulators, VPNs. 2 `wine_ok`
-  (World of Warcraft is the one existing id skipped; Diablo IV, Hearthstone added), 1 `blocked` (FACEIT),
-  the rest native/alternative/unknown. New tests: every entry reachable by its own name; real display names
+  (Diablo IV, Hearthstone; World of Warcraft already existed), 1 `blocked` (FACEIT), 3 `unknown`,
+  the rest native/alternative. New tests: every entry reachable by its own name; real display names
   map correctly; neighbours of short patterns are not caught. A `lint()` pass (categories, notes, Flatpak id
   shape, https links, no packages on `unknown`) runs in the test suite; it found one bad Flatpak id.
 - **Safety rails:** `install`, `install --undo`, `install --fix-boot-entries` are dry runs unless
