@@ -1,0 +1,1 @@
+{"is_admin": true, "ram_bytes": 17179869184, "cpu": {"name": "x", "cores": 4, "threads": 8}, "gpus": {"name": "NVIDIA GeForce", "pnp_id": "PCI\\VEN_10DE"}, "net_adapters": [{"description": "Intel Wi-Fi 6", "pnp_id": "PCI\\VEN_8086", "media": "9"}], "storage_controllers": [{"name": "Intel RST VMD Controller", "service": "iastorvd"}], "bitlocker_shell": []}

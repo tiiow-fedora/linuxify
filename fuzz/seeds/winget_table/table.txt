@@ -1,0 +1,5 @@
+  -   
+Name                      Id                 Version  Source
+------------------------------------------------------------
+Mozilla Firefox           Mozilla.Firefox    130.0    winget
+VLC media player          VideoLAN.VLC       3.0.21   winget

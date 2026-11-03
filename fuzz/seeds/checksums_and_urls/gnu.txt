@@ -1,0 +1,5 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  linuxmint-22.3-cinnamon-64bit.iso
+BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB *other.iso

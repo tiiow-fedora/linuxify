@@ -1,0 +1,114 @@
+{
+ "schema_version": 1,
+ "ignore": [
+  {
+   "match": [
+    "microsoft visual c++"
+   ],
+   "reason": "Windows runtime library; not needed on Linux"
+  },
+  {
+   "match": [
+    "microsoft windows desktop runtime",
+    "microsoft .net runtime",
+    "microsoft asp.net core"
+   ],
+   "reason": ".NET runtimes are Windows plumbing; Linux programs bring their own"
+  },
+  {
+   "match": [
+    "microsoft edge webview2 runtime"
+   ],
+   "reason": "Windows component for embedding web views; not needed on Linux"
+  }
+ ],
+ "apps": [
+  {
+   "id": "firefox",
+   "name": "Mozilla Firefox",
+   "match": [
+    "mozilla firefox"
+   ],
+   "category": "browser",
+   "status": "native",
+   "linux": {
+    "flatpak": "org.mozilla.firefox",
+    "apt": "firefox",
+    "dnf": "firefox"
+   },
+   "alternatives": [],
+   "notes": "Firefox works the same on Linux. Sign in to Firefox Sync to bring your bookmarks and passwords across.",
+   "link": "https://www.mozilla.org/firefox/"
+  },
+  {
+   "id": "google-chrome",
+   "name": "Google Chrome",
+   "match": [
+    "google chrome"
+   ],
+   "category": "browser",
+   "status": "native",
+   "linux": {
+    "flatpak": "com.google.Chrome"
+   },
+   "alternatives": [],
+   "notes": "Chrome has an official Linux version. Sign in to sync your bookmarks and passwords.",
+   "link": "https://www.google.com/chrome/"
+  },
+  {
+   "id": "microsoft-edge",
+   "name": "Microsoft Edge",
+   "match": [
+    "=microsoft edge"
+   ],
+   "category": "browser",
+   "status": "native",
+   "linux": {
+    "flatpak": "com.microsoft.Edge"
+   },
+   "alternatives": [],
+   "notes": "Edge has an official Linux version. Your sync account carries over."
+  },
+  {
+   "id": "brave",
+   "name": "Brave",
+   "match": [
+    "brave browser"
+   ],
+   "category": "browser",
+   "status": "native",
+   "linux": {
+    "flatpak": "com.brave.Browser"
+   },
+   "alternatives": [],
+   "notes": "Brave has an official Linux version with the same settings."
+  },
+  {
+   "id": "librewolf",
+   "name": "LibreWolf",
+   "match": [
+    "librewolf"
+   ],
+   "category": "browser",
+   "status": "native",
+   "linux": {
+    "flatpak": "io.gitlab.librewolf-community"
+   },
+   "alternatives": [],
+   "notes": "LibreWolf is a privacy-focused Firefox build that also runs on Linux.",
+   "link": "https://librewolf.net/"
+  },
+  {
+   "id": "opera",
+   "name": "Opera",
+   "match": [
+    "=opera",
+    "^opera stable"
+   ],
+   "category": "browser",
+   "status": "native",
+   "alternatives": [],
+   "notes": "Opera has an official Linux version."
+  }
+ ]
+}
