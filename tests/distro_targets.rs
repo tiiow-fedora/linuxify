@@ -49,7 +49,10 @@ fn load_shards(dir: &str) -> (BTreeMap<String, Value>, Vec<String>) {
         };
         for (id, e) in apps {
             if out.insert(id.clone(), e.clone()).is_some() {
-                errs.push(format!("{}: duplicate app id '{id}' across shards", f.display()));
+                errs.push(format!(
+                    "{}: duplicate app id '{id}' across shards",
+                    f.display()
+                ));
             }
         }
     }
@@ -69,12 +72,23 @@ fn catalog() -> Catalog {
     let mut alts = BTreeMap::new();
     for a in v["apps"].as_array().unwrap() {
         let id = a["id"].as_str().unwrap().to_string();
-        apps.insert(id.clone(), (a["category"].as_str().unwrap().to_string(), a["linux"].clone()));
+        apps.insert(
+            id.clone(),
+            (
+                a["category"].as_str().unwrap().to_string(),
+                a["linux"].clone(),
+            ),
+        );
         let list: Vec<(String, Option<String>)> = a["alternatives"]
             .as_array()
             .map(|l| {
                 l.iter()
-                    .map(|x| (x["name"].as_str().unwrap().to_string(), x["flatpak"].as_str().map(String::from)))
+                    .map(|x| {
+                        (
+                            x["name"].as_str().unwrap().to_string(),
+                            x["flatpak"].as_str().map(String::from),
+                        )
+                    })
                     .collect()
             })
             .unwrap_or_default();
@@ -91,25 +105,53 @@ fn is_pkg_name(s: &str) -> bool {
         Some(f) if f.is_ascii_alphanumeric() => {}
         _ => return false,
     }
-    s.len() <= 100 && s.chars().all(|c| c.is_ascii_alphanumeric() || "+._@-".contains(c))
+    s.len() <= 100
+        && s.chars()
+            .all(|c| c.is_ascii_alphanumeric() || "+._@-".contains(c))
 }
 
 fn is_flatpak_id(s: &str) -> bool {
     let parts: Vec<&str> = s.split('.').collect();
     parts.len() >= 3
         && parts.iter().all(|p| {
-            !p.is_empty() && p.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-')
+            !p.is_empty()
+                && p.chars()
+                    .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-')
         })
         && !parts[0].chars().next().unwrap().is_ascii_digit()
 }
 
 fn allowed_sources(target: &str) -> &'static [&'static str] {
     match target {
-        "fedora" => &["repo", "rpmfusion", "copr", "vendor-repo", "flatpak", "download", "none"],
+        "fedora" => &[
+            "repo",
+            "rpmfusion",
+            "copr",
+            "vendor-repo",
+            "flatpak",
+            "download",
+            "none",
+        ],
         "arch" => &["repo", "aur", "flatpak", "download", "none"],
         "debian" => &["repo", "vendor-repo", "flatpak", "download", "none"],
-        "ubuntu" => &["repo", "ppa", "snap", "vendor-repo", "flatpak", "download", "none"],
-        "opensuse" => &["repo", "packman", "obs", "vendor-repo", "flatpak", "download", "none"],
+        "ubuntu" => &[
+            "repo",
+            "ppa",
+            "snap",
+            "vendor-repo",
+            "flatpak",
+            "download",
+            "none",
+        ],
+        "opensuse" => &[
+            "repo",
+            "packman",
+            "obs",
+            "vendor-repo",
+            "flatpak",
+            "download",
+            "none",
+        ],
         _ => &[],
     }
 }
@@ -121,7 +163,17 @@ fn check_entry(label: &str, target: &str, e: &Value, targets: &Value) -> Vec<Str
         return vec![format!("{label}: not an object")];
     };
     for k in o.keys() {
-        if !["source", "pkg", "confidence", "needs", "repo", "url", "reason", "catalog_override"].contains(&k.as_str())
+        if ![
+            "source",
+            "pkg",
+            "confidence",
+            "needs",
+            "repo",
+            "url",
+            "reason",
+            "catalog_override",
+        ]
+        .contains(&k.as_str())
         {
             p.push(format!("{label}: unknown key '{k}'"));
         }
@@ -138,8 +190,13 @@ fn check_entry(label: &str, target: &str, e: &Value, targets: &Value) -> Vec<Str
     let pkg = o.get("pkg").and_then(Value::as_str);
     match src {
         "none" => {
-            if o.get("reason").and_then(Value::as_str).map_or(true, |r| r.trim().len() < 10) {
-                p.push(format!("{label}: source none needs a 'reason' (>= 10 chars)"));
+            if o.get("reason")
+                .and_then(Value::as_str)
+                .map_or(true, |r| r.trim().len() < 10)
+            {
+                p.push(format!(
+                    "{label}: source none needs a 'reason' (>= 10 chars)"
+                ));
             }
             if pkg.is_some() {
                 p.push(format!("{label}: source none must not have pkg"));
@@ -148,7 +205,9 @@ fn check_entry(label: &str, target: &str, e: &Value, targets: &Value) -> Vec<Str
         "download" => {
             match o.get("url").and_then(Value::as_str) {
                 Some(u) if u.starts_with("https://") && !u.contains(' ') => {}
-                other => p.push(format!("{label}: download needs an https url, got {other:?}")),
+                other => p.push(format!(
+                    "{label}: download needs an https url, got {other:?}"
+                )),
             }
             if pkg.is_some() {
                 p.push(format!("{label}: download must not have pkg"));
@@ -166,12 +225,16 @@ fn check_entry(label: &str, target: &str, e: &Value, targets: &Value) -> Vec<Str
     if matches!(src, "copr" | "ppa" | "obs") {
         let r = o.get("repo").and_then(Value::as_str).unwrap_or("");
         let ok = match src {
-            "copr" => r.split('/').count() == 2 && r.split('/').all(|s| !s.is_empty() && !s.contains(' ')),
+            "copr" => {
+                r.split('/').count() == 2 && r.split('/').all(|s| !s.is_empty() && !s.contains(' '))
+            }
             "ppa" => r.starts_with("ppa:") && r.matches('/').count() == 1,
             _ => r.starts_with("https://"),
         };
         if !ok {
-            p.push(format!("{label}: {src} needs a well-formed 'repo', got '{r}'"));
+            p.push(format!(
+                "{label}: {src} needs a well-formed 'repo', got '{r}'"
+            ));
         }
     } else if o.contains_key("repo") {
         p.push(format!("{label}: 'repo' only valid for copr/ppa/obs"));
@@ -189,8 +252,13 @@ fn check_entry(label: &str, target: &str, e: &Value, targets: &Value) -> Vec<Str
             .map(|r| r["id"].as_str().unwrap())
             .collect();
         match n.as_array() {
-            Some(a) if !a.is_empty() && a.iter().all(|x| x.as_str().map_or(false, |s| known.contains(s))) => {}
-            _ => p.push(format!("{label}: 'needs' must be a non-empty list of repo ids defined for {target}")),
+            Some(a)
+                if !a.is_empty()
+                    && a.iter()
+                        .all(|x| x.as_str().map_or(false, |s| known.contains(s))) => {}
+            _ => p.push(format!(
+                "{label}: 'needs' must be a non-empty list of repo ids defined for {target}"
+            )),
         }
     }
     p
@@ -204,22 +272,46 @@ fn targets_doc() -> Value {
 fn targets_file_is_well_formed() {
     let t = targets_doc();
     assert_eq!(t["schema_version"], 1);
-    let ids: Vec<&str> = t["targets"].as_array().unwrap().iter().map(|x| x["id"].as_str().unwrap()).collect();
+    let ids: Vec<&str> = t["targets"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|x| x["id"].as_str().unwrap())
+        .collect();
     assert_eq!(ids, TARGETS, "target list/order");
     for x in t["targets"].as_array().unwrap() {
         let id = x["id"].as_str().unwrap();
-        for k in ["name", "family", "package_manager", "install_cmd", "refresh_cmd"] {
-            assert!(x[k].as_str().map_or(false, |s| !s.is_empty()), "{id}: missing {k}");
+        for k in [
+            "name",
+            "family",
+            "package_manager",
+            "install_cmd",
+            "refresh_cmd",
+        ] {
+            assert!(
+                x[k].as_str().map_or(false, |s| !s.is_empty()),
+                "{id}: missing {k}"
+            );
         }
-        assert!(x["install_cmd"].as_str().unwrap().contains("{pkgs}"), "{id}: install_cmd needs {{pkgs}}");
+        assert!(
+            x["install_cmd"].as_str().unwrap().contains("{pkgs}"),
+            "{id}: install_cmd needs {{pkgs}}"
+        );
         assert!(x["flatpak_preinstalled"].is_boolean());
         let repos = x["repos"].as_array().unwrap();
         assert!(!repos.is_empty());
         let mut seen = BTreeSet::new();
         for r in repos {
-            assert!(seen.insert(r["id"].as_str().unwrap()), "{id}: duplicate repo id");
+            assert!(
+                seen.insert(r["id"].as_str().unwrap()),
+                "{id}: duplicate repo id"
+            );
             for k in ["name", "enable", "note"] {
-                assert!(r[k].as_str().map_or(false, |s| !s.is_empty()), "{id}/{}: missing {k}", r["id"]);
+                assert!(
+                    r[k].as_str().map_or(false, |s| !s.is_empty()),
+                    "{id}/{}: missing {k}",
+                    r["id"]
+                );
             }
         }
     }
@@ -232,14 +324,22 @@ fn post_install_notes_are_well_formed() {
     let cats: BTreeSet<&str> = cat.apps.values().map(|(c, _)| c.as_str()).collect();
     let mut all_ids = BTreeSet::new();
     for tg in TARGETS {
-        let notes = t["post_install_notes"][tg].as_array().unwrap_or_else(|| panic!("no notes for {tg}"));
+        let notes = t["post_install_notes"][tg]
+            .as_array()
+            .unwrap_or_else(|| panic!("no notes for {tg}"));
         assert!(notes.len() >= 3, "{tg}: too few notes");
         for n in notes {
             let id = n["id"].as_str().unwrap();
-            assert!(id.starts_with(&format!("{tg}-")), "{id} must be prefixed with {tg}-");
+            assert!(
+                id.starts_with(&format!("{tg}-")),
+                "{id} must be prefixed with {tg}-"
+            );
             assert!(all_ids.insert(id.to_string()), "duplicate note id {id}");
             let text = n["text"].as_str().unwrap();
-            assert!(text.len() >= 20 && text.ends_with('.'), "{id}: note text should be a sentence");
+            assert!(
+                text.len() >= 20 && text.ends_with('.'),
+                "{id}: note text should be a sentence"
+            );
             let when = n["when"].as_str().unwrap();
             if let Some(c) = when.strip_prefix("category:") {
                 assert!(cats.contains(c), "{id}: unknown category {c}");
@@ -250,7 +350,12 @@ fn post_install_notes_are_well_formed() {
             }
         }
     }
-    let known: BTreeSet<&str> = t["targets"].as_array().unwrap().iter().map(|x| x["id"].as_str().unwrap()).collect();
+    let known: BTreeSet<&str> = t["targets"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|x| x["id"].as_str().unwrap())
+        .collect();
     for k in t["post_install_notes"].as_object().unwrap().keys() {
         assert!(known.contains(k.as_str()), "notes for unknown target {k}");
     }
@@ -258,7 +363,10 @@ fn post_install_notes_are_well_formed() {
 
 #[test]
 fn shards_parse_without_duplicates() {
-    assert!(!shard_files("packages").is_empty(), "no distros/packages/*.json shards");
+    assert!(
+        !shard_files("packages").is_empty(),
+        "no distros/packages/*.json shards"
+    );
     let (_, errs) = load_shards("packages");
     assert!(errs.is_empty(), "{}", errs.join("\n"));
 }
@@ -267,16 +375,30 @@ fn shards_parse_without_duplicates() {
 fn every_catalog_app_with_linux_packages_is_mapped_for_every_target() {
     let cat = catalog();
     let (map, _) = load_shards("packages");
-    let want: BTreeSet<&String> = cat.apps.iter().filter(|(_, (_, l))| !l.is_null()).map(|(i, _)| i).collect();
+    let want: BTreeSet<&String> = cat
+        .apps
+        .iter()
+        .filter(|(_, (_, l))| !l.is_null())
+        .map(|(i, _)| i)
+        .collect();
     let have: BTreeSet<&String> = map.keys().collect();
     let missing: Vec<_> = want.difference(&have).collect();
     let extra: Vec<_> = have.difference(&want).collect();
-    assert!(missing.is_empty(), "{} unmapped catalog apps: {missing:?}", missing.len());
-    assert!(extra.is_empty(), "mapped ids that are not native catalog apps: {extra:?}");
+    assert!(
+        missing.is_empty(),
+        "{} unmapped catalog apps: {missing:?}",
+        missing.len()
+    );
+    assert!(
+        extra.is_empty(),
+        "mapped ids that are not native catalog apps: {extra:?}"
+    );
     let t = targets_doc();
     let mut problems = vec![];
     for (id, e) in &map {
-        let o = e.as_object().unwrap_or_else(|| panic!("{id}: entry must be an object"));
+        let o = e
+            .as_object()
+            .unwrap_or_else(|| panic!("{id}: entry must be an object"));
         for k in o.keys() {
             if !TARGETS.contains(&k.as_str()) && k != "notes" {
                 problems.push(format!("{id}: unknown key '{k}'"));
@@ -289,7 +411,12 @@ fn every_catalog_app_with_linux_packages_is_mapped_for_every_target() {
             }
         }
     }
-    assert!(problems.is_empty(), "{} problems:\n{}", problems.len(), problems.join("\n"));
+    assert!(
+        problems.is_empty(),
+        "{} problems:\n{}",
+        problems.len(),
+        problems.join("\n")
+    );
 }
 
 #[test]
@@ -298,19 +425,33 @@ fn mappings_agree_with_the_catalog() {
     let (map, _) = load_shards("packages");
     let mut problems = vec![];
     for (id, e) in &map {
-        let Some((_, linux)) = cat.apps.get(id) else { continue };
+        let Some((_, linux)) = cat.apps.get(id) else {
+            continue;
+        };
         let cat_apt = linux["apt"].as_str();
         let cat_dnf = linux["dnf"].as_str();
         let cat_fp = linux["flatpak"].as_str();
-        for (tg, cat_native) in [("fedora", cat_dnf), ("debian", cat_apt), ("ubuntu", cat_apt)] {
+        for (tg, cat_native) in [
+            ("fedora", cat_dnf),
+            ("debian", cat_apt),
+            ("ubuntu", cat_apt),
+        ] {
             let x = &e[tg];
             let src = x["source"].as_str().unwrap_or("");
             if let Some(n) = cat_native {
-                if src == "repo" && x["pkg"].as_str() != Some(n) && x.get("catalog_override").is_none() {
-                    problems.push(format!("{id}/{tg}: pkg {:?} differs from catalog '{n}' without catalog_override", x["pkg"]));
+                if src == "repo"
+                    && x["pkg"].as_str() != Some(n)
+                    && x.get("catalog_override").is_none()
+                {
+                    problems.push(format!(
+                        "{id}/{tg}: pkg {:?} differs from catalog '{n}' without catalog_override",
+                        x["pkg"]
+                    ));
                 }
                 if src == "none" && cat_fp.is_none() {
-                    problems.push(format!("{id}/{tg}: catalog lists '{n}' but mapping says none"));
+                    problems.push(format!(
+                        "{id}/{tg}: catalog lists '{n}' but mapping says none"
+                    ));
                 }
             }
         }
@@ -320,19 +461,34 @@ fn mappings_agree_with_the_catalog() {
             if src == "flatpak" {
                 if let Some(fp) = cat_fp {
                     if x["pkg"].as_str() != Some(fp) {
-                        problems.push(format!("{id}/{tg}: flatpak id {:?} differs from catalog '{fp}'", x["pkg"]));
+                        problems.push(format!(
+                            "{id}/{tg}: flatpak id {:?} differs from catalog '{fp}'",
+                            x["pkg"]
+                        ));
                     }
                 }
             }
             if src == "none" && cat_fp.is_some() {
-                problems.push(format!("{id}/{tg}: catalog has flatpak '{}' but mapping says none", cat_fp.unwrap()));
+                problems.push(format!(
+                    "{id}/{tg}: catalog has flatpak '{}' but mapping says none",
+                    cat_fp.unwrap()
+                ));
             }
-            if x.get("catalog_override").is_some() && x["catalog_override"].as_str().map_or(true, |s| s.len() < 10) {
+            if x.get("catalog_override").is_some()
+                && x["catalog_override"]
+                    .as_str()
+                    .map_or(true, |s| s.len() < 10)
+            {
                 problems.push(format!("{id}/{tg}: catalog_override needs a reason"));
             }
         }
     }
-    assert!(problems.is_empty(), "{} problems:\n{}", problems.len(), problems.join("\n"));
+    assert!(
+        problems.is_empty(),
+        "{} problems:\n{}",
+        problems.len(),
+        problems.join("\n")
+    );
 }
 
 #[test]
@@ -340,13 +496,20 @@ fn every_app_is_installable_somewhere_and_notes_are_sane() {
     let (map, _) = load_shards("packages");
     let mut problems = vec![];
     for (id, e) in &map {
-        let usable = TARGETS.iter().filter(|t| e[**t]["source"] != "none").count();
+        let usable = TARGETS
+            .iter()
+            .filter(|t| e[**t]["source"] != "none")
+            .count();
         if usable == 0 {
             problems.push(format!("{id}: no installable target at all"));
         }
         if let Some(n) = e.get("notes") {
             match n.as_array() {
-                Some(a) if a.iter().all(|s| s.as_str().map_or(false, |s| s.len() >= 15 && s.ends_with('.'))) => {}
+                Some(a)
+                    if a.iter().all(|s| {
+                        s.as_str()
+                            .map_or(false, |s| s.len() >= 15 && s.ends_with('.'))
+                    }) => {}
                 _ => problems.push(format!("{id}: notes must be sentences ending with '.'")),
             }
         }
@@ -360,7 +523,12 @@ fn every_app_is_installable_somewhere_and_notes_are_sane() {
             }
         }
     }
-    assert!(problems.is_empty(), "{} problems:\n{}", problems.len(), problems.join("\n"));
+    assert!(
+        problems.is_empty(),
+        "{} problems:\n{}",
+        problems.len(),
+        problems.join("\n")
+    );
 }
 
 #[test]
@@ -382,7 +550,10 @@ fn alternatives_shards_are_valid_if_present() {
         };
         match cat.alts.get(id) {
             Some(l) if l.iter().any(|(n, _)| n == name) => {
-                let fp = l.iter().find(|(n, _)| n == name).and_then(|(_, f)| f.clone());
+                let fp = l
+                    .iter()
+                    .find(|(n, _)| n == name)
+                    .and_then(|(_, f)| f.clone());
                 for tg in TARGETS {
                     match e.get(tg) {
                         None => problems.push(format!("{key}: missing target {tg}")),
@@ -391,7 +562,9 @@ fn alternatives_shards_are_valid_if_present() {
                             if x["source"] == "flatpak" {
                                 if let Some(f) = &fp {
                                     if x["pkg"].as_str() != Some(f.as_str()) {
-                                        problems.push(format!("{key}/{tg}: flatpak id differs from catalog '{f}'"));
+                                        problems.push(format!(
+                                            "{key}/{tg}: flatpak id differs from catalog '{f}'"
+                                        ));
                                     }
                                 }
                             }
@@ -402,7 +575,12 @@ fn alternatives_shards_are_valid_if_present() {
             _ => problems.push(format!("{key}: not an alternative in data/app_map.json")),
         }
     }
-    assert!(problems.is_empty(), "{} problems:\n{}", problems.len(), problems.join("\n"));
+    assert!(
+        problems.is_empty(),
+        "{} problems:\n{}",
+        problems.len(),
+        problems.join("\n")
+    );
 }
 
 #[test]
@@ -420,6 +598,11 @@ fn coverage_report() {
             }
         }
     }
-    println!("native apps mapped: {}; alternatives mapped: {}/{}", map.len(), amap.len(), total_alts);
+    println!(
+        "native apps mapped: {}; alternatives mapped: {}/{}",
+        map.len(),
+        amap.len(),
+        total_alts
+    );
     println!("sources: {by_src:?}");
 }
