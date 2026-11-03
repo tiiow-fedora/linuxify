@@ -297,4 +297,58 @@ mod tests {
         let m = AppMap::parse(EMBEDDED_APP_MAP).expect("data/app_map.json must parse and validate");
         assert!(m.apps.len() >= 150, "need at least 150 apps, have {}", m.apps.len());
     }
+
+    /// Realistic Windows display names for programs added in the large 2026-11 batch, and names that
+    /// must NOT be caught by the new generic-looking patterns.
+    #[test]
+    fn new_entries_match_real_display_names_and_not_neighbours() {
+        let m = AppMap::parse(EMBEDDED_APP_MAP).unwrap();
+        let id_of = |n: &str| classify(&prog(n), &m).entry.map(|e| e.id.clone());
+        for (name, id) in [
+            ("Paint", "ms-paint"),
+            ("Microsoft Photos", "ms-photos"),
+            ("SoftMaker FreeOffice 2024", "freeoffice"),
+            ("DB Browser for SQLite", "sqlitebrowser"),
+            ("Code::Blocks", "codeblocks"),
+            ("Dev-C++", "devcpp"),
+            ("Embarcadero RAD Studio 12", "delphi"),
+            ("PostgreSQL 16", "postgresql"),
+            ("MySQL Server 8.0", "mysql-server"),
+            ("PHP 8.3.4", "php"),
+            ("TeXstudio", "texstudio"),
+            ("Mixxx", "mixxx"),
+            ("Traktor Pro 3", "traktor"),
+            ("iZotope RX 10 Audio Editor", "izotope"),
+            ("OpenRGB", "openrgb"),
+            ("WinZip 28", "winzip"),
+            ("Nero Burning ROM 2023", "imgburn"),
+            ("Bandicam", "screenpresso"),
+            ("BlueStacks 5", "bluestacks"),
+            ("Windscribe", "windscribe"),
+            ("QGIS 3.34.4 'Prizren'", "qgis"),
+            ("MATLAB R2024a", "matlab"),
+        ] {
+            assert_eq!(id_of(name).as_deref(), Some(id), "{name}");
+        }
+        // Neighbours of short or generic patterns must stay unmapped (or keep their old entry).
+        for name in ["Paint.NET", "Mail Merge Helper", "Calendar Pro Planner", "Reasonable Defaults", "Maximum Fun", "Youtubers Toolkit", "Notepad Tycoon", "Bear Simulator", "Hyperlink Tool", "Ark Companion Tool", "Phpstorm Notes", "Moonlit Diary"] {
+            let got = id_of(name);
+            assert!(!matches!(got.as_deref(), Some("ms-paint" | "ms-mail-calendar" | "reason" | "hbo-max" | "youtube-music" | "ms-notepad" | "bear-notes" | "hyper-terminal" | "ark" | "php" | "moho")), "{name} wrongly matched {got:?}");
+        }
+    }
+
+    /// Typing an entry's own name must find that entry or one with an equal-or-longer pattern.
+    /// Catches typos in patterns and entries that can never be reached.
+    #[test]
+    fn every_entry_is_reachable_by_its_own_name() {
+        let m = AppMap::parse(EMBEDDED_APP_MAP).unwrap();
+        let mut unreachable = Vec::new();
+        for a in &m.apps {
+            let got = classify(&prog(&a.name), &m).entry.map(|e| e.id.clone());
+            if got.as_deref() != Some(a.id.as_str()) && !a.patterns.iter().any(|p| classify(&prog(p.trim_start_matches(['^', '='])), &m).entry.is_some_and(|e| e.id == a.id)) {
+                unreachable.push(format!("{} (name {:?} -> {:?})", a.id, a.name, got));
+            }
+        }
+        assert!(unreachable.is_empty(), "entries whose own name or patterns do not reach them:\n  {}", unreachable.join("\n  "));
+    }
 }
