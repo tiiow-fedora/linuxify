@@ -1,0 +1,2747 @@
+{
+ "schema_version": 1,
+ "apps": {
+  "powertoys::Built-in desktop features": {
+   "fedora": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Window snapping and tiling are built into GNOME and KDE; nothing to install."
+   },
+   "arch": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Window snapping and tiling are built into GNOME and KDE; nothing to install."
+   },
+   "debian": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Window snapping and tiling are built into GNOME and KDE; nothing to install."
+   },
+   "ubuntu": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Window snapping and tiling are built into GNOME and KDE; nothing to install."
+   },
+   "opensuse": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Window snapping and tiling are built into GNOME and KDE; nothing to install."
+   }
+  },
+  "premiere-elements::Kdenlive": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "kdenlive",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "kdenlive",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "kdenlive",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "kdenlive",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "kdenlive",
+    "confidence": "high"
+   }
+  },
+  "premiere-elements::Shotcut": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.shotcut.Shotcut",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "shotcut",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "shotcut",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "shotcut",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.shotcut.Shotcut",
+    "confidence": "medium"
+   }
+  },
+  "prime-video::Prime Video in a browser": {
+   "fedora": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "arch": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "debian": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "ubuntu": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "opensuse": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   }
+  },
+  "pro-tools::REAPER": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.reaper.fm/download.php",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "reaper",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.reaper.fm/download.php",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.reaper.fm/download.php",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.reaper.fm/download.php",
+    "confidence": "medium"
+   }
+  },
+  "pro-tools::Ardour": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "ardour8",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "medium"
+   }
+  },
+  "process-lasso::GameMode": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gamemode",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "gamemode",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gamemode",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gamemode",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gamemode",
+    "confidence": "medium"
+   }
+  },
+  "process-monitor::htop / btop": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "htop",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "htop",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "htop",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "htop",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "htop",
+    "confidence": "high"
+   }
+  },
+  "process-monitor::GNOME System Monitor": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gnome-system-monitor",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "gnome-system-monitor",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gnome-system-monitor",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gnome-system-monitor",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gnome-system-monitor",
+    "confidence": "high"
+   }
+  },
+  "proteus::KiCad": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "kicad",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "kicad",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "kicad",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "kicad",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "kicad",
+    "confidence": "high"
+   }
+  },
+  "proton-drive::Proton Drive in a browser": {
+   "fedora": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "arch": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "debian": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "ubuntu": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "opensuse": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   }
+  },
+  "proton-drive::rclone": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "rclone",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "rclone",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "rclone",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "rclone",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "rclone",
+    "confidence": "high"
+   }
+  },
+  "pyxel::LibreSprite": {
+   "fedora": {
+    "source": "download",
+    "url": "https://github.com/LibreSprite/LibreSprite",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "libresprite",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://github.com/LibreSprite/LibreSprite",
+    "confidence": "low"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://github.com/LibreSprite/LibreSprite",
+    "confidence": "low"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://github.com/LibreSprite/LibreSprite",
+    "confidence": "low"
+   }
+  },
+  "pyxel::Pixelorama": {
+   "fedora": {
+    "source": "download",
+    "url": "https://orama-interactive.itch.io/pixelorama",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "pixelorama",
+    "confidence": "low"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://orama-interactive.itch.io/pixelorama",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://orama-interactive.itch.io/pixelorama",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://orama-interactive.itch.io/pixelorama",
+    "confidence": "medium"
+   }
+  },
+  "qmk-toolbox::QMK CLI": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "qmk",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "qmk",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://docs.qmk.fm/newbs_getting_started",
+    "confidence": "low"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://docs.qmk.fm/newbs_getting_started",
+    "confidence": "low"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://docs.qmk.fm/newbs_getting_started",
+    "confidence": "low"
+   }
+  },
+  "quickbooks::QuickBooks Online in a browser": {
+   "fedora": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "arch": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "debian": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "ubuntu": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "opensuse": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   }
+  },
+  "quicken::GnuCash": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gnucash",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "gnucash",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gnucash",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gnucash",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gnucash",
+    "confidence": "high"
+   }
+  },
+  "quicken::KMyMoney": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "kmymoney",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "kmymoney",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "kmymoney",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "kmymoney",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "kmymoney",
+    "confidence": "high"
+   }
+  },
+  "radmin-vpn::ZeroTier": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "zerotier-one",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "zerotier-one",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "zerotier-one",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "zerotier-one",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "zerotier-one",
+    "confidence": "low"
+   }
+  },
+  "radmin-vpn::Tailscale": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "tailscale",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "tailscale",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "tailscale",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "tailscale",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "tailscale",
+    "confidence": "medium"
+   }
+  },
+  "rainmeter::Conky": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "conky",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "conky",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "conky",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "conky",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "conky",
+    "confidence": "high"
+   }
+  },
+  "razer-cortex::GameMode": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gamemode",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "gamemode",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gamemode",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gamemode",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gamemode",
+    "confidence": "medium"
+   }
+  },
+  "razer-synapse::Polychromatic": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "polychromatic",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "polychromatic",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "polychromatic",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "polychromatic",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://polychromatic.app/download/",
+    "confidence": "low"
+   }
+  },
+  "rdcman::Remmina": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "remmina",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "remmina",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "remmina",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "remmina",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "remmina",
+    "confidence": "high"
+   }
+  },
+  "reason::Ardour": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "ardour8",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "medium"
+   }
+  },
+  "reason::LMMS": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "lmms",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "lmms",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "lmms",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "lmms",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "lmms",
+    "confidence": "medium"
+   }
+  },
+  "recuva::PhotoRec / TestDisk": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "testdisk",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "testdisk",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "testdisk",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "testdisk",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "testdisk",
+    "confidence": "high"
+   }
+  },
+  "redis-insight::RedisInsight": {
+   "fedora": {
+    "source": "download",
+    "url": "https://redis.io/insight/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://redis.io/insight/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://redis.io/insight/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://redis.io/insight/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://redis.io/insight/",
+    "confidence": "medium"
+   }
+  },
+  "rekordbox::Mixxx": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.mixxx.Mixxx",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mixxx",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mixxx",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mixxx",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.mixxx.Mixxx",
+    "confidence": "medium"
+   }
+  },
+  "revit::FreeCAD (BIM workbench)": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   }
+  },
+  "revit::BlenderBIM": {
+   "fedora": {
+    "source": "download",
+    "url": "https://bonsaibim.org/",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://bonsaibim.org/",
+    "confidence": "low"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://bonsaibim.org/",
+    "confidence": "low"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://bonsaibim.org/",
+    "confidence": "low"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://bonsaibim.org/",
+    "confidence": "low"
+   }
+  },
+  "revo-uninstaller::Software app or apt remove": {
+   "fedora": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Uninstalling is done with the system package manager or software center; nothing to install."
+   },
+   "arch": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Uninstalling is done with the system package manager or software center; nothing to install."
+   },
+   "debian": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Uninstalling is done with the system package manager or software center; nothing to install."
+   },
+   "ubuntu": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Uninstalling is done with the system package manager or software center; nothing to install."
+   },
+   "opensuse": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Uninstalling is done with the system package manager or software center; nothing to install."
+   }
+  },
+  "rgb-boards::OpenRGB": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.openrgb.OpenRGB",
+    "confidence": "medium"
+   }
+  },
+  "rhino::FreeCAD": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   }
+  },
+  "rhino::Blender": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   }
+  },
+  "rkill-adwcleaner::BleachBit": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "bleachbit",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "bleachbit",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "bleachbit",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "bleachbit",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "bleachbit",
+    "confidence": "high"
+   }
+  },
+  "roboform::RoboForm browser extension": {
+   "fedora": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "It is a browser extension installed from the browser's extension store, not a distro package."
+   },
+   "arch": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "It is a browser extension installed from the browser's extension store, not a distro package."
+   },
+   "debian": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "It is a browser extension installed from the browser's extension store, not a distro package."
+   },
+   "ubuntu": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "It is a browser extension installed from the browser's extension store, not a distro package."
+   },
+   "opensuse": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "It is a browser extension installed from the browser's extension store, not a distro package."
+   }
+  },
+  "roccat-swarm::Piper": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "piper",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "piper",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "piper",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "piper",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "piper",
+    "confidence": "medium"
+   }
+  },
+  "rosetta-stone::Anki": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "net.ankiweb.Anki",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "net.ankiweb.Anki",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "net.ankiweb.Anki",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "net.ankiweb.Anki",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "net.ankiweb.Anki",
+    "confidence": "medium"
+   }
+  },
+  "royal-ts::Remmina": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "remmina",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "remmina",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "remmina",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "remmina",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "remmina",
+    "confidence": "high"
+   }
+  },
+  "rtss::MangoHud": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "mangohud",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mangohud",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mangohud",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mangohud",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "mangohud",
+    "confidence": "medium"
+   }
+  },
+  "rufus::Ventoy": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.ventoy.net/en/download.html",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "ventoy-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.ventoy.net/en/download.html",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.ventoy.net/en/download.html",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.ventoy.net/en/download.html",
+    "confidence": "medium"
+   }
+  },
+  "rufus::balenaEtcher": {
+   "fedora": {
+    "source": "download",
+    "url": "https://etcher.balena.io/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "balena-etcher",
+    "confidence": "low"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://etcher.balena.io/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://etcher.balena.io/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://etcher.balena.io/",
+    "confidence": "medium"
+   }
+  },
+  "samsung-magician::smartmontools": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "smartmontools",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "smartmontools",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "smartmontools",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "smartmontools",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "smartmontools",
+    "confidence": "high"
+   }
+  },
+  "samsung-smart-switch::KDE Connect": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "kdeconnect",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "kdeconnect",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "kdeconnect",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "kdeconnect",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "kdeconnect-kde",
+    "confidence": "medium"
+   }
+  },
+  "samsung-smart-switch::Android file transfer (MTP)": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gvfs-mtp",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "gvfs-mtp",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gvfs-backends",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gvfs-backends",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gvfs-backends",
+    "confidence": "medium"
+   }
+  },
+  "sane-scan::Simple Scan": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "simple-scan",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "simple-scan",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "simple-scan",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "simple-scan",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "simple-scan",
+    "confidence": "high"
+   }
+  },
+  "sane-scan::gscan2pdf": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gscan2pdf",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "gscan2pdf",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gscan2pdf",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gscan2pdf",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gscan2pdf",
+    "confidence": "low"
+   }
+  },
+  "screenpresso::OBS Studio": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.obsproject.Studio",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "medium"
+   }
+  },
+  "screenpresso::SimpleScreenRecorder": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "simplescreenrecorder",
+    "confidence": "low",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "simplescreenrecorder",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "simplescreenrecorder",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "simplescreenrecorder",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "simplescreenrecorder",
+    "confidence": "low"
+   }
+  },
+  "screenpresso::Kooha": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "io.github.seadve.Kooha",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "io.github.seadve.Kooha",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "io.github.seadve.Kooha",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "io.github.seadve.Kooha",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "io.github.seadve.Kooha",
+    "confidence": "medium"
+   }
+  },
+  "screentogif::Peek": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "peek",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "peek",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "peek",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "peek",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.uploadedlobster.peek",
+    "confidence": "medium"
+   }
+  },
+  "screentogif::Gifski": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gifski",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "gifski",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gifski",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gifski",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gifski",
+    "confidence": "low"
+   }
+  },
+  "scrivener::Manuskript": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "manuskript",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "manuskript",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "manuskript",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "manuskript",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.theologeek.ch/manuskript/download/",
+    "confidence": "low"
+   }
+  },
+  "scrivener::novelWriter": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "novelwriter",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "novelwriter",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "novelwriter",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "novelwriter",
+    "confidence": "low"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "novelwriter",
+    "confidence": "low"
+   }
+  },
+  "serato::Mixxx": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.mixxx.Mixxx",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mixxx",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mixxx",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mixxx",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.mixxx.Mixxx",
+    "confidence": "medium"
+   }
+  },
+  "shadowplay::OBS Studio": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.obsproject.Studio",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "medium"
+   }
+  },
+  "shadowplay::GPU Screen Recorder": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.dec05eba.gpu_screen_recorder",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.dec05eba.gpu_screen_recorder",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.dec05eba.gpu_screen_recorder",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.dec05eba.gpu_screen_recorder",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.dec05eba.gpu_screen_recorder",
+    "confidence": "medium"
+   }
+  },
+  "sharex::Flameshot": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "flameshot",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "flameshot",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "flameshot",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "flameshot",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "flameshot",
+    "confidence": "high"
+   }
+  },
+  "signalrgb::OpenRGB": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.openrgb.OpenRGB",
+    "confidence": "medium"
+   }
+  },
+  "simplify3d::PrusaSlicer": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.prusa3d.PrusaSlicer",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.prusa3d.PrusaSlicer",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.prusa3d.PrusaSlicer",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.prusa3d.PrusaSlicer",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.prusa3d.PrusaSlicer",
+    "confidence": "medium"
+   }
+  },
+  "simplify3d::UltiMaker Cura": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.ultimaker.cura",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.ultimaker.cura",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.ultimaker.cura",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.ultimaker.cura",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.ultimaker.cura",
+    "confidence": "medium"
+   }
+  },
+  "sketchbook::Krita": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "krita",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "krita",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "krita",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "krita",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "krita",
+    "confidence": "high"
+   }
+  },
+  "sketchbook::MyPaint": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "mypaint",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mypaint",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mypaint",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mypaint",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "mypaint",
+    "confidence": "medium"
+   }
+  },
+  "sketchup::FreeCAD": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   }
+  },
+  "sketchup::Blender": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   }
+  },
+  "sketchup-make::FreeCAD": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   }
+  },
+  "sketchup-make::Blender": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   }
+  },
+  "skype::Microsoft Teams (free) in a browser": {
+   "fedora": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "arch": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "debian": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "ubuntu": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   },
+   "opensuse": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "This is a website used in an existing browser; there is no package to install."
+   }
+  },
+  "snipping-tool::Flameshot": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "flameshot",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "flameshot",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "flameshot",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "flameshot",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "flameshot",
+    "confidence": "high"
+   }
+  },
+  "snipping-tool::Spectacle": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "spectacle",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "spectacle",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "spectacle",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "spectacle",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "spectacle",
+    "confidence": "high"
+   }
+  },
+  "solidworks::FreeCAD": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   }
+  },
+  "solidworks::Onshape (web)": {
+   "fedora": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Onshape is a web service used in a browser; there is no package to install."
+   },
+   "arch": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Onshape is a web service used in a browser; there is no package to install."
+   },
+   "debian": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Onshape is a web service used in a browser; there is no package to install."
+   },
+   "ubuntu": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Onshape is a web service used in a browser; there is no package to install."
+   },
+   "opensuse": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Onshape is a web service used in a browser; there is no package to install."
+   }
+  },
+  "sophos-home::ClamAV": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "clamav",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "clamav",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "clamav",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "clamav",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "clamav",
+    "confidence": "high"
+   }
+  },
+  "soulseek-qt::Nicotine+": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.nicotine_plus.Nicotine",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "org.nicotine_plus.Nicotine",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.nicotine_plus.Nicotine",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.nicotine_plus.Nicotine",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.nicotine_plus.Nicotine",
+    "confidence": "medium"
+   }
+  },
+  "sound-forge::Audacity": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "medium"
+   }
+  },
+  "sound-forge::Tenacity": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.tenacityaudio.Tenacity",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "org.tenacityaudio.Tenacity",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.tenacityaudio.Tenacity",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.tenacityaudio.Tenacity",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.tenacityaudio.Tenacity",
+    "confidence": "medium"
+   }
+  },
+  "sourcetree::GitKraken": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.axosoft.GitKraken",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.axosoft.GitKraken",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.axosoft.GitKraken",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.axosoft.GitKraken",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.axosoft.GitKraken",
+    "confidence": "medium"
+   }
+  },
+  "sourcetree::Sublime Merge": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.sublimemerge.App",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.sublimemerge.App",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.sublimemerge.App",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.sublimemerge.App",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.sublimemerge.App",
+    "confidence": "medium"
+   }
+  },
+  "spacesniffer::Filelight": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "filelight",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "filelight",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "filelight",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "filelight",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "filelight",
+    "confidence": "high"
+   }
+  },
+  "spacesniffer::Baobab": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "baobab",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "baobab",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "baobab",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "baobab",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "baobab",
+    "confidence": "high"
+   }
+  },
+  "speccy::Mission Center": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "io.missioncenter.MissionCenter",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "io.missioncenter.MissionCenter",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "io.missioncenter.MissionCenter",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "io.missioncenter.MissionCenter",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "io.missioncenter.MissionCenter",
+    "confidence": "medium"
+   }
+  },
+  "speccy::inxi": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "inxi",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "inxi",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "inxi",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "inxi",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "inxi",
+    "confidence": "high"
+   }
+  },
+  "splashtop::RustDesk": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.rustdesk.RustDesk",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.rustdesk.RustDesk",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.rustdesk.RustDesk",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.rustdesk.RustDesk",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.rustdesk.RustDesk",
+    "confidence": "medium"
+   }
+  },
+  "spss::PSPP": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "pspp",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "pspp",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "pspp",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "pspp",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "pspp",
+    "confidence": "medium"
+   }
+  },
+  "spybot::ClamAV / ClamTk": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.gitlab.davem.ClamTk",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.gitlab.davem.ClamTk",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.gitlab.davem.ClamTk",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.gitlab.davem.ClamTk",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.gitlab.davem.ClamTk",
+    "confidence": "medium"
+   }
+  },
+  "ssms::DBeaver": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "io.dbeaver.DBeaverCommunity",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "io.dbeaver.DBeaverCommunity",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "io.dbeaver.DBeaverCommunity",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "io.dbeaver.DBeaverCommunity",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "io.dbeaver.DBeaverCommunity",
+    "confidence": "medium"
+   }
+  },
+  "ssms::VS Code with the SQL Server (mssql) extension": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.visualstudio.code",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.visualstudio.code",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.visualstudio.code",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.visualstudio.code",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.visualstudio.code",
+    "confidence": "medium"
+   }
+  },
+  "startisback::KDE Plasma / Cinnamon": {
+   "fedora": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Desktop environments are chosen at install time or via desktop meta-packages that differ per distro; no single package."
+   },
+   "arch": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Desktop environments are chosen at install time or via desktop meta-packages that differ per distro; no single package."
+   },
+   "debian": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Desktop environments are chosen at install time or via desktop meta-packages that differ per distro; no single package."
+   },
+   "ubuntu": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Desktop environments are chosen at install time or via desktop meta-packages that differ per distro; no single package."
+   },
+   "opensuse": {
+    "source": "none",
+    "confidence": "high",
+    "reason": "Desktop environments are chosen at install time or via desktop meta-packages that differ per distro; no single package."
+   }
+  },
+  "steelseries-gg::OpenRGB": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.openrgb.OpenRGB",
+    "confidence": "medium"
+   }
+  },
+  "steelseries-gg::EasyEffects": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "easyeffects",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "easyeffects",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "easyeffects",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "easyeffects",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "easyeffects",
+    "confidence": "medium"
+   }
+  },
+  "steinberg::Ardour": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "ardour8",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "ardour",
+    "confidence": "medium"
+   }
+  },
+  "steinberg::Reaper": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.reaper.fm/download.php",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "reaper",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.reaper.fm/download.php",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.reaper.fm/download.php",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.reaper.fm/download.php",
+    "confidence": "medium"
+   }
+  },
+  "stop-motion-studio::Stopmotion (Qt)": {
+   "fedora": {
+    "source": "download",
+    "url": "https://sourceforge.net/projects/stopmotion/",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://sourceforge.net/projects/stopmotion/",
+    "confidence": "low"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "stopmotion",
+    "confidence": "low"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "stopmotion",
+    "confidence": "low"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://sourceforge.net/projects/stopmotion/",
+    "confidence": "low"
+   }
+  },
+  "streamlabs::OBS Studio": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.obsproject.Studio",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "medium"
+   }
+  },
+  "sumatrapdf::Papers / Document Viewer": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "papers",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "papers",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "papers",
+    "confidence": "low"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "papers",
+    "confidence": "low"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "papers",
+    "confidence": "low"
+   }
+  },
+  "sumatrapdf::Okular": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "okular",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "okular",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "okular",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "okular",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "okular",
+    "confidence": "high"
+   }
+  },
+  "swiftkey::IBus / Fcitx": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "ibus",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "ibus",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "ibus",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "ibus",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "ibus",
+    "confidence": "high"
+   }
+  },
+  "syncback::FreeFileSync": {
+   "fedora": {
+    "source": "download",
+    "url": "https://freefilesync.org/download.php",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "freefilesync-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://freefilesync.org/download.php",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://freefilesync.org/download.php",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://freefilesync.org/download.php",
+    "confidence": "medium"
+   }
+  },
+  "syncback::Syncthing": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   }
+  },
+  "synctrayzor::Syncthing": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   }
+  }
+ }
+}
