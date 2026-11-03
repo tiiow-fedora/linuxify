@@ -1,0 +1,1045 @@
+{
+ "schema_version": 1,
+ "apps": {
+  "hyper-terminal": {
+   "fedora": {
+    "source": "download",
+    "url": "https://hyper.is/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://hyper.is/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://hyper.is/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://hyper.is/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "hyper-bin",
+    "confidence": "medium"
+   }
+  },
+  "insomnia": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "rest.insomnia.Insomnia",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "rest.insomnia.Insomnia",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "rest.insomnia.Insomnia",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "rest.insomnia.Insomnia",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "rest.insomnia.Insomnia",
+    "confidence": "high"
+   }
+  },
+  "intellij-idea": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.jetbrains.IntelliJ-IDEA-Community",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "intellij-idea-community-edition",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.jetbrains.IntelliJ-IDEA-Community",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.jetbrains.IntelliJ-IDEA-Community",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.jetbrains.IntelliJ-IDEA-Community",
+    "confidence": "high"
+   }
+  },
+  "jupyter": {
+   "fedora": {
+    "source": "download",
+    "url": "https://github.com/jupyterlab/jupyterlab-desktop/releases",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://github.com/jupyterlab/jupyterlab-desktop/releases",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://github.com/jupyterlab/jupyterlab-desktop/releases",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://github.com/jupyterlab/jupyterlab-desktop/releases",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "jupyterlab-desktop",
+    "confidence": "low"
+   }
+  },
+  "kdiff3": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "kdiff3",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "kdiff3",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "kdiff3",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "kdiff3",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "kdiff3",
+    "confidence": "high"
+   }
+  },
+  "kotlin": {
+   "fedora": {
+    "source": "download",
+    "url": "https://kotlinlang.org/docs/command-line.html",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "kotlin",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "kotlin",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "kotlin",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://kotlinlang.org/docs/command-line.html",
+    "confidence": "medium"
+   }
+  },
+  "kubectl": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "kubernetes-client",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "kubectl",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "kubectl",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "kubectl",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "kubernetes-client",
+    "confidence": "medium"
+   }
+  },
+  "lazarus": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "lazarus",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "lazarus",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "lazarus",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "lazarus",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "lazarus",
+    "confidence": "medium"
+   }
+  },
+  "lazygit": {
+   "fedora": {
+    "source": "copr",
+    "pkg": "lazygit",
+    "repo": "dejan/lazygit",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "lazygit",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://github.com/jesseduffield/lazygit/releases",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://github.com/jesseduffield/lazygit/releases",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "lazygit",
+    "confidence": "medium"
+   }
+  },
+  "ldtk": {
+   "fedora": {
+    "source": "download",
+    "url": "https://ldtk.io/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://ldtk.io/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://ldtk.io/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://ldtk.io/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "ldtk-bin",
+    "confidence": "medium"
+   }
+  },
+  "lens": {
+   "fedora": {
+    "source": "download",
+    "url": "https://k8slens.dev/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://k8slens.dev/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://k8slens.dev/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://k8slens.dev/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "lens-bin",
+    "confidence": "low"
+   }
+  },
+  "llvm": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "clang",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "clang",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "clang",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "clang",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "clang",
+    "confidence": "high"
+   }
+  },
+  "love2d": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "love",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "love",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "love",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "love",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "love",
+    "confidence": "medium"
+   }
+  },
+  "lua": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "lua",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "lua",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "lua5.4",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "lua5.4",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "lua54",
+    "confidence": "medium"
+   }
+  },
+  "mariadb": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "mariadb-server",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mariadb",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mariadb-server",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mariadb-server",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "mariadb",
+    "confidence": "high"
+   }
+  },
+  "maven": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "maven",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "maven",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "maven",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "maven",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "maven",
+    "confidence": "high"
+   }
+  },
+  "meld": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "meld",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "meld",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "meld",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "meld",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "meld",
+    "confidence": "high"
+   }
+  },
+  "minikube": {
+   "fedora": {
+    "source": "download",
+    "url": "https://minikube.sigs.k8s.io/docs/start/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "minikube",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://minikube.sigs.k8s.io/docs/start/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://minikube.sigs.k8s.io/docs/start/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "minikube",
+    "confidence": "low"
+   }
+  },
+  "mkcert": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "mkcert",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mkcert",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mkcert",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mkcert",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "mkcert",
+    "confidence": "medium"
+   }
+  },
+  "mongodb": {
+   "fedora": {
+    "source": "vendor-repo",
+    "pkg": "mongodb-org",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "mongodb-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "mongodb-org",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "mongodb-org",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "vendor-repo",
+    "pkg": "mongodb-org",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   }
+  },
+  "ms-sql-server": {
+   "fedora": {
+    "source": "vendor-repo",
+    "pkg": "mssql-server",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "mssql-server",
+    "confidence": "low"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://learn.microsoft.com/sql/linux/sql-server-linux-setup",
+    "confidence": "low"
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "mssql-server",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "vendor-repo",
+    "pkg": "mssql-server",
+    "confidence": "low",
+    "needs": [
+     "vendor-repo"
+    ]
+   }
+  },
+  "mysql-server": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "community-mysql-server",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "mysql",
+    "confidence": "low"
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "mysql-server",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ],
+    "catalog_override": "Debian ships MariaDB instead of mysql-server; real MySQL comes from the MySQL APT repository."
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mysql-server",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "vendor-repo",
+    "pkg": "mysql-community-server",
+    "confidence": "low",
+    "needs": [
+     "vendor-repo"
+    ]
+   }
+  },
+  "neovim": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "neovim",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "neovim",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "neovim",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "neovim",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "neovim",
+    "confidence": "high"
+   }
+  },
+  "netbeans": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.apache.netbeans",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "netbeans",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.apache.netbeans",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.apache.netbeans",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.apache.netbeans",
+    "confidence": "high"
+   }
+  },
+  "nginx": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "nginx",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "nginx",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "nginx",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "nginx",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "nginx",
+    "confidence": "high"
+   }
+  },
+  "ngrok": {
+   "fedora": {
+    "source": "download",
+    "url": "https://ngrok.com/download",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://ngrok.com/download",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://ngrok.com/download",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://ngrok.com/download",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "ngrok",
+    "confidence": "medium"
+   }
+  },
+  "nodejs": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "nodejs",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "nodejs",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "nodejs",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "nodejs",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "nodejs-default",
+    "confidence": "medium"
+   }
+  },
+  "notepadqq": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "notepadqq",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "notepadqq",
+    "confidence": "low"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "notepadqq",
+    "confidence": "low"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "notepadqq",
+    "confidence": "low"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://notepadqq.com/",
+    "confidence": "low"
+   }
+  },
+  "nushell": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "nushell",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "nushell",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.nushell.sh/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.nushell.sh/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "nushell",
+    "confidence": "medium"
+   }
+  },
+  "o3de": {
+   "fedora": {
+    "source": "download",
+    "url": "https://o3de.org/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://o3de.org/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://o3de.org/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://o3de.org/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://o3de.org/",
+    "confidence": "medium"
+   }
+  },
+  "ollama": {
+   "fedora": {
+    "source": "download",
+    "url": "https://ollama.com/download",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "ollama",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://ollama.com/download",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://ollama.com/download",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "ollama",
+    "confidence": "low"
+   }
+  },
+  "openlens": {
+   "fedora": {
+    "source": "download",
+    "url": "https://github.com/MuhammedKalkan/OpenLens/releases",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://github.com/MuhammedKalkan/OpenLens/releases",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://github.com/MuhammedKalkan/OpenLens/releases",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://github.com/MuhammedKalkan/OpenLens/releases",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://github.com/MuhammedKalkan/OpenLens/releases",
+    "confidence": "medium"
+   }
+  },
+  "php": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "php-cli",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "php",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "php-cli",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "php-cli",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "php8-cli",
+    "confidence": "medium"
+   }
+  },
+  "podman-desktop": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "io.podman_desktop.PodmanDesktop",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "podman-desktop",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "io.podman_desktop.PodmanDesktop",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "io.podman_desktop.PodmanDesktop",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "io.podman_desktop.PodmanDesktop",
+    "confidence": "high"
+   }
+  },
+  "postgresql": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "postgresql-server",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "postgresql",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "postgresql",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "postgresql",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "postgresql-server",
+    "confidence": "high"
+   }
+  },
+  "postman": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.getpostman.Postman",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.getpostman.Postman",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.getpostman.Postman",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.getpostman.Postman",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.getpostman.Postman",
+    "confidence": "high"
+   }
+  },
+  "powershell": {
+   "fedora": {
+    "source": "vendor-repo",
+    "pkg": "powershell",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "powershell-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "powershell",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "snap",
+    "pkg": "powershell",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://learn.microsoft.com/powershell/scripting/install/installing-powershell-on-linux",
+    "confidence": "medium"
+   }
+  }
+ }
+}

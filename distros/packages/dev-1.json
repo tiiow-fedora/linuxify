@@ -1,0 +1,1058 @@
+{
+ "schema_version": 1,
+ "apps": {
+  "alacritty": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "alacritty",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "alacritty",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "alacritty",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "alacritty",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "alacritty",
+    "confidence": "high"
+   }
+  },
+  "android-studio": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.google.AndroidStudio",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.google.AndroidStudio",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.google.AndroidStudio",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.google.AndroidStudio",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.google.AndroidStudio",
+    "confidence": "medium"
+   },
+   "notes": [
+    "Android Studio needs the Android SDK platform tools and, for emulation, KVM access."
+   ]
+  },
+  "ansible": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "ansible",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "ansible",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "ansible",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "ansible",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "ansible",
+    "confidence": "high"
+   }
+  },
+  "apache-httpd": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "httpd",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "apache",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "apache2",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "apache2",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "apache2",
+    "confidence": "high"
+   }
+  },
+  "apache-tomcat": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "tomcat",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "tomcat10",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "tomcat10",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "tomcat10",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "tomcat",
+    "confidence": "medium"
+   }
+  },
+  "arduino-ide": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "cc.arduino.IDE2",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "cc.arduino.IDE2",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "cc.arduino.IDE2",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "cc.arduino.IDE2",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "cc.arduino.IDE2",
+    "confidence": "medium"
+   },
+   "notes": [
+    "Add your user to the dialout group (uucp on Arch) to upload to boards."
+   ]
+  },
+  "aws-cli": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "awscli2",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "aws-cli-v2",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "snap",
+    "pkg": "aws-cli",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "aws-cli",
+    "confidence": "medium"
+   }
+  },
+  "azure-cli": {
+   "fedora": {
+    "source": "vendor-repo",
+    "pkg": "azure-cli",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "azure-cli",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "azure-cli",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "azure-cli",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "vendor-repo",
+    "pkg": "azure-cli",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   }
+  },
+  "bruno": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.usebruno.Bruno",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.usebruno.Bruno",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.usebruno.Bruno",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.usebruno.Bruno",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.usebruno.Bruno",
+    "confidence": "medium"
+   }
+  },
+  "cloudflared": {
+   "fedora": {
+    "source": "vendor-repo",
+    "pkg": "cloudflared",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "cloudflared",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "cloudflared",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "cloudflared",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/",
+    "confidence": "medium"
+   }
+  },
+  "cmake": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "cmake",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "cmake",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "cmake",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "cmake",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "cmake",
+    "confidence": "high"
+   }
+  },
+  "codeblocks": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "codeblocks",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "codeblocks",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "codeblocks",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "codeblocks",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "codeblocks",
+    "confidence": "medium"
+   }
+  },
+  "composer": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "composer",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "composer",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "composer",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "composer",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "php-composer2",
+    "confidence": "medium"
+   }
+  },
+  "dart-sdk": {
+   "fedora": {
+    "source": "download",
+    "url": "https://dart.dev/get-dart",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "dart",
+    "confidence": "low",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://dart.dev/get-dart",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://dart.dev/get-dart",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://dart.dev/get-dart",
+    "confidence": "medium"
+   }
+  },
+  "dbeaver": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "io.dbeaver.DBeaverCommunity",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "dbeaver",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "io.dbeaver.DBeaverCommunity",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "io.dbeaver.DBeaverCommunity",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "io.dbeaver.DBeaverCommunity",
+    "confidence": "medium"
+   }
+  },
+  "defold": {
+   "fedora": {
+    "source": "download",
+    "url": "https://defold.com/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://defold.com/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://defold.com/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://defold.com/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://defold.com/",
+    "confidence": "medium"
+   }
+  },
+  "dotnet-sdk": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "dotnet-sdk-8.0",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "dotnet-sdk-8.0",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "dotnet-sdk-8.0",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "dotnet-sdk-8.0",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "dotnet-sdk-8.0",
+    "confidence": "medium"
+   }
+  },
+  "eclipse-ide": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.eclipse.Java",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "eclipse-java",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.eclipse.Java",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.eclipse.Java",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.eclipse.Java",
+    "confidence": "medium"
+   }
+  },
+  "elixir": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "elixir",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "elixir",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "elixir",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "elixir",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "elixir",
+    "confidence": "high"
+   }
+  },
+  "emacs": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "emacs",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "emacs",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "emacs",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "emacs",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "emacs",
+    "confidence": "high"
+   }
+  },
+  "erlang": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "erlang",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "erlang",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "erlang",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "erlang",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "erlang",
+    "confidence": "high"
+   }
+  },
+  "flutter": {
+   "fedora": {
+    "source": "download",
+    "url": "https://docs.flutter.dev/get-started/install/linux",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "flutter",
+    "confidence": "low",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://docs.flutter.dev/get-started/install/linux",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "snap",
+    "pkg": "flutter",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://docs.flutter.dev/get-started/install/linux",
+    "confidence": "medium"
+   }
+  },
+  "gcloud-sdk": {
+   "fedora": {
+    "source": "vendor-repo",
+    "pkg": "google-cloud-cli",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "google-cloud-cli",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "google-cloud-cli",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "google-cloud-cli",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://cloud.google.com/sdk/docs/install",
+    "confidence": "medium"
+   }
+  },
+  "gdevelop": {
+   "fedora": {
+    "source": "download",
+    "url": "https://gdevelop.io/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "gdevelop-bin",
+    "confidence": "low",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://gdevelop.io/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://gdevelop.io/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://gdevelop.io/",
+    "confidence": "medium"
+   }
+  },
+  "geany": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "geany",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "geany",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "geany",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "geany",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "geany",
+    "confidence": "high"
+   }
+  },
+  "ghidra": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.ghidra_sre.Ghidra",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "ghidra",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.ghidra_sre.Ghidra",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.ghidra_sre.Ghidra",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.ghidra_sre.Ghidra",
+    "confidence": "medium"
+   }
+  },
+  "git": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "git",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "git",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "git",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "git",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "git",
+    "confidence": "high"
+   }
+  },
+  "git-lfs": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "git-lfs",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "git-lfs",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "git-lfs",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "git-lfs",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "git-lfs",
+    "confidence": "high"
+   }
+  },
+  "github-cli": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gh",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "github-cli",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gh",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gh",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gh",
+    "confidence": "high"
+   }
+  },
+  "gitkraken": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.axosoft.GitKraken",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.axosoft.GitKraken",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.axosoft.GitKraken",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.axosoft.GitKraken",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.axosoft.GitKraken",
+    "confidence": "medium"
+   }
+  },
+  "gnu-radio": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gnuradio",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "gnuradio",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gnuradio",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gnuradio",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gnuradio",
+    "confidence": "high"
+   }
+  },
+  "go": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "golang",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "go",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "golang",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "golang",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "go",
+    "confidence": "high"
+   }
+  },
+  "godot": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "godot",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "godot",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.godotengine.Godot",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.godotengine.Godot",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "godot",
+    "confidence": "medium"
+   }
+  },
+  "gradle": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gradle",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "gradle",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gradle",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gradle",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gradle",
+    "confidence": "medium"
+   }
+  },
+  "haskell": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "ghc",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "ghc",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "ghc",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "ghc",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "ghc",
+    "confidence": "high"
+   }
+  },
+  "hoppscotch": {
+   "fedora": {
+    "source": "download",
+    "url": "https://hoppscotch.io/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "hoppscotch-bin",
+    "confidence": "low",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://hoppscotch.io/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://hoppscotch.io/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://hoppscotch.io/",
+    "confidence": "medium"
+   }
+  },
+  "httpie": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "httpie",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "httpie",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "httpie",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "httpie",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "httpie",
+    "confidence": "medium"
+   }
+  }
+ }
+}
