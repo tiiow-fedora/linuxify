@@ -410,3 +410,13 @@ Short record of choices made while building Linuxify, and why.
 ### Linux CI
 - Added a `test-linux` CI job. Found and fixed a real portability bug (migrate built staging paths
   with `\` on every OS) and gated 2 tests that hard-code `C:\` paths.
+
+### Disk-changing commands are dry runs by default
+- `linuxify install`, `install --undo` and `install --fix-boot-entries` now only print their plan
+  unless `--execute` is given (owner's brief: partitioning dry-run by default, behind explicit
+  confirmations). `--dry-run` is still accepted; combining it with `--execute` is an error. A real
+  run still needs administrator rights, no `no-install.lock`, a verified staged copy and the typed
+  phrase naming the disk. The window already worked this way (plan first, typed phrase to proceed).
+  `remove-windows.sh` already defaulted to check-only (`--really` to delete).
+- Breaking change for anyone with the old README open: `linuxify install linux-mint` used to go
+  straight to the confirmation prompt; it now stops after the plan.

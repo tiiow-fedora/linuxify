@@ -14,8 +14,8 @@ explicit confirmation) sets up a dual boot.
 >   tested.
 > - **Back up everything first**, to a separate disk you then unplug. Linuxify's own staged copy
 >   is not a backup.
-> - Always run `--dry-run` first and read the plan. Real runs need a typed confirmation that
->   names the disk.
+> - `linuxify install` only shows its plan unless you add `--execute`; read the plan first. Real runs
+>   need administrator rights and a typed confirmation that names the disk.
 > - To make a PC permanently refuse any disk change, create an empty file
 >   `%LOCALAPPDATA%\Linuxify\no-install.lock`.
 >
@@ -70,9 +70,9 @@ linuxify try linux-mint                 # 3. download + SHA-256-verify the ISO, 
 linuxify migrate --target E:\ --dry-run # 4. stage your files for Linux (copy, never move)
 linuxify migrate --target E:\
 
-linuxify install linux-mint --dry-run   # 5. show the dual-boot plan; changes nothing
-linuxify install linux-mint             #    do it (admin, typed confirmation)
-linuxify install --undo                 #    remove the installer partitions, grow C: back
+linuxify install linux-mint             # 5. show the dual-boot plan; changes nothing (dry run is the default)
+linuxify install linux-mint --execute   #    do it (admin, typed confirmation)
+linuxify install --undo --execute       #    remove the installer partitions, grow C: back (without --execute: just shows)
 ```
 
 What `install` does: shrinks C:, puts the distro's own installer on a small FAT32 partition

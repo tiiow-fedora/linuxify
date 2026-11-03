@@ -126,9 +126,13 @@ enum Command {
         /// Space for Linux in GB (default 100, or as much as fits safely).
         #[arg(long)]
         linux_gb: Option<u64>,
-        /// Print exactly what would be done, change nothing.
+        /// Print exactly what would be done, change nothing (this is already the default).
         #[arg(long)]
         dry_run: bool,
+        /// Actually change the disk. Without this flag `install` (and `--undo`, `--fix-boot-entries`)
+        /// only shows the plan. Real runs still need administrator rights and a typed confirmation.
+        #[arg(long)]
+        execute: bool,
         /// Remove the installer partition and boot entry and grow C: back.
         #[arg(long)]
         undo: bool,
@@ -162,9 +166,10 @@ fn main() -> ExitCode {
         Command::Migrate { target, dry_run, verify, no_verify, from_folder, stop_after } => {
             run_migrate(MigrateOpts { target, dry_run, verify_only: verify, no_verify, from_folder, stop_after })
         }
-        Command::Install { distro, linux_gb, dry_run, undo, fix_boot_entries, replace_windows } => {
-            run_install(cli.data_dir, InstallOpts { distro, linux_gb, dry_run, undo, fix_boot_entries, replace_windows })
-        }
+        Command::Install { distro, linux_gb, dry_run, execute, undo, fix_boot_entries, replace_windows } => match flow::effective_dry_run(dry_run, execute) {
+            Ok(dry_run) => run_install(cli.data_dir, InstallOpts { distro, linux_gb, dry_run, undo, fix_boot_entries, replace_windows }),
+            Err(e) => Err(e),
+        },
     };
     match result {
         Ok(()) => ExitCode::SUCCESS,
@@ -731,6 +736,9 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
         for f in fixed {
             println!("  {}{f}", if o.dry_run { "would fix: " } else { "fixed: " });
         }
+        if o.dry_run {
+            println!("\nDry run: nothing was changed. Add --execute to fix them for real.");
+        }
         return Ok(());
     }
     if o.undo {
@@ -741,6 +749,7 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
             for s in install_exec::undo(&state, true)? {
                 println!("  would run: {s}");
             }
+            println!("\nDry run: nothing was changed. Add --execute to undo for real.");
             return Ok(());
         }
         if let Some(lock) = flow::install_lock() {
@@ -791,7 +800,7 @@ fn run_install(data_dir: Option<PathBuf>, o: InstallOpts) -> Result<(), String> 
         }
     }
     if o.dry_run {
-        println!("\nDry run: nothing was changed.");
+        println!("\nDry run: nothing was changed. This is the default; add --execute to do it for real (administrator rights and a typed confirmation are still required).");
         return Ok(());
     }
     let plan = prep.plan.as_ref().map_err(|w| w.join("; "))?;

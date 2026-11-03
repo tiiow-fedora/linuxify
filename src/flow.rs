@@ -8,6 +8,16 @@ use crate::install::{self, InstallPlan, InstallState};
 use crate::{appdirs, download, install_exec, iso, migrate, readiness, report, restore, scan, vm};
 use std::path::{Path, PathBuf};
 
+/// Disk-changing commands are dry runs unless `--execute` is given. `--dry-run` stays accepted
+/// (it is the default) but can't be combined with `--execute`.
+pub fn effective_dry_run(dry_run: bool, execute: bool) -> Result<bool, String> {
+    match (dry_run, execute) {
+        (true, true) => Err("--dry-run and --execute contradict each other; use one".into()),
+        (_, true) => Ok(false),
+        _ => Ok(true),
+    }
+}
+
 /// The latest saved scan (`linuxify scan`), if any.
 pub fn latest_scan() -> Option<scan::ScanReport> {
     let p = appdirs::reports_dir().ok()?.join("latest").join("report.json");
@@ -481,6 +491,14 @@ pub fn rank_with_scan(list: &DistroList, answers: &Answers, scan_report: Option<
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn disk_changes_need_execute() {
+        assert_eq!(super::effective_dry_run(false, false), Ok(true), "default is a dry run");
+        assert_eq!(super::effective_dry_run(true, false), Ok(true));
+        assert_eq!(super::effective_dry_run(false, true), Ok(false));
+        assert!(super::effective_dry_run(true, true).is_err());
+    }
+
     use super::*;
 
     fn plan() -> InstallPlan {
