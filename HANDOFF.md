@@ -99,7 +99,7 @@ session" first.**
    from `linuxify quiz-spec`, either map them on the site or send a direct `{"distro": "<id>"}`.
 3. **Click through the web view on Windows**, then enable it in release.yml (`cargo build --release --features webview`).
    Check the WebView2 runtime message on a PC without it, and that links open in the default browser.
-4. **Spot-check the new app_map entries.** Priorities: Flatpak ids against Flathub, the 3 `wine_ok`/`blocked`
+4. **Spot-check the new app_map entries.** (Game anti-cheat claims were checked against AreWeAntiCheatYet in the second pass; the rest was not.) Priorities: Flatpak ids against Flathub, the 3 `wine_ok`/`blocked`
    claims, and entries whose notes say a vendor has a Linux version (links in `linux.url`).
 5. Re-run the install flow in the throwaway Windows VM once with `--execute` (the default flipped).
 6. Still open from before: real hardware, BitLocker, AlmaLinux on a v3 CPU, NixOS (refused by design).

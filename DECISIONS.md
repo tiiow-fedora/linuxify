@@ -420,3 +420,20 @@ Short record of choices made while building Linuxify, and why.
   `remove-windows.sh` already defaulted to check-only (`--really` to delete).
 - Breaking change for anyone with the old README open: `linuxify install linux-mint` used to go
   straight to the confirmation prompt; it now stops after the plan.
+
+## Second cloud-burn pass (2026-11-02, autonomous; owner away)
+
+- **Game anti-cheat claims checked against AreWeAntiCheatYet's public `games.json`** (fetched from
+  raw.githubusercontent.com, which the container allows; Flathub and ProtonDB are blocked and were not
+  worked around). All `blocked` games match its "Denied"/"Broken" status. Reworded where the source is
+  more careful: Escape from Tarkov is "Planned" there (not "does not allow"), PUBG/MapleStory/Conan Exiles
+  are "Broken" (not refused by policy), Rainbow Six Siege is BattlEye (the Ubisoft part was unsupported),
+  and Call of Duty is blocked only for recent titles (older ones are listed Supported). Status values
+  stay `blocked`: the user-facing risk is the same.
+- `wine_ok` games with no AreWeAntiCheatYet entry (13, no anti-cheat or not listed) now say they are
+  community reports and not tested here, instead of asserting "runs well" flat. Nothing was promoted
+  or demoted.
+- Flatpak ids and dnf names for the 373 earlier-added apps remain unverified (no allowed source).
+  I did not go through the per-app flathub GitHub repos as a substitute: that is the same Flathub
+  data behind a block the owner's setup chose not to open.
+- `linuxify install --help` still said "Always try --dry-run first"; now says plan-only unless `--execute`.

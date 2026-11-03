@@ -430,3 +430,9 @@ run on Windows. Details of choices are in DECISIONS.md.
   PowerShell there), not on a Windows VM.
 - Everything listed as untested in the earlier sections still applies (real hardware, BitLocker, AlmaLinux v3
   CPU, etc.).
+
+## Second cloud-burn pass (2026-11-02)
+- app_map: game anti-cheat notes reconciled with AreWeAntiCheatYet data (6 notes reworded), 13 untested
+  `wine_ok` entries labelled as community reports. See DECISIONS.md.
+- 3 more CLI tests (`quiz-spec` shape, first-option answers from the spec are accepted and saved, a direct
+  distro result is saved). `install --help` text fixed.

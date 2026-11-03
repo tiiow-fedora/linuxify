@@ -119,7 +119,7 @@ enum Command {
         #[arg(long, hide = true)]
         stop_after: Option<u64>,
     },
-    /// Set up a dual-boot install (shrinks C:, keeps Windows). Always try --dry-run first.
+    /// Set up a dual-boot install (shrinks C:, keeps Windows). Shows the plan only unless you add --execute.
     Install {
         /// Distro id (default: your top pick from `linuxify choose`).
         distro: Option<String>,
