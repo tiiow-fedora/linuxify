@@ -81,3 +81,33 @@ Rules for delegating:
 5. Stage 5: full dual-boot install verified in a throwaway VM; the gating logic for `--replace-windows` is tested to refuse when verification fails.
 
 Start with Stage 1.
+
+
+---
+
+# Status after the cloud-burn session (2026-11-02)
+
+The original brief above is fully built (stages 1-5 and the window; see PROGRESS.md). This session added the
+website quiz, a much bigger app database, safer install defaults and more tests. **Read PROGRESS.md "Cloud-burn
+session" first.**
+
+## What to do next, in order
+1. **Let CI run on the `claude/cloud-burn` branch** (open a PR). It is the first Windows build of this work.
+   Fix whatever the Windows `cargo test`, clippy and `cargo check --features webview` jobs report.
+2. **Give the quiz an address.** Put the questionnaire's URL in `quiz.json` (see docs/web-quiz.md) and make the
+   site send its result (`window.ipc.postMessage` or a `#linuxify_result=` URL). If the site's questions differ
+   from `linuxify quiz-spec`, either map them on the site or send a direct `{"distro": "<id>"}`.
+3. **Click through the web view on Windows**, then enable it in release.yml (`cargo build --release --features webview`).
+   Check the WebView2 runtime message on a PC without it, and that links open in the default browser.
+4. **Spot-check the new app_map entries.** Priorities: Flatpak ids against Flathub, the 3 `wine_ok`/`blocked`
+   claims, and entries whose notes say a vendor has a Linux version (links in `linux.url`).
+5. Re-run the install flow in the throwaway Windows VM once with `--execute` (the default flipped).
+6. Still open from before: real hardware, BitLocker, AlmaLinux on a v3 CPU, NixOS (refused by design).
+
+## Things worth knowing
+- Disk-changing CLI commands are dry runs unless `--execute`; the typed phrase, admin check, `no-install.lock` and
+  verified-copy gates are unchanged.
+- `tests/restore_sh.rs` and `tests/remove_windows_sh.rs` run the shell scripts in a fake-tools sandbox on Linux
+  and macOS CI; they never touch real devices.
+- The Rust Windows target can't be installed in the cloud container (proxy), so Windows-only code can only be
+  checked by CI or on a PC.

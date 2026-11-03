@@ -79,6 +79,20 @@ pub struct AppMap {
     pub apps: Vec<AppEntry>,
 }
 
+/// Every category an entry may use (see data/SCHEMA.md).
+pub const CATEGORIES: [&str; 18] = [
+    "browser", "office", "creative", "audio", "video", "dev", "game", "game-launcher", "chat", "media", "utility", "security", "vpn", "cloud", "hardware", "system", "education", "finance",
+];
+
+/// Flatpak application ids are reverse-DNS names: at least three dot-separated parts of letters,
+/// digits, `_` and `-`, each starting with a letter or `_` (digits may follow a dot in the last parts).
+pub fn is_flatpak_id(id: &str) -> bool {
+    let parts: Vec<&str> = id.split('.').collect();
+    parts.len() >= 3
+        && parts.iter().all(|p| !p.is_empty() && p.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-'))
+        && parts[0].chars().next().is_some_and(|c| c.is_ascii_alphabetic())
+}
+
 /// Returns the length of the pattern's text if it matches `norm`.
 pub fn pattern_match_len(pattern: &str, norm: &str) -> Option<usize> {
     if let Some(p) = pattern.strip_prefix('=') {
@@ -131,6 +145,48 @@ impl AppMap {
             for p in &r.patterns {
                 if *p != p.to_lowercase() || p.trim_start_matches(['^', '=']).is_empty() {
                     problems.push(format!("ignore pattern '{p}' must be lowercase and non-empty"));
+                }
+            }
+        }
+        problems
+    }
+
+    /// Quality checks for the data file Linuxify ships (stricter than `validate`, which every
+    /// user-supplied file must pass): known categories, notes on every entry, well-formed Flatpak
+    /// ids and https links, and no packages or alternatives on entries that claim not to know.
+    pub fn lint(&self) -> Vec<String> {
+        let mut problems = Vec::new();
+        for a in &self.apps {
+            if !CATEGORIES.contains(&a.category.as_str()) {
+                problems.push(format!("'{}' has unknown category '{}'", a.id, a.category));
+            }
+            if !a.id.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-') || a.id.is_empty() {
+                problems.push(format!("id '{}' must be lowercase a-z, 0-9 and '-'", a.id));
+            }
+            if a.notes.as_deref().is_none_or(|n| n.trim().is_empty()) {
+                problems.push(format!("'{}' needs a plain-English note", a.id));
+            }
+            if a.status == Status::Blocked && a.linux.is_some() {
+                problems.push(format!("'{}' is 'blocked' but lists Linux packages", a.id));
+            }
+            if a.status == Status::Unknown && (a.linux.is_some() || !a.alternatives.is_empty()) {
+                problems.push(format!("'{}' is 'unknown' but lists packages or alternatives (that is a guess)", a.id));
+            }
+            let flatpaks = a.linux.iter().filter_map(|l| l.flatpak.as_deref()).chain(a.alternatives.iter().filter_map(|x| x.flatpak.as_deref()));
+            for f in flatpaks {
+                if !is_flatpak_id(f) {
+                    problems.push(format!("'{}' has a malformed Flatpak id '{f}'", a.id));
+                }
+            }
+            let urls = a.link.iter().chain(a.linux.iter().filter_map(|l| l.url.as_ref()));
+            for u in urls {
+                if !u.starts_with("https://") || u.contains(char::is_whitespace) {
+                    problems.push(format!("'{}' has a link that is not a plain https:// address: '{u}'", a.id));
+                }
+            }
+            for alt in &a.alternatives {
+                if alt.name.trim().is_empty() {
+                    problems.push(format!("'{}' has an alternative with no name", a.id));
                 }
             }
         }
@@ -295,6 +351,8 @@ mod tests {
     #[test]
     fn embedded_app_map_is_valid() {
         let m = AppMap::parse(EMBEDDED_APP_MAP).expect("data/app_map.json must parse and validate");
+        let lint = m.lint();
+        assert!(lint.is_empty(), "data/app_map.json lint problems:\n  - {}", lint.join("\n  - "));
         assert!(m.apps.len() >= 150, "need at least 150 apps, have {}", m.apps.len());
     }
 

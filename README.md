@@ -92,11 +92,16 @@ bash remove-windows.sh       # OPTIONAL, check only: what removing Windows would
 `remove-windows.sh --really` deletes Windows only after re-checking every restored file against
 the checksums taken on Windows, and only after you type the confirmation phrase.
 
+### Website quiz
+
+`linuxify choose --web` shows a distro questionnaire from a website in its own window (needs a build
+with `--features webview` and a quiz address). See `docs/web-quiz.md`.
+
 ## Files
 
 - `PROGRESS.md`: what each stage does, what was verified, and what isn't tested.
 - `DECISIONS.md`: design choices and why.
-- `data/app_map.json`: Windows programs mapped to Linux equivalents (format in `data/SCHEMA.md`).
+- `data/app_map.json`: about 960 Windows programs mapped to Linux equivalents (format in `data/SCHEMA.md`).
   Pull requests welcome.
 - `data/distros.json`, `data/isos.json`: distros, quiz traits, official ISO + checksum sources.
 - `HANDOFF.md`: the original build brief.

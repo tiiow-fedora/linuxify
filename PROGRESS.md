@@ -372,3 +372,61 @@ steps; screenshots in `docs/gui/`. Built with egui/eframe (see `DECISIONS.md`).
   path as `linuxify try` is used, and the "no VM program" message was checked.
 - No high-DPI check beyond 100% scaling, and no screen reader test (AccessKit is enabled).
 - Only English; window size is fixed at 1160×780 to start (resizable, minimum 900×600).
+
+## Cloud-burn session (2026-11-02, autonomous Linux container; branch `claude/cloud-burn`)
+
+Built and tested on **Linux only** (no Windows, no real disks, no VM). Nothing from this session has
+run on Windows. Details of choices are in DECISIONS.md.
+
+### Done
+- **Linux test baseline fixed.** `cargo test` failed 5 tests on Linux. One was a real portability bug
+  (migrate staged files under a name containing `\` on non-Windows); the other two were tests with
+  hard-coded `C:\` paths, now `#[cfg(windows)]`. A `test-linux` job runs in CI.
+- **Website quiz in a web view** (`src/webquiz.rs`, `src/webview.rs`, `docs/web-quiz.md`):
+  - Quiz address is configuration (`--quiz-url`, `LINUXIFY_QUIZ_URL`, `quiz.json`); the owner's site
+    address was not available. The page returns answers to the 14 built-in questions or a distro id.
+  - All page input is untrusted and validated (16 KB cap, strict JSON, checked against QUESTIONS and
+    distros.json). Navigation allow-list, popups/downloads/permissions denied, local pages served from a
+    folder through a custom protocol (not `file://`).
+  - CLI: `choose --web`, `choose --quiz-result <file>`, `quiz-spec`. GUI: "Take the quiz on the website"
+    button on question 1 when an address is set up.
+  - **Verified on Linux:** 12 unit tests; the window itself was run under Xvfb with WebKitGTK against a
+    test page: custom-protocol page and script loaded, `window.ipc` message delivered, URL-hash result
+    intercepted, result written, `choose --web` completed end to end.
+  - Feature `webview` is **off by default** and never built for Windows here (see "Not verified").
+- **app_map.json 590 -> 963 apps** (373 new): Windows built-in apps, office/PDF/LaTeX, science and
+  education, dev tools and CLIs, remote access, security and backup, system utilities, creative
+  (photo/CAD/3D printing), audio/video/DJ, peripherals and vendor tools, emulators, VPNs. 2 `wine_ok`
+  (World of Warcraft is the one existing id skipped; Diablo IV, Hearthstone added), 1 `blocked` (FACEIT),
+  the rest native/alternative/unknown. New tests: every entry reachable by its own name; real display names
+  map correctly; neighbours of short patterns are not caught. A `lint()` pass (categories, notes, Flatpak id
+  shape, https links, no packages on `unknown`) runs in the test suite; it found one bad Flatpak id.
+- **Safety rails:** `install`, `install --undo`, `install --fix-boot-entries` are dry runs unless
+  `--execute` is given. 4 CLI tests run the real binary. `remove-windows.sh` has 8 sandboxed tests of its
+  refusal paths (root, live session, missing/edited/absent files, no Windows) that assert the destructive
+  tools are never called, plus script-text invariants (typed phrase before deletion, no mkfs/wipefs/dd).
+- **restore.sh:** 9 sandboxed tests run it against fake apt/dnf/zypper/pacman/rpm-ostree/flatpak (dry run,
+  no-overwrite, second run, failures reported, damaged files). Added: rpm-ostree systems skip native
+  packages with an explanation instead of listing them as failed. `shellcheck -S warning` is clean on both
+  scripts.
+- 138 unit + 21 integration tests pass; `cargo clippy --all-targets -- -D warnings` clean, with and without
+  `--features webview`.
+
+### Not verified (could not be in this container)
+- **No Windows build or cross-compile check.** `x86_64-pc-windows-gnu` std could not be installed: the
+  egress proxy blocks static.rust-lang.org (403). mingw-w64 is installed, the Rust target is not. All Windows
+  `cfg(windows)` code is as the last session left it; the only edits near it were `cfg!(windows)` helpers.
+  CI (windows-latest) is the first real check of this branch.
+- **The web view on Windows (WebView2).** Compiled and run on Linux (WebKitGTK) only. The Windows
+  custom-protocol URL form (`http://linuxify.localhost/`) and `builder.build(&window)` are from wry's docs/source.
+  CI now runs `cargo check --features webview` on Windows.
+- Whether the owner's real questionnaire site works with it: no address, and its output format is unknown
+  (the contract in docs/web-quiz.md is what the site has to send).
+- **New app_map entries are from memory, not checked against live sources.** Flathub (blocked by the proxy)
+  could not be queried, so the new Flatpak ids are unverified (the 590 earlier entries were checked on
+  2026-10-22). apt names were checked against Ubuntu 24.04's index (8 that don't exist there were
+  dropped); dnf names are unchecked. The `wine_ok` claims are community reports, not tested.
+- The `--execute` default change has been exercised only through the CLI refusal paths on Linux (no
+  PowerShell there), not on a Windows VM.
+- Everything listed as untested in the earlier sections still applies (real hardware, BitLocker, AlmaLinux v3
+  CPU, etc.).
