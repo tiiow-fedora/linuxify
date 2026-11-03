@@ -168,6 +168,7 @@ mapfile -t FLATPAKS < <(awk '$1=="flatpak"{print $2}' apps.txt 2>/dev/null)
 mapfile -t PKGLINES < <(awk '$1=="pkg"{print $2" "$3}' apps.txt 2>/dev/null)
 note "${#FLATPAKS[@]} Flatpak apps and ${#PKGLINES[@]} native packages are listed in apps.txt."
 failed=()
+skipped=()
 if [ "${#FLATPAKS[@]}" -gt 0 ] || [ "${#PKGLINES[@]}" -gt 0 ]; then
   if ask "Install them now? (needs internet; you may be asked for your password)"; then
     if [ "${#FLATPAKS[@]}" -gt 0 ]; then
@@ -197,6 +198,7 @@ if [ "${#FLATPAKS[@]}" -gt 0 ] || [ "${#PKGLINES[@]}" -gt 0 ]; then
         dnf) [ "$dnf_name" != "-" ] && { run sudo dnf install -y "$dnf_name" || failed+=("dnf $dnf_name"); } ;;
         zypper) [ "$dnf_name" != "-" ] && { run sudo zypper --non-interactive install "$dnf_name" || failed+=("zypper $dnf_name"); } ;;
         pacman) [ "$dnf_name" != "-" ] && { run sudo pacman -S --noconfirm --needed "$dnf_name" || failed+=("pacman $dnf_name"); } ;;
+        rpm-ostree) skipped+=("$line") ;;
         *) failed+=("$line (no supported package manager)") ;;
       esac
     done
@@ -207,6 +209,11 @@ fi
 
 # ---------------------------------------------------------------------------
 step "Done"
+if [ "${#skipped[@]}" -gt 0 ]; then
+  note "This is an image-based system (rpm-ostree), so native packages were not layered on. Use the"
+  note "Flatpak version from the Software app, or a toolbox/distrobox container, for:"
+  for f in "${skipped[@]}"; do note "  - ${f%% *} / ${f##* }"; done
+fi
 if [ "${#failed[@]}" -gt 0 ]; then
   note "These installs didn't work (install them from the Software app instead):"
   for f in "${failed[@]}"; do note "  - $f"; done
