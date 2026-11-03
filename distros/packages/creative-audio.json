@@ -1,0 +1,923 @@
+{
+ "schema_version": 1,
+ "apps": {
+  "blender": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "blender",
+    "confidence": "high"
+   }
+  },
+  "audacity": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "audacity",
+    "confidence": "high"
+   }
+  },
+  "gimp": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gimp",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "gimp",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gimp",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gimp",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gimp",
+    "confidence": "high"
+   }
+  },
+  "krita": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "krita",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "krita",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "krita",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "krita",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "krita",
+    "confidence": "high"
+   }
+  },
+  "inkscape": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "inkscape",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "inkscape",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "inkscape",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "inkscape",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "inkscape",
+    "confidence": "high"
+   }
+  },
+  "musicbrainz-picard": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "picard",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "picard",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "picard",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "picard",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.musicbrainz.Picard",
+    "confidence": "high"
+   }
+  },
+  "darktable": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "darktable",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "darktable",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "darktable",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "darktable",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "darktable",
+    "confidence": "high"
+   }
+  },
+  "rawtherapee": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "rawtherapee",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "rawtherapee",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "rawtherapee",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "rawtherapee",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "rawtherapee",
+    "confidence": "medium"
+   }
+  },
+  "digikam": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "digikam",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "digikam",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "digikam",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "digikam",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "digikam",
+    "confidence": "medium"
+   }
+  },
+  "scribus": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "scribus",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "scribus",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "scribus",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "scribus",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "scribus",
+    "confidence": "medium"
+   }
+  },
+  "freecad": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "freecad",
+    "confidence": "medium"
+   }
+  },
+  "librecad": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "librecad",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "librecad",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "librecad",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "librecad",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "librecad",
+    "confidence": "medium"
+   }
+  },
+  "kicad": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "kicad",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "kicad",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "kicad",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "kicad",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "kicad",
+    "confidence": "medium"
+   }
+  },
+  "musescore": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.musescore.MuseScore",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "musescore",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.musescore.MuseScore",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.musescore.MuseScore",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.musescore.MuseScore",
+    "confidence": "high"
+   }
+  },
+  "bitwig-studio": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.bitwig.BitwigStudio",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "bitwig-studio",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.bitwig.BitwigStudio",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.bitwig.BitwigStudio",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.bitwig.BitwigStudio",
+    "confidence": "high"
+   }
+  },
+  "lmms": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "lmms",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "lmms",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "lmms",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "lmms",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "lmms",
+    "confidence": "medium"
+   }
+  },
+  "blockbench": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "net.blockbench.Blockbench",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "blockbench-bin",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "net.blockbench.Blockbench",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "net.blockbench.Blockbench",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "net.blockbench.Blockbench",
+    "confidence": "high"
+   }
+  },
+  "pinta": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "pinta",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "pinta",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.github.PintaProject.Pinta",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.github.PintaProject.Pinta",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.github.PintaProject.Pinta",
+    "confidence": "high"
+   }
+  },
+  "mypaint": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "mypaint",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mypaint",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mypaint",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mypaint",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "mypaint",
+    "confidence": "medium"
+   }
+  },
+  "photopea": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.photopea.com/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://www.photopea.com/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.photopea.com/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.photopea.com/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.photopea.com/",
+    "confidence": "medium"
+   },
+   "notes": [
+    "Photopea is a web app, so the download link simply opens it in your browser."
+   ]
+  },
+  "hugin": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "hugin",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "hugin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "hugin",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "hugin",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "hugin",
+    "confidence": "medium"
+   }
+  },
+  "shotwell": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "shotwell",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "shotwell",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "shotwell",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "shotwell",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "shotwell",
+    "confidence": "medium"
+   }
+  },
+  "imagemagick": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "ImageMagick",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "imagemagick",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "imagemagick",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "imagemagick",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "ImageMagick",
+    "confidence": "medium"
+   }
+  },
+  "openscad": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "openscad",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "openscad",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "openscad",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "openscad",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "openscad",
+    "confidence": "medium"
+   }
+  },
+  "meshlab": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "net.meshlab.MeshLab",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "meshlab",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "meshlab",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "meshlab",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "net.meshlab.MeshLab",
+    "confidence": "high"
+   }
+  },
+  "orcaslicer": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "io.github.softfever.OrcaSlicer",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "orca-slicer-bin",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "io.github.softfever.OrcaSlicer",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "io.github.softfever.OrcaSlicer",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "io.github.softfever.OrcaSlicer",
+    "confidence": "high"
+   }
+  },
+  "bambu-studio": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.bambulab.BambuStudio",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "bambustudio-bin",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.bambulab.BambuStudio",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.bambulab.BambuStudio",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.bambulab.BambuStudio",
+    "confidence": "high"
+   }
+  },
+  "superslicer": {
+   "fedora": {
+    "source": "download",
+    "url": "https://github.com/supermerill/SuperSlicer/releases",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://github.com/supermerill/SuperSlicer/releases",
+    "confidence": "low"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://github.com/supermerill/SuperSlicer/releases",
+    "confidence": "low"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://github.com/supermerill/SuperSlicer/releases",
+    "confidence": "low"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://github.com/supermerill/SuperSlicer/releases",
+    "confidence": "low"
+   }
+  },
+  "libresprite": {
+   "fedora": {
+    "source": "download",
+    "url": "https://libresprite.github.io/",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://libresprite.github.io/",
+    "confidence": "low"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://libresprite.github.io/",
+    "confidence": "low"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://libresprite.github.io/",
+    "confidence": "low"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://libresprite.github.io/",
+    "confidence": "low"
+   }
+  },
+  "pixelorama": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.orama_interactive.Pixelorama",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.orama_interactive.Pixelorama",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.orama_interactive.Pixelorama",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.orama_interactive.Pixelorama",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.orama_interactive.Pixelorama",
+    "confidence": "high"
+   }
+  },
+  "mixxx": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "mixxx",
+    "confidence": "medium",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mixxx",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mixxx",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mixxx",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "packman",
+    "pkg": "mixxx",
+    "confidence": "medium",
+    "needs": [
+     "packman"
+    ]
+   }
+  },
+  "freac": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.freac.freac",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "freac",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.freac.freac",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.freac.freac",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.freac.freac",
+    "confidence": "high"
+   }
+  },
+  "easyeffects": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.github.wwmm.easyeffects",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "easyeffects",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "easyeffects",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "easyeffects",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "easyeffects",
+    "confidence": "medium"
+   }
+  }
+ }
+}

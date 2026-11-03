@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "notice": "Package names are curated from distro knowledge and are NOT verified against live repositories (no network in the authoring environment). Every mapping carries a confidence level; see docs/distro-targets.md.",
+  "targets": [
+    {
+      "id": "fedora",
+      "name": "Fedora",
+      "family": "rpm",
+      "package_manager": "dnf",
+      "install_cmd": "sudo dnf install -y {pkgs}",
+      "refresh_cmd": "sudo dnf upgrade --refresh -y",
+      "flatpak_preinstalled": true,
+      "repos": [
+        {"id": "rpmfusion", "name": "RPM Fusion (free + nonfree)", "enable": "sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm", "note": "Needed for patent-encumbered codecs, Steam and the NVIDIA driver."},
+        {"id": "copr", "name": "Fedora COPR (community builds)", "enable": "sudo dnf copr enable -y {owner}/{project}", "note": "Unofficial community builds; not reviewed by Fedora."},
+        {"id": "vendor-repo", "name": "Vendor RPM repository", "enable": "Add the vendor's .repo file, then install by name", "note": "Used for Chrome, VS Code, Docker CE and similar vendor-supplied builds."}
+      ]
+    },
+    {
+      "id": "arch",
+      "name": "Arch Linux",
+      "family": "pacman",
+      "package_manager": "pacman",
+      "install_cmd": "sudo pacman -S --needed --noconfirm {pkgs}",
+      "refresh_cmd": "sudo pacman -Syu --noconfirm",
+      "flatpak_preinstalled": false,
+      "repos": [
+        {"id": "multilib", "name": "multilib", "enable": "Uncomment the [multilib] section in /etc/pacman.conf, then sudo pacman -Sy", "note": "Needed for 32-bit libraries used by Steam and Wine."},
+        {"id": "aur", "name": "Arch User Repository", "enable": "Install an AUR helper (for example paru or yay), then paru -S {pkgs}", "note": "Community-maintained build recipes; read the PKGBUILD before installing."},
+        {"id": "chaotic", "name": "Chaotic-AUR (prebuilt)", "enable": "Optional prebuilt AUR binaries; follow chaotic.cx instructions", "note": "Third-party binary repo; optional."}
+      ]
+    },
+    {
+      "id": "debian",
+      "name": "Debian",
+      "family": "deb",
+      "package_manager": "apt",
+      "install_cmd": "sudo apt-get install -y {pkgs}",
+      "refresh_cmd": "sudo apt-get update && sudo apt-get upgrade -y",
+      "flatpak_preinstalled": false,
+      "repos": [
+        {"id": "non-free", "name": "contrib / non-free / non-free-firmware", "enable": "Add 'contrib non-free non-free-firmware' to the sources in /etc/apt/sources.list, then sudo apt-get update", "note": "Needed for some firmware, drivers and proprietary packages."},
+        {"id": "vendor-repo", "name": "Vendor APT repository", "enable": "Add the vendor's signing key and .list/.sources file, then apt-get update", "note": "Used for Chrome, VS Code, Docker CE and similar vendor-supplied builds."},
+        {"id": "backports", "name": "bookworm/trixie-backports", "enable": "Add the backports suite and install with -t <suite>-backports", "note": "Newer versions of selected packages."}
+      ]
+    },
+    {
+      "id": "ubuntu",
+      "name": "Ubuntu",
+      "family": "deb",
+      "package_manager": "apt",
+      "install_cmd": "sudo apt-get install -y {pkgs}",
+      "refresh_cmd": "sudo apt-get update && sudo apt-get upgrade -y",
+      "flatpak_preinstalled": false,
+      "repos": [
+        {"id": "universe", "name": "universe / multiverse", "enable": "sudo add-apt-repository -y universe multiverse && sudo apt-get update", "note": "Community and non-free packages; usually already enabled on desktop installs."},
+        {"id": "snap", "name": "Snap Store", "enable": "sudo snap install {pkg}", "note": "Preinstalled on Ubuntu; some apps (Firefox, Chromium) ship only as snaps."},
+        {"id": "ppa", "name": "Personal Package Archive", "enable": "sudo add-apt-repository -y ppa:{owner}/{name} && sudo apt-get update", "note": "Unofficial; installs third-party software as root."},
+        {"id": "vendor-repo", "name": "Vendor APT repository", "enable": "Add the vendor's signing key and .list/.sources file, then apt-get update", "note": "Used for Chrome, VS Code, Docker CE and similar vendor-supplied builds."}
+      ]
+    },
+    {
+      "id": "opensuse",
+      "name": "openSUSE (Tumbleweed / Leap)",
+      "family": "rpm",
+      "package_manager": "zypper",
+      "install_cmd": "sudo zypper --non-interactive install {pkgs}",
+      "refresh_cmd": "sudo zypper --non-interactive dup",
+      "flatpak_preinstalled": false,
+      "repos": [
+        {"id": "packman", "name": "Packman", "enable": "sudo zypper addrepo -cfp 90 https://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Tumbleweed/ packman && sudo zypper dup --from packman --allow-vendor-change", "note": "Multimedia codecs and extras not shipped by openSUSE for patent reasons."},
+        {"id": "obs", "name": "Open Build Service home/devel repo", "enable": "sudo zypper addrepo -f {url} {alias} && sudo zypper refresh", "note": "Community builds; not reviewed by openSUSE."},
+        {"id": "vendor-repo", "name": "Vendor RPM repository", "enable": "Add the vendor's .repo file with zypper addrepo, then install by name", "note": "Used for Chrome, VS Code, Docker CE and similar vendor-supplied builds."}
+      ]
+    }
+  ],
+  "post_install_notes": {
+    "fedora": [
+      {"id": "fedora-rpmfusion", "text": "Enable RPM Fusion free and nonfree before installing codecs, Steam or the NVIDIA driver.", "when": "always"},
+      {"id": "fedora-codecs", "text": "For full video playback, swap ffmpeg-free for ffmpeg: sudo dnf swap ffmpeg-free ffmpeg --allowerasing.", "when": "category:video"},
+      {"id": "fedora-nvidia", "text": "NVIDIA driver is packaged as akmod-nvidia in RPM Fusion nonfree; with Secure Boot on, enroll the akmods key first.", "when": "category:game"},
+      {"id": "fedora-selinux", "text": "Fedora uses SELinux; if a downloaded vendor app fails to start, check 'sudo ausearch -m avc -ts recent' before disabling anything.", "when": "always"},
+      {"id": "fedora-flathub", "text": "Fedora's Flatpak remote is filtered; add the full Flathub remote: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo.", "when": "always"}
+    ],
+    "arch": [
+      {"id": "arch-multilib", "text": "Enable the multilib repository in /etc/pacman.conf before installing Steam, Wine or 32-bit games.", "when": "category:game"},
+      {"id": "arch-aur", "text": "Packages marked source 'aur' are community recipes. Install an AUR helper and read each PKGBUILD first.", "when": "always"},
+      {"id": "arch-partial-upgrades", "text": "Never run 'pacman -Sy <pkg>' alone; always upgrade the whole system (pacman -Syu) to avoid partial upgrades.", "when": "always"},
+      {"id": "arch-flatpak", "text": "Install flatpak first (sudo pacman -S flatpak) and add Flathub before using any flatpak mapping.", "when": "always"},
+      {"id": "arch-nvidia", "text": "NVIDIA users: install nvidia-open (or nvidia-dkms for custom kernels) and nvidia-utils; lib32-nvidia-utils for Steam.", "when": "category:game"}
+    ],
+    "debian": [
+      {"id": "debian-nonfree", "text": "Enable contrib, non-free and non-free-firmware in your APT sources for firmware and proprietary packages.", "when": "always"},
+      {"id": "debian-old", "text": "Debian stable ships conservative versions; use Flatpak or backports when you need a newer app.", "when": "always"},
+      {"id": "debian-flatpak", "text": "Install flatpak and add Flathub before using any flatpak mapping: sudo apt-get install flatpak && flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo.", "when": "always"},
+      {"id": "debian-firefox", "text": "Debian provides Firefox ESR as 'firefox-esr' rather than 'firefox'.", "when": "app:firefox"},
+      {"id": "debian-sudo", "text": "Debian's installer may not add your user to sudo; add it with 'su -c \"usermod -aG sudo $USER\"' and log in again.", "when": "always"}
+    ],
+    "ubuntu": [
+      {"id": "ubuntu-snap", "text": "Ubuntu's 'firefox' and 'chromium-browser' apt packages are transitional and install the snap; that is expected.", "when": "category:browser"},
+      {"id": "ubuntu-flatpak", "text": "Install flatpak (sudo apt-get install flatpak) and add Flathub before using any flatpak mapping.", "when": "always"},
+      {"id": "ubuntu-universe", "text": "If a package is 'not found', enable universe/multiverse: sudo add-apt-repository universe multiverse.", "when": "always"},
+      {"id": "ubuntu-restricted", "text": "Install ubuntu-restricted-extras for media codecs and Microsoft fonts.", "when": "category:media"},
+      {"id": "ubuntu-nvidia", "text": "NVIDIA users: use 'ubuntu-drivers install' to pick the right proprietary driver.", "when": "category:game"}
+    ],
+    "opensuse": [
+      {"id": "opensuse-packman", "text": "Add the Packman repository and switch system multimedia packages to it for codecs.", "when": "category:video"},
+      {"id": "opensuse-patterns", "text": "openSUSE groups software in patterns; 'sudo zypper install -t pattern devel_basis' provides a compiler toolchain.", "when": "category:dev"},
+      {"id": "opensuse-flatpak", "text": "Install flatpak (sudo zypper install flatpak) and add Flathub before using any flatpak mapping.", "when": "always"},
+      {"id": "opensuse-snapper", "text": "Tumbleweed and Leap default to Btrfs with snapper snapshots; roll back from the boot menu if an update breaks the system.", "when": "always"},
+      {"id": "opensuse-nvidia", "text": "NVIDIA drivers come from NVIDIA's own repository (zypper addrepo https://download.nvidia.com/opensuse/tumbleweed NVIDIA).", "when": "category:game"}
+    ]
+  }
+}

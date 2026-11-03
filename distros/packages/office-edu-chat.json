@@ -1,0 +1,1304 @@
+{
+ "schema_version": 1,
+ "apps": {
+  "thunderbird": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "thunderbird",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "thunderbird",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "thunderbird",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "thunderbird",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "MozillaThunderbird",
+    "confidence": "high"
+   }
+  },
+  "discord": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.discordapp.Discord",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "discord",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.discordapp.Discord",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "snap",
+    "pkg": "discord",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.discordapp.Discord",
+    "confidence": "high"
+   }
+  },
+  "slack": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.slack.Slack",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "slack-desktop",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.slack.Slack",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "snap",
+    "pkg": "slack",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.slack.Slack",
+    "confidence": "high"
+   }
+  },
+  "zoom": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "us.zoom.Zoom",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "zoom",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "us.zoom.Zoom",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "snap",
+    "pkg": "zoom-client",
+    "confidence": "low"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "us.zoom.Zoom",
+    "confidence": "high"
+   }
+  },
+  "telegram": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "telegram-desktop",
+    "confidence": "high",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "telegram-desktop",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "telegram-desktop",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "telegram-desktop",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "telegram-desktop",
+    "confidence": "high"
+   }
+  },
+  "signal": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.signal.Signal",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "signal-desktop",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.signal.Signal",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.signal.Signal",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.signal.Signal",
+    "confidence": "high"
+   }
+  },
+  "element": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "im.riot.Riot",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "element-desktop",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "im.riot.Riot",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "im.riot.Riot",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "im.riot.Riot",
+    "confidence": "high"
+   }
+  },
+  "mumble": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "mumble",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mumble",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mumble",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mumble",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "mumble",
+    "confidence": "high"
+   }
+  },
+  "mattermost": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.mattermost.Desktop",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "mattermost-desktop",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.mattermost.Desktop",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.mattermost.Desktop",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.mattermost.Desktop",
+    "confidence": "high"
+   }
+  },
+  "rocket-chat": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "chat.rocket.RocketChat",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "rocketchat-desktop",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "chat.rocket.RocketChat",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "chat.rocket.RocketChat",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "chat.rocket.RocketChat",
+    "confidence": "high"
+   }
+  },
+  "session": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "network.loki.Session",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "session-desktop-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "network.loki.Session",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "network.loki.Session",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "network.loki.Session",
+    "confidence": "high"
+   }
+  },
+  "jitsi-meet": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.jitsi.jitsi-meet",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "jitsi-meet-desktop-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.jitsi.jitsi-meet",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.jitsi.jitsi-meet",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.jitsi.jitsi-meet",
+    "confidence": "high"
+   }
+  },
+  "ferdium": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.ferdium.Ferdium",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "ferdium-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.ferdium.Ferdium",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.ferdium.Ferdium",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.ferdium.Ferdium",
+    "confidence": "high"
+   }
+  },
+  "vesktop": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "dev.vencord.Vesktop",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "vesktop-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "dev.vencord.Vesktop",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "dev.vencord.Vesktop",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "dev.vencord.Vesktop",
+    "confidence": "high"
+   }
+  },
+  "onlyoffice": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.onlyoffice.desktopeditors",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "onlyoffice-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.onlyoffice.desktopeditors",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.onlyoffice.desktopeditors",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.onlyoffice.desktopeditors",
+    "confidence": "high"
+   }
+  },
+  "wps-office": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.wps.Office",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "wps-office",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.wps.Office",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.wps.Office",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.wps.Office",
+    "confidence": "high"
+   }
+  },
+  "joplin": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "net.cozic.joplin_desktop",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "joplin-desktop",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "net.cozic.joplin_desktop",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "net.cozic.joplin_desktop",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "net.cozic.joplin_desktop",
+    "confidence": "high"
+   }
+  },
+  "logseq": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.logseq.Logseq",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "logseq-desktop-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.logseq.Logseq",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.logseq.Logseq",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.logseq.Logseq",
+    "confidence": "high"
+   }
+  },
+  "standard-notes": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.standardnotes.standardnotes",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "standard-notes-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.standardnotes.standardnotes",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.standardnotes.standardnotes",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.standardnotes.standardnotes",
+    "confidence": "high"
+   }
+  },
+  "zotero": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.zotero.Zotero",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "zotero-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.zotero.Zotero",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.zotero.Zotero",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.zotero.Zotero",
+    "confidence": "high"
+   }
+  },
+  "anki": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "net.ankiweb.Anki",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "anki-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "net.ankiweb.Anki",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "net.ankiweb.Anki",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "net.ankiweb.Anki",
+    "confidence": "high"
+   }
+  },
+  "drawio": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.jgraph.drawio.desktop",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "drawio-desktop-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.jgraph.drawio.desktop",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.jgraph.drawio.desktop",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.jgraph.drawio.desktop",
+    "confidence": "high"
+   }
+  },
+  "simplenote": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.simplenote.Simplenote",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "simplenote-electron-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.simplenote.Simplenote",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.simplenote.Simplenote",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.simplenote.Simplenote",
+    "confidence": "high"
+   }
+  },
+  "anytype": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "io.anytype.anytype",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "anytype-bin",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "io.anytype.anytype",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "io.anytype.anytype",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "io.anytype.anytype",
+    "confidence": "high"
+   }
+  },
+  "libreoffice": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "libreoffice",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "libreoffice-fresh",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "libreoffice",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "libreoffice",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "libreoffice",
+    "confidence": "high"
+   }
+  },
+  "obsidian": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "md.obsidian.Obsidian",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "obsidian",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "md.obsidian.Obsidian",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "md.obsidian.Obsidian",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "md.obsidian.Obsidian",
+    "confidence": "high"
+   }
+  },
+  "proton-mail-bridge": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "ch.protonmail.protonmail-bridge",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "protonmail-bridge",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "ch.protonmail.protonmail-bridge",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "ch.protonmail.protonmail-bridge",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "ch.protonmail.protonmail-bridge",
+    "confidence": "high"
+   }
+  },
+  "calibre": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "calibre",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "calibre",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "calibre",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "calibre",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "calibre",
+    "confidence": "high"
+   }
+  },
+  "texmaker": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "texmaker",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "texmaker",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "texmaker",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "texmaker",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "texmaker",
+    "confidence": "medium"
+   }
+  },
+  "texstudio": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "texstudio",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "texstudio",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "texstudio",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "texstudio",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "texstudio",
+    "confidence": "high"
+   }
+  },
+  "xournalpp": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "xournalpp",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "xournalpp",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "xournalpp",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "xournalpp",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "xournalpp",
+    "confidence": "high"
+   }
+  },
+  "zim-wiki": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "zim",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "zim",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "zim",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "zim",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "zim",
+    "confidence": "high"
+   }
+  },
+  "trilium": {
+   "fedora": {
+    "source": "download",
+    "url": "https://github.com/TriliumNext/Trilium/releases",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "triliumnext-bin",
+    "confidence": "low"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://github.com/TriliumNext/Trilium/releases",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://github.com/TriliumNext/Trilium/releases",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://github.com/TriliumNext/Trilium/releases",
+    "confidence": "medium"
+   }
+  },
+  "freeoffice": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.freeoffice.com/en/download",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "freeoffice",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.freeoffice.com/en/download",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.freeoffice.com/en/download",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.freeoffice.com/en/download",
+    "confidence": "medium"
+   }
+  },
+  "planmaker-office": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.softmaker.com/en/softmaker-office",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://www.softmaker.com/en/softmaker-office",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.softmaker.com/en/softmaker-office",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.softmaker.com/en/softmaker-office",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.softmaker.com/en/softmaker-office",
+    "confidence": "medium"
+   }
+  },
+  "geogebra": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.geogebra.org/download",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "geogebra",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.geogebra.org/download",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.geogebra.org/download",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.geogebra.org/download",
+    "confidence": "medium"
+   }
+  },
+  "stellarium": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "stellarium",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "stellarium",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "stellarium",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "stellarium",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "stellarium",
+    "confidence": "high"
+   }
+  },
+  "scratch-desktop": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "edu.mit.Scratch",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "edu.mit.Scratch",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "edu.mit.Scratch",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "edu.mit.Scratch",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "edu.mit.Scratch",
+    "confidence": "high"
+   }
+  },
+  "gcompris": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gcompris-qt",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "gcompris-qt",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gcompris-qt",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gcompris-qt",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gcompris-qt",
+    "confidence": "medium"
+   }
+  },
+  "octave": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "octave",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "octave",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "octave",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "octave",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "octave",
+    "confidence": "high"
+   }
+  },
+  "matlab": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.mathworks.com/downloads/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://www.mathworks.com/downloads/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.mathworks.com/downloads/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.mathworks.com/downloads/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.mathworks.com/downloads/",
+    "confidence": "medium"
+   }
+  },
+  "mathematica-native": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.wolfram.com/mathematica/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://www.wolfram.com/mathematica/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.wolfram.com/mathematica/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.wolfram.com/mathematica/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.wolfram.com/mathematica/",
+    "confidence": "medium"
+   }
+  },
+  "maple": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.maplesoft.com/products/maple/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://www.maplesoft.com/products/maple/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.maplesoft.com/products/maple/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.maplesoft.com/products/maple/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.maplesoft.com/products/maple/",
+    "confidence": "medium"
+   }
+  },
+  "stata": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.stata.com/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://www.stata.com/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.stata.com/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.stata.com/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.stata.com/",
+    "confidence": "medium"
+   }
+  },
+  "tutanota": {
+   "fedora": {
+    "source": "download",
+    "url": "https://tuta.com/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://tuta.com/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://tuta.com/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://tuta.com/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://tuta.com/",
+    "confidence": "medium"
+   }
+  },
+  "jasp": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.jaspstats.JASP",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "org.jaspstats.JASP",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.jaspstats.JASP",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.jaspstats.JASP",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.jaspstats.JASP",
+    "confidence": "high"
+   }
+  },
+  "qgis": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "qgis",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "qgis",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "qgis",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "qgis",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "qgis",
+    "confidence": "high"
+   }
+  },
+  "fritzing": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.fritzing.Fritzing",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "fritzing",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "fritzing",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "fritzing",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.fritzing.Fritzing",
+    "confidence": "high"
+   }
+  }
+ }
+}

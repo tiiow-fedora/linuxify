@@ -1,0 +1,1048 @@
+{
+ "schema_version": 1,
+ "apps": {
+  "processing": {
+   "fedora": {
+    "source": "download",
+    "url": "https://processing.org/download",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "processing",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://processing.org/download",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://processing.org/download",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://processing.org/download",
+    "confidence": "medium"
+   }
+  },
+  "pycharm-edu": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.jetbrains.com/pycharm-edu/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://www.jetbrains.com/pycharm-edu/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.jetbrains.com/pycharm-edu/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.jetbrains.com/pycharm-edu/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.jetbrains.com/pycharm-edu/",
+    "confidence": "medium"
+   }
+  },
+  "python": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "python3",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "python",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "python3",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "python3",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "python3",
+    "confidence": "high"
+   }
+  },
+  "qemu": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "qemu-system-x86",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "qemu-desktop",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "qemu-system-x86",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "qemu-system-x86",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "qemu-x86",
+    "confidence": "medium"
+   }
+  },
+  "qt-creator": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "qt-creator",
+    "confidence": "medium",
+    "catalog_override": "Fedora names the package qt-creator, not the Debian qtcreator."
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "qtcreator",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "qtcreator",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "qtcreator",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "qt6-creator",
+    "confidence": "low"
+   }
+  },
+  "r-lang": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "R",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "r",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "r-base",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "r-base",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "R-base",
+    "confidence": "medium"
+   }
+  },
+  "rabbitmq": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "rabbitmq-server",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "rabbitmq",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "rabbitmq-server",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "rabbitmq-server",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "rabbitmq-server",
+    "confidence": "medium"
+   }
+  },
+  "redis": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "redis",
+    "confidence": "high",
+    "catalog_override": "Fedora and openSUSE name the package redis, not Debian's redis-server."
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "redis",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "redis-server",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "redis-server",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "redis",
+    "confidence": "high"
+   }
+  },
+  "rstudio-desktop": {
+   "fedora": {
+    "source": "download",
+    "url": "https://posit.co/download/rstudio-desktop/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "rstudio-desktop-bin",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://posit.co/download/rstudio-desktop/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://posit.co/download/rstudio-desktop/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://posit.co/download/rstudio-desktop/",
+    "confidence": "medium"
+   }
+  },
+  "ruby": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "ruby",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "ruby",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "ruby",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "ruby",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "ruby",
+    "confidence": "high"
+   }
+  },
+  "rustup": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "rustup",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "rustup",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "rustup",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "rustup",
+    "confidence": "low"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "rustup",
+    "confidence": "medium"
+   }
+  },
+  "scala": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.scala-lang.org/download/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "scala",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "scala",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "scala",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.scala-lang.org/download/",
+    "confidence": "medium"
+   }
+  },
+  "securecrt": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.vandyke.com/download/securecrt/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://www.vandyke.com/download/securecrt/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.vandyke.com/download/securecrt/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.vandyke.com/download/securecrt/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.vandyke.com/download/securecrt/",
+    "confidence": "medium"
+   }
+  },
+  "sqlite": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "sqlite",
+    "confidence": "high",
+    "catalog_override": "Fedora names the CLI package sqlite, not Debian's sqlite3."
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "sqlite",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "sqlite3",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "sqlite3",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "sqlite3",
+    "confidence": "high"
+   }
+  },
+  "sqlitebrowser": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "sqlitebrowser",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "sqlitebrowser",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "sqlitebrowser",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "sqlitebrowser",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "sqlitebrowser",
+    "confidence": "high"
+   }
+  },
+  "ssh-win": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "openssh-clients",
+    "confidence": "high",
+    "catalog_override": "Fedora names the client package openssh-clients."
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "openssh",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "openssh-client",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "openssh-client",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "openssh-clients",
+    "confidence": "high"
+   }
+  },
+  "starship": {
+   "fedora": {
+    "source": "copr",
+    "pkg": "starship",
+    "repo": "atim/starship",
+    "confidence": "medium",
+    "needs": [
+     "copr"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "starship",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "starship",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://starship.rs/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "starship",
+    "confidence": "medium"
+   }
+  },
+  "strawberry-perl": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "perl",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "perl",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "perl",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "perl",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "perl",
+    "confidence": "high"
+   }
+  },
+  "sublime-merge": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.sublimemerge.App",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "sublime-merge",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.sublimemerge.App",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.sublimemerge.App",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.sublimemerge.App",
+    "confidence": "high"
+   }
+  },
+  "sublime-text": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.sublimehq.SublimeText",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "sublime-text-4",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.sublimehq.SublimeText",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.sublimehq.SublimeText",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.sublimehq.SublimeText",
+    "confidence": "high"
+   }
+  },
+  "swagger-editor": {
+   "fedora": {
+    "source": "download",
+    "url": "https://swagger.io/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://swagger.io/",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://swagger.io/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://swagger.io/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://swagger.io/",
+    "confidence": "medium"
+   }
+  },
+  "swi-prolog": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "pl",
+    "confidence": "medium",
+    "catalog_override": "Fedora packages SWI-Prolog as pl."
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "swi-prolog",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "swi-prolog",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "swi-prolog",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "swi-prolog",
+    "confidence": "high"
+   }
+  },
+  "tabby-terminal": {
+   "fedora": {
+    "source": "download",
+    "url": "https://tabby.sh/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "tabby-bin",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://tabby.sh/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://tabby.sh/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://tabby.sh/",
+    "confidence": "medium"
+   }
+  },
+  "terraform": {
+   "fedora": {
+    "source": "vendor-repo",
+    "pkg": "terraform",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "terraform-bin",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "terraform",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "terraform",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://developer.hashicorp.com/terraform/install",
+    "confidence": "medium"
+   }
+  },
+  "thonny": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "thonny",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "thonny",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "thonny",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "thonny",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.thonny.Thonny",
+    "confidence": "high"
+   }
+  },
+  "tiled": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "tiled",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "tiled",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "tiled",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "tiled",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "tiled",
+    "confidence": "medium"
+   }
+  },
+  "unreal-engine": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.unrealengine.com/linux",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://www.unrealengine.com/linux",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.unrealengine.com/linux",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.unrealengine.com/linux",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.unrealengine.com/linux",
+    "confidence": "medium"
+   }
+  },
+  "vagrant-alt": {
+   "fedora": {
+    "source": "vendor-repo",
+    "pkg": "packer",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "packer-bin",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "packer",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "packer",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://developer.hashicorp.com/packer/install",
+    "confidence": "medium"
+   }
+  },
+  "vim": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "vim-enhanced",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "vim",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "vim",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "vim",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "vim",
+    "confidence": "high"
+   }
+  },
+  "virt-manager": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "virt-manager",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "virt-manager",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "virt-manager",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "virt-manager",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "virt-manager",
+    "confidence": "high"
+   }
+  },
+  "vscode": {
+   "fedora": {
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "high",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "visual-studio-code-bin",
+    "confidence": "high",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "high",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "high",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "vendor-repo",
+    "pkg": "code",
+    "confidence": "high",
+    "needs": [
+     "vendor-repo"
+    ]
+   }
+  },
+  "vscodium": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.vscodium.codium",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "vscodium-bin",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.vscodium.codium",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.vscodium.codium",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.vscodium.codium",
+    "confidence": "high"
+   }
+  },
+  "wezterm": {
+   "fedora": {
+    "source": "copr",
+    "pkg": "wezterm",
+    "repo": "wezfurlong/wezterm-nightly",
+    "confidence": "medium",
+    "needs": [
+     "copr"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "wezterm",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.wezfurlong.wezterm",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.wezfurlong.wezterm",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.wezfurlong.wezterm",
+    "confidence": "high"
+   }
+  },
+  "yarn-pkg": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "yarnpkg",
+    "confidence": "low",
+    "catalog_override": "Fedora may ship Yarn under yarnpkg; unverified."
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "yarn",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "yarnpkg",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "yarnpkg",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://yarnpkg.com/getting-started/install",
+    "confidence": "medium"
+   }
+  },
+  "zed": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "dev.zed.Zed",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "zed",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "dev.zed.Zed",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "dev.zed.Zed",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "dev.zed.Zed",
+    "confidence": "high"
+   }
+  },
+  "zig": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "zig",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "zig",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "zig",
+    "confidence": "low"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://ziglang.org/download/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "zig",
+    "confidence": "medium"
+   }
+  }
+ }
+}
