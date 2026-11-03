@@ -60,8 +60,8 @@ pub fn fix_load_option(opt: &[u8], parts: &[GptEntry]) -> Option<Fixed> {
         if len < 4 || i + len > end || (kind == 0x7f && sub == 0xff) {
             break;
         }
-        // Media / hard drive node, GPT signature.
-        if kind == 0x04 && sub == 0x01 && len == 42 && opt[i + 41] == 0x02 {
+        // Media / hard drive node, partition format GPT (0x02) with a GUID signature (0x02).
+        if kind == 0x04 && sub == 0x01 && len == 42 && opt[i + 40] == 0x02 && opt[i + 41] == 0x02 {
             let number = u32::from_le_bytes(opt[i + 4..i + 8].try_into().ok()?);
             if let Some(&(slot, _)) = parts.iter().find(|(_, g)| g[..] == opt[i + 24..i + 40]) {
                 if slot != number {
@@ -93,7 +93,8 @@ pub fn refresh_boot_entries(disks: &[u32], write: bool) -> Result<Vec<String>, S
         let Some((opt, attrs)) = sys::get_var(&name) else { continue };
         if let Some((fixed, changes)) = fix_load_option(&opt, &parts) {
             if write {
-                sys::set_var(&name, &fixed, attrs)?;
+                // Report what was already rewritten if a later write fails.
+                sys::set_var(&name, &fixed, attrs).map_err(|e| format!("{e} (already fixed: {})", if done.is_empty() { "nothing".to_string() } else { done.join("; ") }))?;
             }
             for (old, new) in changes {
                 done.push(format!("{name} \"{}\": partition {old} -> {new}", load_option_description(&opt)));
@@ -234,6 +235,12 @@ mod tests {
         assert_eq!(fix_load_option(&fixed, &parts), None, "already right");
         assert_eq!(fix_load_option(&limine(7, b""), &[(5, [9u8; 16])]), None, "other disk's partition: untouched");
         assert_eq!(fix_load_option(&limine(7, b"")[..20], &parts), None, "truncated: untouched");
+        // An MBR-format HD node (format 0x01) is never rewritten, even if its bytes happen to match.
+        let mut mbr = limine(7, b"");
+        let at = mbr.iter().position(|&b| b == 0x04).unwrap();
+        let hd = mbr.windows(4).position(|w| w == [0x04, 0x01, 42, 0]).unwrap_or(at);
+        mbr[hd + 40] = 0x01;
+        assert_eq!(fix_load_option(&mbr, &parts), None, "non-GPT node: untouched");
     }
 
     #[test]

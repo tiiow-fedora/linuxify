@@ -92,13 +92,39 @@ bash remove-windows.sh       # OPTIONAL, check only: what removing Windows would
 `remove-windows.sh --really` deletes Windows only after re-checking every restored file against
 the checksums taken on Windows, and only after you type the confirmation phrase.
 
+If Linux was installed after the installer partitions and no longer starts after `--undo` (the
+firmware boot entry kept an old partition number), `linuxify install --fix-boot-entries --execute`
+rewrites the stale numbers (without `--execute` it only lists them).
+
+### Safety
+
+- Everything that changes a disk is a **dry run by default**; it needs `--execute`, an administrator
+  shell and a typed confirmation phrase.
+- `--undo` re-scans the disk first: it only deletes partitions found at the recorded offset and size,
+  refuses to touch anything that looks like a Windows system/boot partition or C:, and grows C: by
+  volume letter, not by a saved partition number.
+- Creating `%LOCALAPPDATA%\Linuxify\no-install.lock` makes this PC refuse every disk change.
+- Before a first run on real hardware, work through [docs/LAPTOP-TEST-CHECKLIST.md](docs/LAPTOP-TEST-CHECKLIST.md).
+
 ### Website quiz
 
 `linuxify choose --web` shows a distro questionnaire from a website in its own window (needs a build
 with `--features webview` and a quiz address). See `docs/web-quiz.md`.
 
+## Development
+
+```
+cargo build
+cargo test          # unit tests + script tests; never touches a disk
+cargo clippy --all-targets
+```
+
+Disk-changing code paths are tested only through unit tests (pure functions that build the
+diskpart/bcdedit scripts) and in VMs, never on a development machine.
+
 ## Files
 
+- `docs/LAPTOP-TEST-CHECKLIST.md`: step-by-step test plan for the first real-hardware run.
 - `PROGRESS.md`: what each stage does, what was verified, and what isn't tested.
 - `DECISIONS.md`: design choices and why.
 - `data/app_map.json`: about 960 Windows programs mapped to Linux equivalents (format in `data/SCHEMA.md`).

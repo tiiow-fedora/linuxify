@@ -285,10 +285,8 @@ fn count_files(root: &Path) -> (u64, u64) {
 pub fn undo(state: &InstallState, dry_run: bool) -> Result<Vec<String>, String> {
     let p = &state.plan;
     let hw = fresh_hw()?;
-    let mut parts: Vec<u32> = install::find_partition_at(&hw, p.disk, p.installer_offset, p.fat_size()).into_iter().collect();
-    if p.data_size > 0 {
-        parts.extend(install::find_partition_at(&hw, p.disk, p.data_offset(), p.data_size));
-    }
+    // Verified before anything is changed (bcdedit included).
+    let (parts, _c_now) = install::undo_targets(&hw, p)?;
     let mut done = Vec::new();
     if let Some(g) = &state.bcd_guid {
         done.push(format!("bcdedit /delete {g}"));
@@ -296,7 +294,7 @@ pub fn undo(state: &InstallState, dry_run: bool) -> Result<Vec<String>, String> 
             let _ = bcdedit(&["/delete".into(), g.clone()]);
         }
     }
-    let script = install::diskpart_undo(p.disk, &parts, p.c_partition);
+    let script = install::diskpart_undo(p.disk, &parts);
     done.push(format!("diskpart:\n{}", script.replace("\r\n", "\n    ")));
     if !dry_run {
         run_diskpart(&script, "undo.txt")?;
