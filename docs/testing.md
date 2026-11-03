@@ -74,3 +74,8 @@ Then add a plain unit test with the minimised input next to the parser, fix the 
 ### Parsers that are not fuzzed
 
 `restore.sh` and `remove-windows.sh` are shell, not parsers; they have sandboxed tests in `tests/restore_sh.rs` and `tests/remove_windows_sh.rs`. Windows-only readers (registry, PowerShell calls) can only be exercised through the pure functions they feed, which are covered above.
+
+## Findings so far
+
+- **Fixed:** `iso::parse_checksums` accepted path-like file names (`../x.iso`, `dir/x`) in the BSD `SHA256 (name) = hash` form; the GNU form already rejected them. The name later becomes a file name under the ISO folder. Found by `checksums_and_urls` after a few minutes. Regression: unit test `bsd_checksum_names_must_not_be_paths` and seed `fuzz/seeds/checksums_and_urls/regression-*`. Not exploitable without control of an official checksum host (checksum URLs are pinned to `allowed_hosts`), so this was defence in depth.
+- All other targets ran without a crash or assertion failure for 90 s + 240 s each (a short run, not proof of absence).

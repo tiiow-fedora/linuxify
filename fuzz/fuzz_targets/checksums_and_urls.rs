@@ -8,7 +8,7 @@ fuzz_target!(|data: &[u8]| {
     for (name, hash) in parse_checksums(&text) {
         assert_eq!(hash.len(), 64);
         assert!(hash.chars().all(|c| c.is_ascii_hexdigit() && !c.is_ascii_uppercase()));
-        assert!(!name.is_empty() && !name.contains('/') && !name.contains('\\') || name.contains(')'));
+        assert!(!name.is_empty() && !name.contains('/') && !name.contains('\\'), "file name is a path");
     }
     if let Some(h) = host_of(&text) {
         assert!(text.starts_with("https://"));

@@ -80,7 +80,7 @@ proptest! {
         for (name, hash) in parse_checksums(&s) {
             prop_assert_eq!(hash.len(), 64);
             prop_assert!(hash.chars().all(|c| c.is_ascii_hexdigit() && !c.is_ascii_uppercase()));
-            prop_assert!(!name.is_empty());
+            prop_assert!(!name.is_empty() && !name.contains('/') && !name.contains('\\'));
         }
     }
 
