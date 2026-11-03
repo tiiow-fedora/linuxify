@@ -21,8 +21,11 @@ jobs:
         run: |
           $v = (Select-String -Path Cargo.toml -Pattern '^version = "(.+)"').Matches[0].Groups[1].Value
           if ("v$v" -ne $env:GITHUB_REF_NAME) { throw "tag $env:GITHUB_REF_NAME doesn't match Cargo.toml version $v" }
+      - uses: Swatinem/rust-cache@v2
       - name: Test
         run: cargo test --locked
+      - name: Clippy
+        run: cargo clippy --locked --all-targets -- -D warnings
       - name: Build
         run: cargo build --locked --release
       - name: Package
