@@ -47,6 +47,27 @@ enum Command {
         /// Open the result page in the browser when done.
         #[arg(long)]
         open: bool,
+        /// Take the quiz on the website in a window (needs a quiz address, see `quiz-spec`).
+        #[arg(long)]
+        web: bool,
+        /// Address of the website quiz (default: LINUXIFY_QUIZ_URL or quiz.json).
+        #[arg(long)]
+        quiz_url: Option<String>,
+        /// Read a saved website-quiz result (JSON file) instead of asking.
+        #[arg(long)]
+        quiz_result: Option<PathBuf>,
+    },
+    /// Print the questions and answer keys a website quiz can send back (JSON).
+    QuizSpec,
+    /// Internal: the window that shows the website quiz.
+    #[command(hide = true)]
+    QuizWindow {
+        #[arg(long)]
+        url: Option<String>,
+        #[arg(long)]
+        file: Option<PathBuf>,
+        #[arg(long)]
+        out: PathBuf,
     },
     /// Try a distro safely in a virtual machine (downloads and verifies the official ISO).
     Try {
@@ -129,7 +150,12 @@ fn main() -> ExitCode {
     let result = match command {
         Command::Gui { page } => return run_gui(cli.data_dir, page),
         Command::Scan { no_winget, open } => run_scan(cli.data_dir, !no_winget, open),
-        Command::Choose { answers, no_scan, open } => run_choose(cli.data_dir, answers, no_scan, open),
+        Command::Choose { answers, no_scan, open, web, quiz_url, quiz_result } => run_choose(cli.data_dir, ChooseOpts { answers, no_scan, open, web, quiz_url, quiz_result }),
+        Command::QuizSpec => {
+            println!("{}", serde_json::to_string_pretty(&linuxify::webquiz::spec_json()).unwrap_or_default());
+            Ok(())
+        }
+        Command::QuizWindow { url, file, out } => run_quiz_window(url, file, out),
         Command::Try { distro, vm, disk, iso_file, dry_run, reverify, remove, list, download_only } => {
             run_try(cli.data_dir, TryOpts { distro, vm, disk, iso_file, dry_run, reverify, remove, list, download_only })
         }
@@ -246,8 +272,69 @@ fn ask_questions() -> Result<Option<Answers>, String> {
     Ok(Some(answers))
 }
 
-fn run_choose(data_dir: Option<PathBuf>, answers_file: Option<PathBuf>, no_scan: bool, open: bool) -> Result<(), String> {
+struct ChooseOpts {
+    answers: Option<PathBuf>,
+    no_scan: bool,
+    open: bool,
+    web: bool,
+    quiz_url: Option<String>,
+    quiz_result: Option<PathBuf>,
+}
+
+#[cfg(feature = "webview")]
+fn run_quiz_window(url: Option<String>, file: Option<PathBuf>, out: PathBuf) -> Result<(), String> {
+    use linuxify::webquiz::{check_url, QuizSource};
+    let source = match (url, file) {
+        (Some(u), None) => QuizSource::Url(check_url(&u)?),
+        (None, Some(f)) => QuizSource::File(f),
+        _ => return Err("give either --url or --file".into()),
+    };
+    linuxify::webview::run(source, &out).map(|_| ())
+}
+
+#[cfg(not(feature = "webview"))]
+fn run_quiz_window(_url: Option<String>, _file: Option<PathBuf>, _out: PathBuf) -> Result<(), String> {
+    Err("this build of Linuxify has no web view".into())
+}
+
+fn run_choose(data_dir: Option<PathBuf>, o: ChooseOpts) -> Result<(), String> {
+    let ChooseOpts { answers: answers_file, no_scan, open, web, quiz_url, quiz_result } = o;
     let (list, _) = DistroList::load(data_dir.as_deref())?;
+
+    // A website quiz: in a window (--web) or as a saved result (--quiz-result).
+    let web_result = if let Some(p) = &quiz_result {
+        let t = std::fs::read_to_string(p).map_err(|e| format!("could not read {}: {e}", p.display()))?;
+        Some(linuxify::webquiz::parse_result(&t, Some(&list))?)
+    } else if web {
+        let src = flow::quiz_source(quiz_url.as_deref(), data_dir.as_deref())?
+            .ok_or("no website quiz is set up: pass --quiz-url, set LINUXIFY_QUIZ_URL, or create quiz.json (see `linuxify quiz-spec` and docs/web-quiz.md)")?;
+        match flow::run_web_quiz(&src, &list)? {
+            Some(r) => Some(r),
+            None => {
+                println!("The quiz window was closed before the quiz finished; nothing saved.");
+                return Ok(());
+            }
+        }
+    } else {
+        None
+    };
+    let mut answers_file = answers_file;
+    let mut web_answers = None;
+    match web_result {
+        Some(linuxify::webquiz::QuizResult::Distro(id)) => {
+            let d = flow::find_distro(&list, &id)?;
+            let p = flow::save_web_pick(&id)?;
+            println!("The website quiz picked {} ({}).", d.name, d.homepage);
+            println!("Saved: {} (`linuxify try` and `linuxify install` now default to it)", p.display());
+            println!("Run `linuxify choose` and answer the questions here if you also want Linuxify's own ranking.");
+            return Ok(());
+        }
+        Some(linuxify::webquiz::QuizResult::Answers(a)) => {
+            web_answers = Some(a);
+            answers_file = None;
+        }
+        None => {}
+    }
 
     let scan_path = appdirs::reports_dir()?.join("latest").join("report.json");
     let scan_report: Option<scan::ScanReport> = if no_scan {
@@ -267,6 +354,7 @@ fn run_choose(data_dir: Option<PathBuf>, answers_file: Option<PathBuf>, no_scan:
     let hints = scan_report.as_ref().map(chooser::hints_from_scan);
 
     let answers = match answers_file {
+        _ if web_answers.is_some() => web_answers.take().unwrap_or_default(),
         Some(p) => {
             let t = std::fs::read_to_string(&p).map_err(|e| format!("could not read {}: {e}", p.display()))?;
             let v: serde_json::Value = serde_json::from_str(&t).map_err(|e| format!("{} is not valid JSON: {e}", p.display()))?;

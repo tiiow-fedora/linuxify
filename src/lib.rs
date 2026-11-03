@@ -17,3 +17,6 @@ pub mod report;
 pub mod restore;
 pub mod scan;
 pub mod vm;
+#[cfg(feature = "webview")]
+pub mod webview;
+pub mod webquiz;

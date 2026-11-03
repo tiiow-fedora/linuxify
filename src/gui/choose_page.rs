@@ -4,7 +4,9 @@ use super::style::*;
 use super::{next_button, open_path, Page, Shared};
 use crate::chooser::{self, Answers, Recommendation, QUESTIONS};
 use crate::{appdirs, flow};
+use crate::webquiz::{QuizResult, QuizSource};
 use eframe::egui::{self, CornerRadius, RichText, Sense, Stroke, Vec2};
+use std::sync::mpsc;
 
 pub struct ChoosePage {
     answers: Answers,
@@ -12,6 +14,12 @@ pub struct ChoosePage {
     question: Option<usize>,
     result: Option<Recommendation>,
     error: Option<String>,
+    /// The website quiz, when one is set up and this build can show it.
+    web_source: Option<QuizSource>,
+    /// A website quiz window that is open right now (its result arrives here).
+    web_job: Option<mpsc::Receiver<Result<Option<QuizResult>, String>>>,
+    /// A distro the website quiz picked directly (no answers to rank).
+    web_pick: Option<String>,
 }
 
 impl ChoosePage {
@@ -22,7 +30,8 @@ impl ChoosePage {
             (Some(a), Ok(list)) => Some(flow::rank_with_scan(list, a, sh.scan.as_ref())),
             _ => None,
         };
-        ChoosePage { question: if result.is_some() { None } else { Some(0) }, answers: saved.unwrap_or_default(), result, error: None }
+        let web_source = if flow::web_quiz_supported() { flow::quiz_source(None, sh.data_dir.as_deref()).ok().flatten() } else { None };
+        ChoosePage { question: if result.is_some() { None } else { Some(0) }, answers: saved.unwrap_or_default(), result, error: None, web_source, web_job: None, web_pick: None }
     }
 
     pub fn ui(&mut self, ui: &mut egui::Ui, _ctx: &egui::Context, sh: &mut Shared) -> Option<Page> {
@@ -32,7 +41,13 @@ impl ChoosePage {
             return None;
         }
         if let Some(e) = &self.error {
-            error_box(ui, "Couldn't save the result", e);
+            error_box(ui, "The quiz result couldn't be used", e);
+            ui.add_space(8.0);
+        }
+        self.poll_web(ui.ctx(), sh);
+        if let Some(id) = &self.web_pick {
+            let name = sh.distros.as_ref().ok().and_then(|l| l.distros.iter().find(|d| &d.id == id)).map_or(id.clone(), |d| d.name.clone());
+            tinted(ui, ACCENT, |ui| muted(ui, &format!("The website quiz picked {name}. The next steps will use it. Answer the questions here too if you also want Linuxify's own ranking.")));
             ui.add_space(8.0);
         }
         match self.question {
@@ -49,6 +64,9 @@ impl ChoosePage {
         if sh.scan.is_none() && i == 0 {
             tinted(ui, BLUE, |ui| muted(ui, "No scan yet, so the result uses your answers only. Scanning first (step 1) gives a better match."));
             ui.add_space(8.0);
+        }
+        if i == 0 {
+            self.web_box(ui, sh);
         }
         ui.horizontal(|ui| {
             ui.label(RichText::new(format!("Question {} of {}", i + 1, QUESTIONS.len())).color(MUTED));
@@ -89,6 +107,11 @@ impl ChoosePage {
             self.question = Some(i + 1);
             return;
         }
+        self.finish(sh);
+    }
+
+    /// Ranks the current answers, saves the result and shows it.
+    fn finish(&mut self, sh: &mut Shared) {
         let Ok(list) = &sh.distros else { return };
         if let Err(e) = chooser::validate_answers(&self.answers) {
             self.error = Some(e);
@@ -99,6 +122,57 @@ impl ChoosePage {
         self.result = Some(rec);
         self.question = None;
         sh.refresh();
+    }
+
+    fn web_box(&mut self, ui: &mut egui::Ui, sh: &Shared) {
+        let Some(src) = self.web_source.clone() else { return };
+        tinted(ui, BLUE, |ui| {
+            if self.web_job.is_some() {
+                muted(ui, "The website quiz is open in its own window. Finish it there and the result comes back here.");
+            } else {
+                muted(ui, "Prefer the website version of the quiz? It opens in its own window.");
+                if secondary(ui, "Take the quiz on the website", sh.distros.is_ok()).clicked() {
+                    if let Ok(list) = sh.distros.clone() {
+                        let (tx, rx) = mpsc::channel();
+                        let ctx = ui.ctx().clone();
+                        std::thread::spawn(move || {
+                            let _ = tx.send(flow::run_web_quiz(&src, &list));
+                            ctx.request_repaint();
+                        });
+                        self.web_job = Some(rx);
+                        self.error = None;
+                    }
+                }
+            }
+        });
+        ui.add_space(8.0);
+    }
+
+    fn poll_web(&mut self, ctx: &egui::Context, sh: &mut Shared) {
+        let Some(rx) = &self.web_job else { return };
+        match rx.try_recv() {
+            Ok(res) => {
+                self.web_job = None;
+                match res {
+                    Ok(Some(QuizResult::Answers(a))) => {
+                        self.answers = a;
+                        self.web_pick = None;
+                        self.finish(sh);
+                    }
+                    Ok(Some(QuizResult::Distro(id))) => match flow::save_web_pick(&id) {
+                        Ok(_) => {
+                            self.web_pick = Some(id);
+                            sh.refresh();
+                        }
+                        Err(e) => self.error = Some(e),
+                    },
+                    Ok(None) => {}
+                    Err(e) => self.error = Some(e),
+                }
+            }
+            Err(mpsc::TryRecvError::Empty) => ctx.request_repaint_after(std::time::Duration::from_millis(400)),
+            Err(mpsc::TryRecvError::Disconnected) => self.web_job = None,
+        }
     }
 
     fn results(&mut self, ui: &mut egui::Ui, sh: &Shared) -> Option<Page> {

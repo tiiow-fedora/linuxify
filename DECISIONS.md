@@ -383,3 +383,30 @@ Short record of choices made while building Linuxify, and why.
   install itself reports through the phase it saves to `install-state.json`.
 - **Admin.** The window doesn't ask for admin up front: steps 1–4 don't need it. When the install
   plan needs it, "Restart as administrator" relaunches with `RunAs` straight to the install step.
+
+## Cloud-burn session (2026-11-02, autonomous; owner away)
+
+### Website quiz in a web view
+- The owner's questionnaire website was not in the repo and no address was given, so the address
+  is configuration (`--quiz-url`, `LINUXIFY_QUIZ_URL`, `quiz.json`), not hard-coded. The contract
+  the website must meet is `docs/web-quiz.md`; `linuxify quiz-spec` prints the exact ids/keys.
+- The page returns either answers to Linuxify's own 14 questions (ranked here together with the
+  scan) or a direct distro id. Chosen because a website can't know the PC's GPU/RAM/Secure Boot.
+  If the site's questions differ, the site (or a small adapter) maps to these keys.
+- **wry + tao**, in a separate child process (`linuxify quiz-window`), behind the cargo feature
+  `webview`, **off by default**. Reason: it could only be compiled on Linux (WebKitGTK) in the
+  container, not for Windows (the `static.rust-lang.org` egress is blocked, so no
+  `x86_64-pc-windows-*` std). CI now runs `cargo check --features webview` on Windows. When that is
+  green and someone has clicked through it on Windows, add `--features webview` to release.yml.
+- Local pages are served through a custom protocol, never `file://`: tested on WebKitGTK, wry's
+  message bridge silently drops `window.ipc` messages from `file://` pages (it can't build an
+  `http::Uri` from them). Windows would likely do the same.
+- Everything the page sends is untrusted: 16 KB cap, strict JSON (unknown fields refused),
+  checked against QUESTIONS / distros.json. Navigation allow-list, pop-ups/downloads/permissions
+  denied. All of that is plain functions in `webquiz.rs` with unit tests.
+- Built-in quiz stays the default and the fallback whenever there is no address, no web view in
+  the build, or the window fails.
+
+### Linux CI
+- Added a `test-linux` CI job. Found and fixed a real portability bug (migrate built staging paths
+  with `\` on every OS) and gated 2 tests that hard-code `C:\` paths.

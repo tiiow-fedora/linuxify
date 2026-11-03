@@ -48,6 +48,69 @@ pub fn save_choice(answers: &Answers, rec: &Recommendation, scan_used: bool) -> 
     Ok((json_path, html_path))
 }
 
+/// Where the website quiz comes from: `--quiz-url`, `LINUXIFY_QUIZ_URL`, or a `quiz.json` in
+/// the Linuxify folder or next to the exe (`data/quiz.json`). None when not set up.
+pub fn quiz_source(cli_url: Option<&str>, data_dir: Option<&Path>) -> Result<Option<crate::webquiz::QuizSource>, String> {
+    let mut dirs: Vec<PathBuf> = Vec::new();
+    if let Some(d) = data_dir {
+        dirs.push(d.to_path_buf());
+    }
+    if let Ok(h) = appdirs::home() {
+        dirs.push(h);
+    }
+    if let Some(d) = std::env::current_exe().ok().and_then(|e| e.parent().map(|p| p.join("data"))) {
+        dirs.push(d);
+    }
+    let env = std::env::var(crate::webquiz::ENV_URL).ok();
+    crate::webquiz::resolve_source(cli_url, env.as_deref(), &dirs)
+}
+
+/// Whether this build can show the website quiz in a window.
+pub fn web_quiz_supported() -> bool {
+    cfg!(feature = "webview")
+}
+
+/// Shows the website quiz in its own window (a child process) and returns its validated
+/// result; `Ok(None)` if the window was closed without finishing. Blocks until then.
+pub fn run_web_quiz(source: &crate::webquiz::QuizSource, distros: &DistroList) -> Result<Option<crate::webquiz::QuizResult>, String> {
+    if !web_quiz_supported() {
+        return Err("this build of Linuxify has no web view; use the built-in quiz (or `--quiz-result` with a saved result)".into());
+    }
+    let home = appdirs::home()?;
+    std::fs::create_dir_all(&home).map_err(|e| e.to_string())?;
+    let out = home.join(format!("quiz-result-{}.json", std::process::id()));
+    let _ = std::fs::remove_file(&out);
+    let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+    let mut cmd = std::process::Command::new(exe);
+    cmd.arg("quiz-window").arg("--out").arg(&out);
+    match source {
+        crate::webquiz::QuizSource::Url(u) => cmd.arg("--url").arg(u),
+        crate::webquiz::QuizSource::File(f) => cmd.arg("--file").arg(f),
+    };
+    let status = cmd.status().map_err(|e| format!("could not open the quiz window: {e}"))?;
+    let payload = std::fs::read_to_string(&out);
+    let _ = std::fs::remove_file(&out);
+    match (status.code(), payload) {
+        (Some(0), Ok(text)) => crate::webquiz::parse_result(&text, Some(distros)).map(Some),
+        (Some(2), _) => Ok(None),
+        _ => Err("the quiz window failed to start or finish; use the built-in quiz instead".into()),
+    }
+}
+
+/// Remembers a distro the website quiz picked directly, so `try`/`install` default to it.
+pub fn save_web_pick(distro_id: &str) -> Result<PathBuf, String> {
+    let home = appdirs::home()?;
+    std::fs::create_dir_all(&home).map_err(|e| e.to_string())?;
+    let saved = serde_json::json!({
+        "generated_at": chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string(),
+        "source": "website-quiz",
+        "top": [distro_id],
+    });
+    let p = home.join("choice.json");
+    std::fs::write(&p, serde_json::to_string_pretty(&saved).map_err(|e| e.to_string())?).map_err(|e| e.to_string())?;
+    Ok(p)
+}
+
 pub fn find_distro<'a>(list: &'a DistroList, id: &str) -> Result<&'a Distro, String> {
     list.distros.iter().find(|d| d.id == id).ok_or_else(|| format!("unknown distro '{id}'. Run `linuxify try --list` to see the ids."))
 }
