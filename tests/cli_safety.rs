@@ -10,7 +10,7 @@ fn linuxify(args: &[&str]) -> (bool, String) {
 }
 
 fn linuxify_in(home: &std::path::Path, args: &[&str]) -> (bool, String) {
-    std::fs::create_dir_all(&home).unwrap();
+    std::fs::create_dir_all(home).unwrap();
     let out = Command::new(env!("CARGO_BIN_EXE_linuxify")).args(args).env("LOCALAPPDATA", home).output().unwrap();
     let text = format!("{}{}", String::from_utf8_lossy(&out.stdout), String::from_utf8_lossy(&out.stderr));
     (out.status.success(), text)
