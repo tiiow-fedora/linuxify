@@ -720,7 +720,7 @@ pub struct InstallState {
 
 /// diskpart script that deletes the installer partitions (found by their
 /// recorded offsets at undo time) and grows C: back into the free space.
-pub fn diskpart_undo(disk: u32, installer_partitions: &[u32], c_partition: u32) -> String {
+pub fn diskpart_undo(disk: u32, installer_partitions: &[u32]) -> String {
     let mut s = format!("rem Linuxify: undo\r\nselect disk {disk}\r\n");
     let mut parts = installer_partitions.to_vec();
     // Highest number first, in case diskpart renumbers the ones after a deleted partition.
@@ -729,7 +729,8 @@ pub fn diskpart_undo(disk: u32, installer_partitions: &[u32], c_partition: u32) 
         // No "override": diskpart then refuses to delete protected/system partitions.
         s += &format!("select partition {n}\r\ndelete partition\r\n");
     }
-    s += &format!("select partition {c_partition}\r\nextend\r\nexit\r\n");
+    // C: by letter, not number: deleting partitions can renumber the ones after them.
+    s += "select volume C\r\nextend\r\nexit\r\n";
     s
 }
 
@@ -744,6 +745,32 @@ pub fn find_partition_at(hw: &HardwareFacts, disk: u32, offset: u64, size: u64) 
         .iter()
         .find(|p| p.offset.abs_diff(offset) < MB && p.size.abs_diff(size) < 2 * MB)
         .map(|p| p.number)
+}
+
+/// What `--undo` may touch, worked out from a fresh scan: the installer
+/// partitions (found by recorded offset and size, never C:, a system or boot
+/// partition) and C:'s *current* partition number. Numbers saved at install
+/// time can be stale (deleting a partition packs the ones after it), so C: is
+/// looked up by drive letter and recorded offset; if it is not where the plan
+/// left it, nothing may be extended and the caller must stop before diskpart.
+pub fn undo_targets(hw: &HardwareFacts, plan: &InstallPlan) -> Result<(Vec<u32>, u32), String> {
+    let disk = hw.disks.iter().find(|d| d.number == plan.disk).ok_or("the disk Linuxify installed on is no longer present; nothing was changed")?;
+    let c = disk
+        .partitions
+        .iter()
+        .find(|p| p.drive_letter == Some('C') && p.offset.abs_diff(plan.c_offset) < MB)
+        .ok_or("C: is no longer at the place Linuxify recorded; nothing was changed")?;
+    let mut parts = Vec::new();
+    for (offset, size) in std::iter::once((plan.installer_offset, plan.fat_size())).chain((plan.data_size > 0).then(|| (plan.data_offset(), plan.data_size))) {
+        let hit = disk.partitions.iter().find(|p| p.offset.abs_diff(offset) < MB && p.size.abs_diff(size) < 2 * MB);
+        if let Some(p) = hit {
+            if p.number == c.number || p.drive_letter == Some('C') || p.is_system || p.is_boot {
+                return Err(format!("partition {} sits where the installer partition was but looks like a Windows partition; refusing to delete it", p.number));
+            }
+            parts.push(p.number);
+        }
+    }
+    Ok((parts, c.number))
 }
 
 #[cfg(test)]
@@ -1049,14 +1076,40 @@ mod tests {
     }
 
     #[test]
+    fn undo_targets_use_fresh_c_number_and_never_touch_windows() {
+        let mut h = hw();
+        let p = plan(&h, &req()).unwrap();
+        // Installer partition was created below recovery, so C: stayed at 3 and LNXINST got 5.
+        h.disks[0].partitions.push(part(5, None, BASIC, p.installer_offset, p.fat_size(), None));
+        assert_eq!(undo_targets(&h, &p).unwrap(), (vec![5], 3));
+        // C: renumbered since the plan: the fresh number is used, not the saved one.
+        h.disks[0].partitions[2].number = 2;
+        assert_eq!(undo_targets(&h, &p).unwrap().1, 2);
+        // C: moved or gone: refuse before any diskpart.
+        h.disks[0].partitions[2].offset += 10 * MB;
+        assert!(undo_targets(&h, &p).is_err());
+        let mut h2 = hw();
+        h2.disks[0].partitions[2].drive_letter = None;
+        assert!(undo_targets(&h2, &p).is_err());
+        // Something that looks like Windows at the installer's offset is never deleted.
+        let mut h3 = hw();
+        let mut sys = part(5, None, BASIC, p.installer_offset, p.fat_size(), None);
+        sys.is_system = true;
+        h3.disks[0].partitions.push(sys);
+        assert!(undo_targets(&h3, &p).is_err());
+        // Already deleted: nothing to delete, C: still found.
+        assert_eq!(undo_targets(&hw(), &p).unwrap(), (vec![], 3));
+    }
+
+    #[test]
     fn undo_script_and_partition_lookup() {
-        let s = diskpart_undo(0, &[4], 3);
-        assert!(s.contains("select partition 4\r\ndelete partition\r\nselect partition 3\r\nextend"));
+        let s = diskpart_undo(0, &[4]);
+        assert!(s.contains("select partition 4\r\ndelete partition\r\nselect volume C\r\nextend"));
         assert!(!s.contains("override"), "undo must not force-delete protected partitions");
-        let s2 = diskpart_undo(0, &[], 3);
+        let s2 = diskpart_undo(0, &[]);
         assert!(!s2.contains("delete"));
         // LNXINST and LNXDATA: the higher number goes first.
-        assert!(diskpart_undo(0, &[4, 5], 3).contains("select partition 5\r\ndelete partition\r\nselect partition 4\r\ndelete partition\r\nselect partition 3\r\nextend"));
+        assert!(diskpart_undo(0, &[4, 5]).contains("select partition 5\r\ndelete partition\r\nselect partition 4\r\ndelete partition\r\nselect volume C\r\nextend"));
         let mut h = hw();
         let p = plan(&h, &req()).unwrap();
         h.disks[0].partitions.push(part(5, Some('L'), BASIC, p.installer_offset, p.installer_size, None));

@@ -8,31 +8,70 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+
 jobs:
+  # Build, unit/integration tests and clippy on both OSes. OS-touching code is only fully
+  # exercised on Windows; Linux catches accidental Windows-only assumptions in the portable logic.
   test:
-    runs-on: windows-latest
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v4
       - name: Toolchain
         run: rustup toolchain install stable --profile minimal --component clippy && rustup default stable
-      - name: Tests
+      - uses: Swatinem/rust-cache@v2
+      - name: System libraries for the GUI and web view
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libxdo-dev
+      - name: Build
+        run: cargo build --locked --all-targets
+      - name: Tests (includes the catalog validator, tests/catalog.rs)
         run: cargo test --locked
       - name: Clippy
         run: cargo clippy --locked --all-targets -- -D warnings
       - name: Web view build (feature webview)
         run: cargo check --locked --features webview
 
-  # The pure logic (scoring, mapping, migration, install planning) is portable; this catches
-  # accidental Windows-only assumptions in it. OS-touching code is only exercised on Windows.
-  test-linux:
+  # Fast, dependency-light gate for data edits: runs only the static catalog validator.
+  catalog:
+    name: catalog validation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Toolchain
-        run: rustup toolchain install stable --profile minimal --component clippy && rustup default stable
-      - name: System libraries for the GUI and web view
+        run: rustup toolchain install stable --profile minimal && rustup default stable
+      - uses: Swatinem/rust-cache@v2
+      - name: System libraries
         run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libxdo-dev
-      - name: Tests
-        run: cargo test --locked
-      - name: Web view build
-        run: cargo check --locked --features webview
+      - run: cargo test --locked --test catalog
+
+  # Advisory for now: the code base was never rustfmt-formatted (long lines), so a blocking check
+  # would fail until a one-off `cargo fmt` commit lands. Remove continue-on-error after that.
+  fmt:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: rustup toolchain install stable --profile minimal --component rustfmt && rustup default stable
+      - run: cargo fmt --all --check
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+      - name: Audit Cargo.lock
+        run: cargo audit

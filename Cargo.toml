@@ -31,3 +31,6 @@ codegen-units = 1
 # The website quiz in a web view (WebView2 on Windows). Off by default until it has been
 # built and clicked through on Windows; see DECISIONS.md. Build with `--features webview`.
 webview = ["dep:wry", "dep:tao"]
+
+[dev-dependencies]
+proptest = "1"

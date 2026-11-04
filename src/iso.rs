@@ -86,6 +86,8 @@ pub fn host_of(url: &str) -> Option<&str> {
 /// Returns (file name, lowercase hex hash) pairs.
 pub fn parse_checksums(text: &str) -> Vec<(String, String)> {
     let is_hash = |s: &str| s.len() == 64 && s.chars().all(|c| c.is_ascii_hexdigit());
+    // A name becomes a file name in the download folder, so it must not be a path.
+    let is_plain_name = |n: &str| !n.is_empty() && !n.contains('/') && !n.contains('\\');
     let mut out = Vec::new();
     for line in text.lines().map(str::trim) {
         if line.is_empty() || line.starts_with('#') || line.starts_with("-----") || line.starts_with("Hash:") {
@@ -93,7 +95,7 @@ pub fn parse_checksums(text: &str) -> Vec<(String, String)> {
         }
         if let Some(rest) = line.strip_prefix("SHA256 (") {
             if let Some((name, hash)) = rest.split_once(") = ") {
-                if is_hash(hash.trim()) {
+                if is_hash(hash.trim()) && is_plain_name(name) {
                     out.push((name.to_string(), hash.trim().to_ascii_lowercase()));
                 }
             }
@@ -102,7 +104,7 @@ pub fn parse_checksums(text: &str) -> Vec<(String, String)> {
         let mut parts = line.splitn(2, char::is_whitespace);
         let (Some(hash), Some(name)) = (parts.next(), parts.next()) else { continue };
         let name = name.trim().trim_start_matches('*');
-        if is_hash(hash) && !name.is_empty() && !name.contains('/') && !name.contains('\\') {
+        if is_hash(hash) && is_plain_name(name) {
             out.push((name.to_string(), hash.to_ascii_lowercase()));
         }
     }
@@ -162,6 +164,16 @@ pub fn iso_url(final_checksum_url: &str, file_name: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    /// Found by fuzzing: the BSD form accepted names that are paths.
+    #[test]
+    fn bsd_checksum_names_must_not_be_paths() {
+        let h = "a".repeat(64);
+        for bad in ["../evil.iso", "dir/x.iso", "..\\evil.iso", ""] {
+            assert!(parse_checksums(&format!("SHA256 ({bad}) = {h}")).is_empty(), "{bad:?}");
+        }
+        assert_eq!(parse_checksums(&format!("SHA256 (ok.iso) = {h}")).len(), 1);
+    }
+
     use super::*;
 
     const H1: &str = "487f87faaf547ea30e0aba4d5b53346292571256b25333a978db1692bcee9dd2";

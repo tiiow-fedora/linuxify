@@ -1,0 +1,770 @@
+{
+ "schema_version": 1,
+ "apps": {
+  "vlc": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "vlc",
+    "confidence": "high",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "vlc",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "vlc",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "vlc",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "vlc",
+    "confidence": "medium"
+   }
+  },
+  "spotify": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.spotify.Client",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.spotify.Client",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.spotify.Client",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.spotify.Client",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.spotify.Client",
+    "confidence": "high"
+   }
+  },
+  "obs-studio": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "obs-studio",
+    "confidence": "medium",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "obs-studio",
+    "confidence": "medium"
+   }
+  },
+  "handbrake": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "HandBrake-gui",
+    "confidence": "medium",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "handbrake",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "handbrake",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "handbrake",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "fr.handbrake.ghb",
+    "confidence": "high"
+   }
+  },
+  "nicotine-plus": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.nicotine_plus.Nicotine",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "nicotine+",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "nicotine",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "nicotine",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.nicotine_plus.Nicotine",
+    "confidence": "high"
+   }
+  },
+  "yt-dlp": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "yt-dlp",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "yt-dlp",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "yt-dlp",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "yt-dlp",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "yt-dlp",
+    "confidence": "medium"
+   }
+  },
+  "ffmpeg": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "ffmpeg",
+    "confidence": "high",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "ffmpeg",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "ffmpeg",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "ffmpeg",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "packman",
+    "pkg": "ffmpeg",
+    "confidence": "medium",
+    "needs": [
+     "packman"
+    ]
+   },
+   "notes": [
+    "Fedora and openSUSE ship a codec-limited ffmpeg by default; the RPM Fusion or Packman build is needed for full codec support."
+   ]
+  },
+  "kdenlive": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "kdenlive",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "kdenlive",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "kdenlive",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "kdenlive",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "kdenlive",
+    "confidence": "medium"
+   }
+  },
+  "shotcut": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.shotcut.Shotcut",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "shotcut",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "shotcut",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "shotcut",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.shotcut.Shotcut",
+    "confidence": "high"
+   }
+  },
+  "openshot": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "openshot",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "openshot",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "openshot-qt",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "openshot-qt",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "openshot-qt",
+    "confidence": "medium"
+   }
+  },
+  "aegisub": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.aegisub.Aegisub",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "aegisub",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "aegisub",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "aegisub",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.aegisub.Aegisub",
+    "confidence": "high"
+   }
+  },
+  "mkvtoolnix": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "mkvtoolnix-gui",
+    "confidence": "medium",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mkvtoolnix-gui",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mkvtoolnix-gui",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mkvtoolnix-gui",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "mkvtoolnix-gui",
+    "confidence": "medium"
+   }
+  },
+  "mpv": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "mpv",
+    "confidence": "medium",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mpv",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mpv",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mpv",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "mpv",
+    "confidence": "medium"
+   }
+  },
+  "kodi": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "kodi",
+    "confidence": "medium",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "kodi",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "kodi",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "kodi",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "packman",
+    "pkg": "kodi",
+    "confidence": "medium",
+    "needs": [
+     "packman"
+    ]
+   }
+  },
+  "plex-desktop": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "tv.plex.PlexDesktop",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "tv.plex.PlexDesktop",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "tv.plex.PlexDesktop",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "tv.plex.PlexDesktop",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "tv.plex.PlexDesktop",
+    "confidence": "high"
+   }
+  },
+  "stremio": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.stremio.Stremio",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.stremio.Stremio",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.stremio.Stremio",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.stremio.Stremio",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.stremio.Stremio",
+    "confidence": "high"
+   }
+  },
+  "xnview-mp": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.xnview.XnViewMP",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.xnview.XnViewMP",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.xnview.XnViewMP",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.xnview.XnViewMP",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.xnview.XnViewMP",
+    "confidence": "high"
+   }
+  },
+  "plexamp": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.plexamp.Plexamp",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.plexamp.Plexamp",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.plexamp.Plexamp",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.plexamp.Plexamp",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.plexamp.Plexamp",
+    "confidence": "high"
+   }
+  },
+  "natron": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "fr.natron.Natron",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "fr.natron.Natron",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "fr.natron.Natron",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "fr.natron.Natron",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "fr.natron.Natron",
+    "confidence": "high"
+   }
+  },
+  "opentoonz": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "io.github.OpenToonz",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "io.github.OpenToonz",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "io.github.OpenToonz",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "io.github.OpenToonz",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "io.github.OpenToonz",
+    "confidence": "high"
+   }
+  },
+  "audacious": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "audacious",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "audacious",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "audacious",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "audacious",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "audacious",
+    "confidence": "medium"
+   }
+  },
+  "strawberry": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "strawberry",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "strawberry",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "strawberry",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "strawberry",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "strawberry",
+    "confidence": "medium"
+   }
+  },
+  "clementine": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "clementine",
+    "confidence": "medium",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "clementine",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "clementine",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "clementine",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "packman",
+    "pkg": "clementine",
+    "confidence": "low",
+    "needs": [
+     "packman"
+    ]
+   }
+  },
+  "avidemux": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.avidemux.Avidemux",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "avidemux-qt",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "avidemux-qt",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "avidemux-qt",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.avidemux.Avidemux",
+    "confidence": "high"
+   }
+  },
+  "synfig": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "synfigstudio",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "synfigstudio",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "synfigstudio",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "synfigstudio",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.synfig.SynfigStudio",
+    "confidence": "high"
+   }
+  },
+  "pencil2d": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "pencil2d",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "pencil2d",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "pencil2d",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "pencil2d",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.pencil2d.Pencil2D",
+    "confidence": "high"
+   }
+  },
+  "pitivi": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "pitivi",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "pitivi",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "pitivi",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "pitivi",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "pitivi",
+    "confidence": "medium"
+   }
+  }
+ }
+}

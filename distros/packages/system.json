@@ -1,0 +1,1226 @@
+{
+ "schema_version": 1,
+ "apps": {
+  "putty": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "putty",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "putty",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "putty",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "putty",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "putty",
+    "confidence": "high"
+   }
+  },
+  "ultimaker-cura": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.ultimaker.cura",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.ultimaker.cura",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.ultimaker.cura",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.ultimaker.cura",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.ultimaker.cura",
+    "confidence": "medium"
+   }
+  },
+  "prusaslicer": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.prusa3d.PrusaSlicer",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "prusa-slicer",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.prusa3d.PrusaSlicer",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.prusa3d.PrusaSlicer",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.prusa3d.PrusaSlicer",
+    "confidence": "medium"
+   }
+  },
+  "7-zip": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "p7zip",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "7zip",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "p7zip-full",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "p7zip-full",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "p7zip",
+    "confidence": "medium"
+   }
+  },
+  "rpi-imager": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.raspberrypi.rpi-imager",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "rpi-imager",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.raspberrypi.rpi-imager",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.raspberrypi.rpi-imager",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.raspberrypi.rpi-imager",
+    "confidence": "medium"
+   }
+  },
+  "fedora-media-writer": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "mediawriter",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "org.fedoraproject.MediaWriter",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.fedoraproject.MediaWriter",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.fedoraproject.MediaWriter",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.fedoraproject.MediaWriter",
+    "confidence": "medium"
+   }
+  },
+  "qbittorrent": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "qbittorrent",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "qbittorrent",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "qbittorrent",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "qbittorrent",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "qbittorrent",
+    "confidence": "high"
+   }
+  },
+  "virtualbox": {
+   "fedora": {
+    "source": "rpmfusion",
+    "pkg": "VirtualBox",
+    "confidence": "medium",
+    "needs": [
+     "rpmfusion"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "virtualbox",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "virtualbox",
+    "confidence": "medium",
+    "needs": [
+     "non-free"
+    ]
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "virtualbox",
+    "confidence": "medium",
+    "needs": [
+     "universe"
+    ]
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "virtualbox",
+    "confidence": "medium"
+   },
+   "notes": [
+    "Add your user to the vboxusers group and reboot so USB passthrough and kernel modules work."
+   ]
+  },
+  "wireshark": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "wireshark",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "wireshark-qt",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "wireshark",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "wireshark",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "wireshark",
+    "confidence": "high"
+   },
+   "notes": [
+    "Add your user to the wireshark group to capture packets without root."
+   ]
+  },
+  "nmap": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "nmap",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "nmap",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "nmap",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "nmap",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "nmap",
+    "confidence": "high"
+   }
+  },
+  "tesseract-ocr": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "tesseract",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "tesseract",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "tesseract-ocr",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "tesseract-ocr",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "tesseract-ocr",
+    "confidence": "medium"
+   },
+   "notes": [
+    "Install a language data package such as tesseract-ocr-eng, tesseract-langpack-eng or tesseract-data-eng for recognition."
+   ]
+  },
+  "smartmontools": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "smartmontools",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "smartmontools",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "smartmontools",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "smartmontools",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "smartmontools",
+    "confidence": "high"
+   }
+  },
+  "wireguard": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "wireguard-tools",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "wireguard-tools",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "wireguard-tools",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "wireguard-tools",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "wireguard-tools",
+    "confidence": "high"
+   }
+  },
+  "openvpn": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "openvpn",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "openvpn",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "openvpn",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "openvpn",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "openvpn",
+    "confidence": "high"
+   }
+  },
+  "gnucash": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "gnucash",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "gnucash",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "gnucash",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "gnucash",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "gnucash",
+    "confidence": "high"
+   }
+  },
+  "jdownloader": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "org.jdownloader.JDownloader",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "org.jdownloader.JDownloader",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.jdownloader.JDownloader",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.jdownloader.JDownloader",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.jdownloader.JDownloader",
+    "confidence": "medium"
+   }
+  },
+  "transmission": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "transmission-gtk",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "transmission-gtk",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "transmission-gtk",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "transmission-gtk",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "transmission-gtk",
+    "confidence": "high"
+   }
+  },
+  "deluge": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "deluge",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "deluge-gtk",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "deluge",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "deluge",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "deluge",
+    "confidence": "medium"
+   }
+  },
+  "filezilla": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "filezilla",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "filezilla",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "filezilla",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "filezilla",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "filezilla",
+    "confidence": "high"
+   }
+  },
+  "copyq": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "copyq",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "copyq",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "copyq",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "copyq",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.github.hluk.copyq",
+    "confidence": "medium"
+   }
+  },
+  "peazip": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "io.github.peazip.PeaZip",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "io.github.peazip.PeaZip",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "io.github.peazip.PeaZip",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "io.github.peazip.PeaZip",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "io.github.peazip.PeaZip",
+    "confidence": "medium"
+   }
+  },
+  "openrgb": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "openrgb",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "org.openrgb.OpenRGB",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "org.openrgb.OpenRGB",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "org.openrgb.OpenRGB",
+    "confidence": "medium"
+   },
+   "notes": [
+    "Install OpenRGB's udev rules so it can talk to your devices without root."
+   ]
+  },
+  "rustdesk": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.rustdesk.RustDesk",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "rustdesk-bin",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.rustdesk.RustDesk",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.rustdesk.RustDesk",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.rustdesk.RustDesk",
+    "confidence": "medium"
+   }
+  },
+  "nextcloud": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "nextcloud-client",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "nextcloud-client",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "nextcloud-desktop",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "nextcloud-desktop",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "nextcloud-desktop",
+    "confidence": "high"
+   }
+  },
+  "syncthing": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "syncthing",
+    "confidence": "high"
+   }
+  },
+  "netbird": {
+   "fedora": {
+    "source": "vendor-repo",
+    "pkg": "netbird",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "netbird",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "vendor-repo",
+    "pkg": "netbird",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "ubuntu": {
+    "source": "vendor-repo",
+    "pkg": "netbird",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   },
+   "opensuse": {
+    "source": "vendor-repo",
+    "pkg": "netbird",
+    "confidence": "medium",
+    "needs": [
+     "vendor-repo"
+    ]
+   }
+  },
+  "nomachine": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.nomachine.com/download",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "nomachine",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.nomachine.com/download",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.nomachine.com/download",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.nomachine.com/download",
+    "confidence": "medium"
+   }
+  },
+  "freefilesync": {
+   "fedora": {
+    "source": "download",
+    "url": "https://freefilesync.org/download.php",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "freefilesync-bin",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://freefilesync.org/download.php",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://freefilesync.org/download.php",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://freefilesync.org/download.php",
+    "confidence": "medium"
+   }
+  },
+  "rclone": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "rclone",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "rclone",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "rclone",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "rclone",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "rclone",
+    "confidence": "high"
+   }
+  },
+  "restic": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "restic",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "restic",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "restic",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "restic",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "restic",
+    "confidence": "high"
+   }
+  },
+  "borg": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.borgbase.Vorta",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.borgbase.Vorta",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.borgbase.Vorta",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.borgbase.Vorta",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.borgbase.Vorta",
+    "confidence": "medium"
+   },
+   "notes": [
+    "The command-line tool is packaged separately as borgbackup (borg on Arch)."
+   ]
+  },
+  "bleachbit-native": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "bleachbit",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "bleachbit",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "bleachbit",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "bleachbit",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "bleachbit",
+    "confidence": "high"
+   }
+  },
+  "clonezilla": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "clonezilla",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "clonezilla",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "clonezilla",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "clonezilla",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://clonezilla.org/downloads.php",
+    "confidence": "medium"
+   }
+  },
+  "exiftool": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "perl-Image-ExifTool",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "perl-image-exiftool",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "libimage-exiftool-perl",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "libimage-exiftool-perl",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "exiftool",
+    "confidence": "medium"
+   }
+  },
+  "mediainfo": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "mediainfo-gui",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "mediainfo-gui",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "mediainfo-gui",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "mediainfo-gui",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "net.mediaarea.MediaInfo",
+    "confidence": "medium"
+   }
+  },
+  "shutter": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "shutter",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "shutter",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "shutter",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "shutter",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "shutter",
+    "confidence": "low"
+   }
+  },
+  "solaar": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "solaar",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "solaar",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "solaar",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "solaar",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "solaar",
+    "confidence": "medium"
+   }
+  },
+  "kdeconnect": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "kdeconnect",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "kdeconnect",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "kdeconnect",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "kdeconnect",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "kdeconnect-kde",
+    "confidence": "medium"
+   },
+   "notes": [
+    "Open UDP/TCP ports 1714-1764 in your firewall so phones can pair."
+   ]
+  },
+  "scrcpy": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "scrcpy",
+    "confidence": "low"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "scrcpy",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "scrcpy",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "scrcpy",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "scrcpy",
+    "confidence": "medium"
+   }
+  },
+  "google-earth-pro": {
+   "fedora": {
+    "source": "download",
+    "url": "https://www.google.com/earth/versions/",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "aur",
+    "pkg": "google-earth-pro",
+    "confidence": "medium",
+    "needs": [
+     "aur"
+    ]
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://www.google.com/earth/versions/",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://www.google.com/earth/versions/",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://www.google.com/earth/versions/",
+    "confidence": "medium"
+   }
+  },
+  "tlp": {
+   "fedora": {
+    "source": "repo",
+    "pkg": "tlp",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "repo",
+    "pkg": "tlp",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "repo",
+    "pkg": "tlp",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "repo",
+    "pkg": "tlp",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "repo",
+    "pkg": "tlp",
+    "confidence": "high"
+   },
+   "notes": [
+    "Enable the service with: sudo systemctl enable --now tlp."
+   ]
+  },
+  "hide-me": {
+   "fedora": {
+    "source": "download",
+    "url": "https://hide.me/en/vpn-linux",
+    "confidence": "medium"
+   },
+   "arch": {
+    "source": "download",
+    "url": "https://hide.me/en/vpn-linux",
+    "confidence": "medium"
+   },
+   "debian": {
+    "source": "download",
+    "url": "https://hide.me/en/vpn-linux",
+    "confidence": "medium"
+   },
+   "ubuntu": {
+    "source": "download",
+    "url": "https://hide.me/en/vpn-linux",
+    "confidence": "medium"
+   },
+   "opensuse": {
+    "source": "download",
+    "url": "https://hide.me/en/vpn-linux",
+    "confidence": "medium"
+   }
+  },
+  "bottles": {
+   "fedora": {
+    "source": "flatpak",
+    "pkg": "com.usebottles.bottles",
+    "confidence": "high"
+   },
+   "arch": {
+    "source": "flatpak",
+    "pkg": "com.usebottles.bottles",
+    "confidence": "high"
+   },
+   "debian": {
+    "source": "flatpak",
+    "pkg": "com.usebottles.bottles",
+    "confidence": "high"
+   },
+   "ubuntu": {
+    "source": "flatpak",
+    "pkg": "com.usebottles.bottles",
+    "confidence": "high"
+   },
+   "opensuse": {
+    "source": "flatpak",
+    "pkg": "com.usebottles.bottles",
+    "confidence": "high"
+   }
+  }
+ }
+}
