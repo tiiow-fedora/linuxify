@@ -1,0 +1,90 @@
+[package]
+name = "linuxify-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+arbitrary = { version = "1", features = ["derive"] }
+serde_json = "1"
+linuxify = { path = ".." }
+
+# Keeps this crate out of the main workspace so `cargo build`/`cargo test` at the root never see it.
+[workspace]
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "data_files"
+path = "fuzz_targets/data_files.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "checksums_and_urls"
+path = "fuzz_targets/checksums_and_urls.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "winget_table"
+path = "fuzz_targets/winget_table.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "app_matching"
+path = "fuzz_targets/app_matching.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "userdata_formats"
+path = "fuzz_targets/userdata_formats.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "webquiz_input"
+path = "fuzz_targets/webquiz_input.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "firmware_bytes"
+path = "fuzz_targets/firmware_bytes.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "state_files"
+path = "fuzz_targets/state_files.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "hardware_probe"
+path = "fuzz_targets/hardware_probe.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "answers_and_vm"
+path = "fuzz_targets/answers_and_vm.rs"
+test = false
+doc = false
+bench = false

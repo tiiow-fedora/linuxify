@@ -1,0 +1,5 @@
+target
+artifacts
+coverage
+# corpus/ is generated; only hand-picked seeds under seeds/ are committed
+corpus
